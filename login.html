@@ -1,0 +1,349 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GardenOfEchos — Log In</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      background: #f5f5f5;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    /* ── Card container ── */
+    .card {
+      display: flex;
+      width: 820px;
+      min-height: 480px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,.15);
+    }
+
+    /* ── Left panel ── */
+    .panel-left {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+      background:
+        linear-gradient(145deg, rgba(235,80,90,.88) 0%, rgba(220,60,100,.85) 100%);
+      overflow: hidden;
+    }
+    /* Decorative leaf/floral blobs to mimic the background photo feel */
+    .panel-left::before {
+      content: '';
+      position: absolute;
+      top: -60px;
+      left: -60px;
+      width: 280px;
+      height: 280px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.07);
+    }
+    .panel-left::after {
+      content: '';
+      position: absolute;
+      bottom: -80px;
+      right: -50px;
+      width: 320px;
+      height: 320px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+    .leaf-1 {
+      position: absolute;
+      top: 20px;
+      right: 30px;
+      width: 120px;
+      height: 200px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      background: rgba(255,255,255,.08);
+      transform: rotate(-25deg);
+    }
+    .leaf-2 {
+      position: absolute;
+      bottom: 40px;
+      left: 20px;
+      width: 100px;
+      height: 170px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      background: rgba(255,255,255,.07);
+      transform: rotate(30deg);
+    }
+    .leaf-3 {
+      position: absolute;
+      top: 50%;
+      left: -20px;
+      width: 80px;
+      height: 140px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      background: rgba(0,0,0,.07);
+      transform: rotate(15deg) translateY(-50%);
+    }
+
+    .panel-left-content {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+    }
+    .panel-left h2 {
+      color: #fff;
+      font-size: 22px;
+      font-weight: 700;
+      margin-bottom: 30px;
+      line-height: 1.35;
+    }
+    .btn-signup {
+      display: inline-block;
+      padding: 10px 36px;
+      border: 2px solid #fff;
+      border-radius: 4px;
+      color: #fff;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      background: transparent;
+      letter-spacing: .4px;
+      transition: background .18s, color .18s;
+      text-decoration: none;
+    }
+    .btn-signup:hover {
+      background: #fff;
+      color: #e0546a;
+    }
+
+    /* ── Right panel ── */
+    .panel-right {
+      flex: 1.1;
+      background: #fff;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 52px 52px;
+    }
+    .panel-right h1 {
+      font-size: 26px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+      text-align: center;
+    }
+    .panel-right .subtitle {
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 32px;
+      text-align: center;
+    }
+
+    /* ── Form ── */
+    .login-form {
+      width: 100%;
+      max-width: 320px;
+    }
+    .form-group {
+      margin-bottom: 18px;
+    }
+    .form-group label {
+      display: block;
+      font-size: 12.5px;
+      color: #555;
+      margin-bottom: 5px;
+      font-weight: 500;
+    }
+    .form-group input {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 4px;
+      font-size: 13.5px;
+      color: #333;
+      background: #fff;
+      transition: border-color .15s;
+      outline: none;
+    }
+    .form-group input:focus {
+      border-color: #e0546a;
+    }
+    .form-group input::placeholder {
+      color: #bbb;
+    }
+    .btn-login {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      background: #e0546a;
+      color: #fff;
+      border: none;
+      border-radius: 4px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .3px;
+      transition: background .18s;
+      margin-top: 8px;
+    }
+    .btn-login:hover { background: #c94060; }
+    .forgot-link {
+      display: block;
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12.5px;
+      color: #e0546a;
+      text-decoration: none;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+
+    /* ── Sign-up panel (hidden by default) ── */
+    .signup-form {
+      width: 100%;
+      max-width: 320px;
+      display: none;
+    }
+    .signup-form.active { display: block; }
+    .login-form.hidden { display: none; }
+
+    .back-link {
+      display: block;
+      text-align: center;
+      margin-top: 16px;
+      font-size: 12.5px;
+      color: #888;
+      cursor: pointer;
+    }
+    .back-link span { color: #e0546a; cursor: pointer; }
+    .back-link span:hover { text-decoration: underline; }
+
+    /* ── Back to site link ── */
+    .back-to-site {
+      position: fixed;
+      top: 18px;
+      left: 22px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 13px;
+      color: #666;
+      text-decoration: none;
+      z-index: 10;
+    }
+    .back-to-site:hover { color: #e0546a; }
+    .back-to-site svg { width: 15px; height: 15px; }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      body { align-items: flex-start; padding: 20px 14px; }
+      .card { flex-direction: column; width: 100%; min-height: unset; }
+      .panel-left { padding: 40px 28px; min-height: 200px; }
+      .panel-right { padding: 36px 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Back link -->
+  <a class="back-to-site" href="homepage.html">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <line x1="19" y1="12" x2="5" y2="12"/>
+      <polyline points="12 19 5 12 12 5"/>
+    </svg>
+    Back to GardenOfEchos
+  </a>
+
+  <div class="card">
+
+    <!-- ── Left Panel ── -->
+    <div class="panel-left">
+      <div class="leaf-1"></div>
+      <div class="leaf-2"></div>
+      <div class="leaf-3"></div>
+      <div class="panel-left-content" id="leftContent">
+        <h2>Create New Account</h2>
+        <a class="btn-signup" onclick="showSignup()">Sign up</a>
+      </div>
+    </div>
+
+    <!-- ── Right Panel ── -->
+    <div class="panel-right">
+
+      <!-- Login Form -->
+      <div id="loginSection">
+        <h1>Log In</h1>
+        <p class="subtitle">Welcome Back To Garden of Echoes.</p>
+        <form class="login-form" onsubmit="return false;">
+          <div class="form-group">
+            <label for="login-email">Login</label>
+            <input type="text" id="login-email" placeholder="jairuno" autocomplete="username">
+          </div>
+          <div class="form-group">
+            <label for="login-pass">Password</label>
+            <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+          </div>
+          <button type="submit" class="btn-login">Log In</button>
+          <a href="#" class="forgot-link">Forgot Password?</a>
+        </form>
+      </div>
+
+      <!-- Sign Up Form (toggled) -->
+      <div id="signupSection" style="display:none;">
+        <h1>Create Account</h1>
+        <p class="subtitle">Join Garden of Echoes today.</p>
+        <form class="signup-form active" onsubmit="return false;">
+          <div class="form-group">
+            <label for="signup-name">Full Name</label>
+            <input type="text" id="signup-name" placeholder="Jane Smith" autocomplete="name">
+          </div>
+          <div class="form-group">
+            <label for="signup-email">Email</label>
+            <input type="email" id="signup-email" placeholder="jane@email.com" autocomplete="email">
+          </div>
+          <div class="form-group">
+            <label for="signup-pass">Password</label>
+            <input type="password" id="signup-pass" placeholder="••••••••" autocomplete="new-password">
+          </div>
+          <div class="form-group">
+            <label for="signup-confirm">Confirm Password</label>
+            <input type="password" id="signup-confirm" placeholder="••••••••" autocomplete="new-password">
+          </div>
+          <button type="submit" class="btn-login">Create Account</button>
+          <p class="back-link">Already have an account? <span onclick="showLogin()">Log In</span></p>
+        </form>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function showSignup() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('signupSection').style.display = 'block';
+      document.getElementById('leftContent').innerHTML = `
+        <h2>Already Have an Account?</h2>
+        <a class="btn-signup" onclick="showLogin()">Log In</a>
+      `;
+    }
+    function showLogin() {
+      document.getElementById('signupSection').style.display = 'none';
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('leftContent').innerHTML = `
+        <h2>Create New Account</h2>
+        <a class="btn-signup" onclick="showSignup()">Sign up</a>
+      `;
+    }
+  </script>
+
+</body>
+</html>
