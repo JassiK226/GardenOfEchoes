@@ -1,0 +1,365 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GardenOfEchos — Flower Subscription Plans</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #f4f5f7;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ══ Nav ══ */
+    .main-nav {
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      height: 96px;
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .logo { display: flex; align-items: center; margin-right: 36px; }
+    .logo img { height: 90px; width: auto; display: block; }
+    .main-nav-links { display: flex; align-items: center; gap: 4px; flex: 1; }
+    .main-nav-links a {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px; font-size: 13.5px; color: #333;
+      white-space: nowrap; border-radius: 4px; transition: background .15s;
+    }
+    .main-nav-links a:hover { background: #f5f5f5; }
+    .main-nav-links a svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .nav-donation {
+      background: #7c3aed !important; color: #fff !important;
+      border-radius: 5px !important; padding: 6px 16px !important; font-weight: 600 !important;
+    }
+    .nav-donation:hover { background: #6d28d9 !important; }
+
+    /* ══ Category Nav ══ */
+    .cat-nav {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 28px; height: 44px; background: #fafafa;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .cat-nav a {
+      padding: 8px 18px; font-size: 13.5px; color: #444;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .cat-nav a:hover { color: #c0392b; }
+    .cat-nav a .arrow { font-size: 10px; margin-top: 1px; }
+    .cat-item { position: relative; }
+    .cat-item:hover .dropdown { display: block; }
+    .dropdown {
+      display: none; position: absolute; top: 100%; left: 0;
+      background: #fff; border: 1px solid #e0e0e0; min-width: 180px;
+      z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.1);
+    }
+    .dropdown a {
+      display: block; padding: 9px 16px; font-size: 13px;
+      color: #333; border-bottom: 1px solid #f0f0f0;
+    }
+    .dropdown a:hover { background: #f9f9f9; color: #c0392b; }
+
+    /* ══ Page ══ */
+    .page-wrap {
+      padding: 60px 20px 80px;
+      background: linear-gradient(160deg, #f0eef8 0%, #f7f4fb 50%, #fdf0f3 100%);
+      min-height: calc(100vh - 140px);
+    }
+
+    .page-header {
+      text-align: center;
+      margin-bottom: 52px;
+    }
+    .page-header .script-title {
+      font-family: Georgia, 'Times New Roman', serif;
+      font-style: italic;
+      font-size: 38px;
+      font-weight: 400;
+      color: #2d2d2d;
+      letter-spacing: .5px;
+      margin-bottom: 8px;
+    }
+    .page-header .sub-title {
+      font-size: 18px;
+      font-weight: 600;
+      color: #444;
+      letter-spacing: .3px;
+    }
+
+    /* ══ Cards ══ */
+    .plans-grid {
+      display: flex;
+      justify-content: center;
+      gap: 24px;
+      flex-wrap: wrap;
+      max-width: 1020px;
+      margin: 0 auto;
+    }
+
+    .plan-card {
+      position: relative;
+      background: #fff;
+      border-radius: 18px;
+      padding: 36px 32px 32px;
+      width: 295px;
+      box-shadow: 0 6px 32px rgba(0,0,0,.09);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      transition: transform .2s, box-shadow .2s;
+    }
+    .plan-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 14px 44px rgba(0,0,0,.13);
+    }
+
+    /* ── Bloom (pink) ── */
+    .plan-card.bloom { border: 2px solid #f472b6; }
+    .plan-card.bloom .plan-name { color: #e0546a; }
+    .plan-card.bloom .plan-price { color: #e0546a; }
+    .plan-card.bloom .btn-subscribe { background: linear-gradient(90deg, #f472b6, #e0546a); }
+    .plan-card.bloom .btn-subscribe:hover { background: linear-gradient(90deg, #ec4899, #c94060); }
+
+    /* ── Seasonal (purple) ── */
+    .plan-card.seasonal { border: 2px solid #a78bfa; }
+    .plan-card.seasonal .plan-name { color: #7c3aed; }
+    .plan-card.seasonal .plan-price { color: #7c3aed; }
+    .plan-card.seasonal .btn-subscribe { background: linear-gradient(90deg, #a78bfa, #7c3aed); }
+    .plan-card.seasonal .btn-subscribe:hover { background: linear-gradient(90deg, #8b5cf6, #6d28d9); }
+
+    /* ── Annual (orange) ── */
+    .plan-card.annual { border: 2px solid #fb923c; }
+    .plan-card.annual .plan-name { color: #ea6c1a; }
+    .plan-card.annual .plan-price { color: #ea6c1a; }
+    .plan-card.annual .btn-subscribe { background: linear-gradient(90deg, #fb923c, #ea6c1a); }
+    .plan-card.annual .btn-subscribe:hover { background: linear-gradient(90deg, #f97316, #d35f10); }
+
+    /* ── Badge ── */
+    .badge-popular {
+      position: absolute;
+      top: -14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #facc15;
+      color: #7a5f00;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 14px;
+      border-radius: 20px;
+      white-space: nowrap;
+      letter-spacing: .4px;
+    }
+
+    .plan-name {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: .5px;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+    .plan-freq {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 28px;
+      text-align: center;
+    }
+
+    .plan-features {
+      list-style: none;
+      width: 100%;
+      margin-bottom: 28px;
+    }
+    .plan-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 13.5px;
+      color: #444;
+      padding: 7px 0;
+      border-bottom: 1px solid #f3f3f3;
+    }
+    .plan-features li:last-child { border-bottom: none; }
+    .plan-features li .feat-icon { font-size: 18px; flex-shrink: 0; }
+
+    .plan-price {
+      font-size: 32px;
+      font-weight: 800;
+      margin-bottom: 20px;
+    }
+    .plan-price span {
+      font-size: 14px;
+      font-weight: 400;
+      color: #999;
+    }
+
+    .btn-subscribe {
+      display: block;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 8px;
+      color: #fff;
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .4px;
+      transition: background .18s;
+      font-family: inherit;
+    }
+
+    /* ══ Responsive ══ */
+    @media (max-width: 680px) {
+      .main-nav { padding: 0 14px; height: 72px; }
+      .logo img { height: 62px; }
+      .main-nav-links a span { display: none; }
+      .page-header .script-title { font-size: 28px; }
+      .plans-grid { flex-direction: column; align-items: center; }
+      .plan-card { width: 100%; max-width: 340px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ Main Nav ══ -->
+  <nav class="main-nav">
+    <a href="homepage.html" class="logo"><img src="logo.png" alt="Garden of Echoes"></a>
+    <div class="main-nav-links">
+      <a href="subscriptions.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>The Garden Program</span>
+      </a>
+      <a href="login.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>My Account</span>
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Cart</span>
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Contact Us</span>
+      </a>
+      <a href="#" class="nav-donation"><span>Donation</span></a>
+    </div>
+  </nav>
+
+  <!-- ══ Category Nav ══ -->
+  <nav class="cat-nav">
+    <div class="cat-item">
+      <a href="#">Anniversary <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Anniversary Flowers</a>
+        <a href="#">Anniversary Wreaths</a>
+        <a href="#">Anniversary Baskets</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Occasions <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Birthday</a>
+        <a href="#">Wedding</a>
+        <a href="#">Graduation</a>
+        <a href="#">Get Well Soon</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Sympathy <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Funeral Flowers</a>
+        <a href="#">Sympathy Wreaths</a>
+        <a href="#">Memorial Arrangements</a>
+        <a href="#">Casket Flowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Flowers <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Roses</a>
+        <a href="#">Lilies</a>
+        <a href="#">Orchids</a>
+        <a href="#">Tulips</a>
+        <a href="#">Sunflowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Other Items <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Vases</a>
+        <a href="#">Gift Baskets</a>
+        <a href="#">Candles</a>
+        <a href="#">Cards</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ Plans ══ -->
+  <div class="page-wrap">
+    <div class="page-header">
+      <p class="script-title">Garden of Echos</p>
+      <p class="sub-title">Flower Subscription Plans</p>
+    </div>
+
+    <div class="plans-grid">
+
+      <!-- Bloom Plan -->
+      <div class="plan-card bloom">
+        <div class="badge-popular">&#11088; Most Popular</div>
+        <p class="plan-name">BLOOM PLAN</p>
+        <p class="plan-freq">(Every 3 Months)</p>
+        <ul class="plan-features">
+          <li><span class="feat-icon">🌸</span> 4 Deliveries / Year</li>
+          <li><span class="feat-icon">🌿</span> Fresh Seasonal Flowers</li>
+          <li><span class="feat-icon">🚚</span> Free Delivery</li>
+          <li><span class="feat-icon">🎁</span> Optional Add-Ons</li>
+        </ul>
+        <p class="plan-price">$250 <span>/ year</span></p>
+        <button class="btn-subscribe" onclick="goToCheckout('bloom', 'Bloom Plan', '$250/year', 250)">Subscribe Now</button>
+      </div>
+
+      <!-- Seasonal Plan -->
+      <div class="plan-card seasonal">
+        <p class="plan-name">SEASONAL PLAN</p>
+        <p class="plan-freq">(Every 6 Months)</p>
+        <ul class="plan-features">
+          <li><span class="feat-icon">🌼</span> 2 Deliveries / Year</li>
+          <li><span class="feat-icon">💐</span> Premium Arrangements</li>
+          <li><span class="feat-icon">🚚</span> Free Delivery</li>
+          <li><span class="feat-icon">🎁</span> Optional Add-Ons</li>
+        </ul>
+        <p class="plan-price">$150 <span>/ year</span></p>
+        <button class="btn-subscribe" onclick="goToCheckout('seasonal', 'Seasonal Plan', '$150/year', 150)">Subscribe Now</button>
+      </div>
+
+      <!-- Annual Plan -->
+      <div class="plan-card annual">
+        <p class="plan-name">ANNUAL PLAN</p>
+        <p class="plan-freq">(Once a Year)</p>
+        <ul class="plan-features">
+          <li><span class="feat-icon">🌺</span> 1 Delivery / Year</li>
+          <li><span class="feat-icon">✨</span> Deluxe Arrangement</li>
+          <li><span class="feat-icon">🚚</span> Free Delivery</li>
+          <li><span class="feat-icon">🎁</span> Optional Add-Ons</li>
+        </ul>
+        <p class="plan-price">$75 <span>/ year</span></p>
+        <button class="btn-subscribe" onclick="goToCheckout('annual', 'Annual Plan', '$75/year', 75)">Subscribe Now</button>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    function goToCheckout(planId, planName, planPrice, amount) {
+      const params = new URLSearchParams({ planId, planName, planPrice, amount });
+      window.location.href = 'checkout.html?' + params.toString();
+    }
+  </script>
+
+</body>
+</html>
