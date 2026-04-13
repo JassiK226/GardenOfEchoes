@@ -301,6 +301,7 @@
               <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
             </div>
             <button type="submit" class="btn-login">Log In</button>
+            <p id="loginMessage" style="margin-top:10px; font-size:13px; color:#c94060;"></p>
             <a href="#" class="forgot-link">Forgot Password?</a>
           </form>
         </div>
@@ -425,6 +426,43 @@
       signupMessage.textContent = 'Something went wrong.';
     }
   }
+
+  async function handleLogin(e) {
+  e.preventDefault();
+
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-pass').value;
+  const loginMessage = document.getElementById('loginMessage');
+
+  try {
+    const response = await fetch('/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      localStorage.setItem('fullName', data.full_name);
+      localStorage.setItem('email', data.email);
+
+      loginMessage.style.color = 'green';
+      loginMessage.textContent = 'Login successful!';
+
+      setTimeout(() => {
+        window.location.href = 'profile.html';
+      }, 800);
+    } else {
+      loginMessage.style.color = '#c94060';
+      loginMessage.textContent = data.error || 'Invalid email or password';
+    }
+  } catch (error) {
+    console.error(error);
+    loginMessage.style.color = '#c94060';
+    loginMessage.textContent = 'Something went wrong.';
+  }
+}
   </script>
   
 
