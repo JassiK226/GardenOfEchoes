@@ -383,81 +383,104 @@
     `;
   }
 
-  async function handleSignup(e) {
-    e.preventDefault();
+ // Function to handle signup form submission
+async function handleSignup(e) {
+  e.preventDefault(); // prevent page from refreshing
 
-    const fullName = document.getElementById('signup-name').value;
-    const email = document.getElementById('signup-email').value;
-    const password = document.getElementById('signup-pass').value;
-    const confirmPassword = document.getElementById('signup-confirm').value;
-    const signupMessage = document.getElementById('signupMessage');
+  // Get user input values from form
+  const fullName = document.getElementById('signup-name').value;
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-pass').value;
+  const confirmPassword = document.getElementById('signup-confirm').value;
+  const signupMessage = document.getElementById('signupMessage');
 
-    if (password !== confirmPassword) {
-      signupMessage.textContent = 'Passwords do not match.';
-      return;
-    }
-
-    try {
-      const response = await fetch('/signup', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullName, email, password })
-      });
-
-      const data = await response.json();
-
-      if (response.ok) {
-        localStorage.setItem('fullName', fullName);
-        localStorage.setItem('email', email);
-
-        signupMessage.style.color = 'green';
-        signupMessage.textContent = 'Account created successfully!';
-
-        setTimeout(() => {
-          window.location.href = 'profile.html';
-        }, 1000);
-      } else {
-        signupMessage.style.color = '#c94060';
-        signupMessage.textContent = data.error || 'Error creating account.';
-      }
-    } catch (error) {
-      console.error(error);
-      signupMessage.style.color = '#c94060';
-      signupMessage.textContent = 'Something went wrong.';
-    }
+  // Check if passwords match before sending to backend
+  if (password !== confirmPassword) {
+    signupMessage.textContent = 'Passwords do not match.';
+    return; // stop execution if passwords don’t match
   }
 
-  async function handleLogin(e) {
-  e.preventDefault();
+  try {
+    // Send signup data to backend
+    const response = await fetch('/signup', {
+      method: 'POST', // POST request to create new account
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fullName, email, password }) // convert data to JSON
+    });
 
+    const data = await response.json(); // get response from server
+
+    // If signup is successful
+    if (response.ok) {
+      // Save user info in storage so it can be used on profile page
+      localStorage.setItem('fullName', fullName);
+      localStorage.setItem('email', email);
+
+      // Show success message
+      signupMessage.style.color = 'green';
+      signupMessage.textContent = 'Account created successfully!';
+
+      // Redirect to profile page after short delay
+      setTimeout(() => {
+        window.location.href = 'profile.html';
+      }, 1000);
+
+    } else {
+      // If signup fails (e.g., duplicate email)
+      signupMessage.style.color = '#c94060';
+      signupMessage.textContent = data.error || 'Error creating account.';
+    }
+
+  } catch (error) {
+    // If something goes wrong (server error, network issue)
+    console.error(error);
+    signupMessage.style.color = '#c94060';
+    signupMessage.textContent = 'Something went wrong.';
+  }
+}
+
+  // Function to handle login form submission
+async function handleLogin(e) {
+  e.preventDefault(); // prevent page refresh when form is submitted
+
+  // Get values entered by user
   const email = document.getElementById('login-email').value;
   const password = document.getElementById('login-pass').value;
   const loginMessage = document.getElementById('loginMessage');
 
   try {
+    // Send login request to backend
     const response = await fetch('/login', {
-      method: 'POST',
+      method: 'POST', // POST request to send data
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password })
+      body: JSON.stringify({ email, password }) // convert data to JSON
     });
 
-    const data = await response.json();
+    const data = await response.json(); // get response from server
 
+    // If login is successful
     if (response.ok) {
+      // Save user info in storage so it can be used on other pages
       localStorage.setItem('fullName', data.full_name);
       localStorage.setItem('email', data.email);
 
+      // Show success message
       loginMessage.style.color = 'green';
       loginMessage.textContent = 'Login successful!';
 
+      // Redirect user to profile page
       setTimeout(() => {
         window.location.href = 'profile.html';
       }, 800);
+
     } else {
+      // If login fails (wrong email/password)
       loginMessage.style.color = '#c94060';
       loginMessage.textContent = data.error || 'Invalid email or password';
     }
+
   } catch (error) {
+    // If something goes wrong (server error, network error, etc.)
     console.error(error);
     loginMessage.style.color = '#c94060';
     loginMessage.textContent = 'Something went wrong.';

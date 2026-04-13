@@ -1,26 +1,29 @@
-const express = require('express');
-const cors = require('cors');
-const pool = require('./db');
-const path = require('path');
-require('dotenv').config();
+// Import required packages
+const express = require('express'); // framework to create server and routes
+const cors = require('cors'); // allows frontend to communicate with backend
+const pool = require('./db'); // connection to PostgreSQL database
+const path = require('path'); // helps work with file paths
+require('dotenv').config(); // loads environment variables
 
+// Create Express 
 const app = express();
 console.log('Server file started');
 
-app.use(cors());
-app.use(express.json());
-app.use(express.static(path.join(__dirname, 'echos')));
+app.use(cors()); // allows cross-origin requests
+app.use(express.json()); // allows server to read JSON data from requests
+app.use(express.static(path.join(__dirname, 'echos'))); // serves frontend files
 
-/*app.get('/', (req, res) => {
-  res.send('Backend is running');
-}); */
+// Home route - serves homepage.html
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'echos', 'homepage.html'));
 });
 
+// Test database connection route
 app.get('/test-db', async (req, res) => {
   try {
+    // Runs simple query to check connection
     const result = await pool.query('SELECT NOW()');
+
     res.json({
       message: 'Database connected successfully',
       time: result.rows[0],
@@ -31,8 +34,10 @@ app.get('/test-db', async (req, res) => {
   }
 });
 
+// Save user profile data to "users" table
 app.post('/users', async (req, res) => {
   try {
+    // Get data from frontend request body
     const {
       firstName,
       lastName,
@@ -43,6 +48,7 @@ app.post('/users', async (req, res) => {
       bio
     } = req.body;
 
+    // Insert data into database
     const newUser = await pool.query(
       `INSERT INTO users 
       (first_name, last_name, email, phone, dob, gender, bio) 
@@ -51,6 +57,7 @@ app.post('/users', async (req, res) => {
       [firstName, lastName, email, phone, dob, gender, bio]
     );
 
+    // Send back the saved user
     res.json(newUser.rows[0]);
   } catch (err) {
     console.error(err.message);
@@ -58,6 +65,7 @@ app.post('/users', async (req, res) => {
   }
 });
 
+// Get all users from "users" table
 app.get('/users', async (req, res) => {
   try {
     const allUsers = await pool.query('SELECT * FROM users ORDER BY id ASC');
@@ -68,10 +76,13 @@ app.get('/users', async (req, res) => {
   }
 });
 
+// Sign up route - creates new account
 app.post('/signup', async (req, res) => {
   try {
+    // Get signup data
     const { fullName, email, password } = req.body;
 
+    // Insert into accounts table
     const newAccount = await pool.query(
       `INSERT INTO accounts (full_name, email, password)
        VALUES ($1, $2, $3)
@@ -86,6 +97,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
+// Get all accounts (for testing/debugging)
 app.get('/accounts', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM accounts ORDER BY id ASC');
@@ -96,19 +108,24 @@ app.get('/accounts', async (req, res) => {
   }
 });
 
+// Login route - checks if user exists
 app.post('/login', async (req, res) => {
   try {
+    // Get login data
     const { email, password } = req.body;
 
+    // Check if user exists with matching email and password
     const result = await pool.query(
       'SELECT * FROM accounts WHERE email = $1 AND password = $2',
       [email, password]
     );
 
+    // If no user found → return error
     if (result.rows.length === 0) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
+    // If found → return user data
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err.message);
@@ -116,8 +133,10 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Set server port (from environment or default 3000)
 const PORT = process.env.PORT || 3000;
 
+// Start server
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
