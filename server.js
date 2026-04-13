@@ -1,6 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const pool = require('./db');
+const path = require('path');
 require('dotenv').config();
 
 const app = express();
@@ -8,9 +9,13 @@ console.log('Server file started');
 
 app.use(cors());
 app.use(express.json());
+app.use(express.static(path.join(__dirname, 'echos')));
 
-app.get('/', (req, res) => {
+/*app.get('/', (req, res) => {
   res.send('Backend is running');
+}); */
+app.get('/', (req, res) => {
+  res.sendFile(path.join(__dirname, 'echos', 'homepage.html'));
 });
 
 app.get('/test-db', async (req, res) => {
