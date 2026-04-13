@@ -905,7 +905,35 @@ async function saveProfile(e) {
       clearTimeout(t._timer);
       t._timer = setTimeout(() => t.style.opacity = '0', 2800);
     }
-  </script>
+  
+  window.addEventListener('DOMContentLoaded', () => {
+    const fullName = localStorage.getItem('fullName');
+    const email = localStorage.getItem('email');
 
+    if (!fullName) return;
+
+    const nameParts = fullName.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    const sidebarName = document.getElementById('sidebarName');
+    const sidebarEmail = document.getElementById('sidebarEmail');
+    const sidebarInitial = document.getElementById('sidebarInitial');
+    const avatarPreview = document.getElementById('avatarPreview');
+
+    const firstInput = document.getElementById('p-first');
+    const lastInput = document.getElementById('p-last');
+    const emailInput = document.getElementById('p-email');
+
+    if (sidebarName) sidebarName.textContent = fullName;
+    if (sidebarEmail) sidebarEmail.textContent = email || '';
+    if (sidebarInitial) sidebarInitial.textContent = firstName.charAt(0).toUpperCase();
+    if (avatarPreview) avatarPreview.textContent = firstName.charAt(0).toUpperCase();
+
+    if (firstInput) firstInput.value = firstName;
+    if (lastInput) lastInput.value = lastName;
+    if (emailInput) emailInput.value = email || '';
+  });
+</script>
 </body>
 </html>

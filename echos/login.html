@@ -358,7 +358,8 @@
         <a class="btn-signup" onclick="showSignup()">Sign up</a>
       `;
     }*/
-   function goToProfile(e) {
+  
+  function goToProfile(e) {
     e.preventDefault();
     window.location.href = 'profile.html';
   }
@@ -398,22 +399,18 @@
     try {
       const response = await fetch('/signup', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          fullName,
-          email,
-          password
-        })
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ fullName, email, password })
       });
 
       const data = await response.json();
 
       if (response.ok) {
+        localStorage.setItem('fullName', fullName);
+        localStorage.setItem('email', email);
+
         signupMessage.style.color = 'green';
         signupMessage.textContent = 'Account created successfully!';
-        console.log(data);
 
         setTimeout(() => {
           window.location.href = 'profile.html';
