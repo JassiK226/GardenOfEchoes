@@ -291,8 +291,8 @@
         <div id="loginSection">
           <h1>Log In</h1>
           <p class="subtitle">Welcome Back To Garden of Echoes.</p>
-          <form class="form-wrap" onsubmit="goToProfile(event)">
-            <div class="form-group">
+              <form class="form-wrap" onsubmit="handleLogin(event)">
+              <div class="form-group">
               <label for="login-email">Login</label>
               <input type="text" id="login-email" placeholder="jairuno" autocomplete="username">
             </div>
@@ -327,6 +327,7 @@
               <input type="password" id="signup-confirm" placeholder="••••••••" autocomplete="new-password">
             </div>
             <button type="submit" class="btn-login">Create Account</button>
+            <p id="signupMessage" style="margin-top:10px; font-size:13px; color:#c94060;"></p>
             <p class="back-link">Already have an account? <span onclick="showLogin()">Log In</span></p>
           </form>
         </div>
@@ -335,8 +336,9 @@
     </div>
   </div>
 
+  
   <script>
-    function goToProfile(e) {
+    /*function goToProfile(e) {
       e.preventDefault();
       window.location.href = 'profile.html';
     }
@@ -355,8 +357,79 @@
         <h2>Create New Account</h2>
         <a class="btn-signup" onclick="showSignup()">Sign up</a>
       `;
+    }*/
+   function goToProfile(e) {
+    e.preventDefault();
+    window.location.href = 'profile.html';
+  }
+
+  function showSignup() {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('signupSection').style.display = 'block';
+    document.getElementById('leftContent').innerHTML = `
+      <h2>Already Have an Account?</h2>
+      <a class="btn-signup" onclick="showLogin()">Log In</a>
+    `;
+  }
+
+  function showLogin() {
+    document.getElementById('signupSection').style.display = 'none';
+    document.getElementById('loginSection').style.display = 'block';
+    document.getElementById('leftContent').innerHTML = `
+      <h2>Create New Account</h2>
+      <a class="btn-signup" onclick="showSignup()">Sign up</a>
+    `;
+  }
+
+  async function handleSignup(e) {
+    e.preventDefault();
+
+    const fullName = document.getElementById('signup-name').value;
+    const email = document.getElementById('signup-email').value;
+    const password = document.getElementById('signup-pass').value;
+    const confirmPassword = document.getElementById('signup-confirm').value;
+    const signupMessage = document.getElementById('signupMessage');
+
+    if (password !== confirmPassword) {
+      signupMessage.textContent = 'Passwords do not match.';
+      return;
     }
+
+    try {
+      const response = await fetch('/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          fullName,
+          email,
+          password
+        })
+      });
+
+      const data = await response.json();
+
+      if (response.ok) {
+        signupMessage.style.color = 'green';
+        signupMessage.textContent = 'Account created successfully!';
+        console.log(data);
+
+        setTimeout(() => {
+          window.location.href = 'profile.html';
+        }, 1000);
+      } else {
+        signupMessage.style.color = '#c94060';
+        signupMessage.textContent = data.error || 'Error creating account.';
+      }
+    } catch (error) {
+      console.error(error);
+      signupMessage.style.color = '#c94060';
+      signupMessage.textContent = 'Something went wrong.';
+    }
+  }
   </script>
+  
 
 </body>
 </html>

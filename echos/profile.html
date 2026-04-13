@@ -466,7 +466,7 @@
             </div>
             <div class="form-group full">
               <label for="p-bio">Bio</label>
-              <textarea id="p-bio" placeholder="Tell us a little about yourself…"></textarea>
+              <textarea id="p-bio" placeholder="Tell us a little about yourself..."></textarea>
             </div>
           </div>
           <div class="section-divider"></div>
@@ -751,7 +751,6 @@
     const data = await response.json();
 
     if (response.ok) {
-      // ✅ KEEP your existing UI updates
       const first = userData.firstName || 'User';
       const last = userData.lastName || '';
       const email = userData.email || '';

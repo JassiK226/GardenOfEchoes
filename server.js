@@ -33,11 +33,22 @@ app.get('/test-db', async (req, res) => {
 
 app.post('/users', async (req, res) => {
   try {
-    const { name, email, password } = req.body;
+    const {
+      firstName,
+      lastName,
+      email,
+      phone,
+      dob,
+      gender,
+      bio
+    } = req.body;
 
     const newUser = await pool.query(
-      'INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING *',
-      [name, email, password]
+      `INSERT INTO users 
+      (first_name, last_name, email, phone, dob, gender, bio) 
+      VALUES ($1, $2, $3, $4, $5, $6, $7) 
+      RETURNING *`,
+      [firstName, lastName, email, phone, dob, gender, bio]
     );
 
     res.json(newUser.rows[0]);
@@ -54,6 +65,34 @@ app.get('/users', async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Error getting users');
+  }
+});
+
+app.post('/signup', async (req, res) => {
+  try {
+    const { fullName, email, password } = req.body;
+
+    const newAccount = await pool.query(
+      `INSERT INTO accounts (full_name, email, password)
+       VALUES ($1, $2, $3)
+       RETURNING *`,
+      [fullName, email, password]
+    );
+
+    res.json(newAccount.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error creating account' });
+  }
+});
+
+app.get('/accounts', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM accounts ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting accounts' });
   }
 });
 
