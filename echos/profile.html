@@ -716,7 +716,7 @@
     }
 
     /* ── Save Profile ── */
-    function saveProfile(e) {
+    /*function saveProfile(e) {
       e.preventDefault();
       const first = document.getElementById('p-first').value || 'User';
       const last  = document.getElementById('p-last').value || '';
@@ -727,6 +727,82 @@
       document.getElementById('avatarPreview').textContent  = first.charAt(0).toUpperCase();
       showToast('Profile saved!');
     }
+      *//*
+     async function saveProfile(e) {
+  e.preventDefault();
+
+  const userData = {
+    firstName: document.getElementById('p-first').value,
+    lastName: document.getElementById('p-last').value,
+    email: document.getElementById('p-email').value,
+    phone: document.getElementById('p-phone').value,
+    dob: document.getElementById('p-dob').value,
+    gender: document.getElementById('p-gender').value,
+    bio: document.getElementById('p-bio').value
+  };
+
+  try {
+    const response = await fetch('/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      // ✅ KEEP your existing UI updates
+      const first = userData.firstName || 'User';
+      const last = userData.lastName || '';
+      const email = userData.email || '';
+
+      document.getElementById('sidebarName').textContent = (first + ' ' + last).trim();
+      document.getElementById('sidebarEmail').textContent = email;
+      document.getElementById('sidebarInitial').textContent = first.charAt(0).toUpperCase();
+      document.getElementById('avatarPreview').textContent = first.charAt(0).toUpperCase();
+
+      showToast('Profile saved AND stored in database!');
+      console.log(data);
+
+    } else {
+      showToast('Error saving to database');
+      console.error(data);
+    }
+
+  } catch (error) {
+    console.error(error);
+    showToast('Something went wrong');
+  }
+}*/
+async function saveProfile(e) {
+  e.preventDefault();
+
+  const data = {
+    firstName: document.getElementById('p-first').value,
+    lastName: document.getElementById('p-last').value,
+    email: document.getElementById('p-email').value,
+    phone: document.getElementById('p-phone').value,
+    dob: document.getElementById('p-dob').value,
+    gender: document.getElementById('p-gender').value,
+    bio: document.getElementById('p-bio').value
+  };
+
+  try {
+    const res = await fetch('/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+    console.log(result);
+
+    showToast('Profile saved!');
+  } catch (err) {
+    console.error(err);
+    alert('Error saving profile');
+  }
+}
 
     /* ── Loved One ── */
     function toggleAddLovedOne() {
