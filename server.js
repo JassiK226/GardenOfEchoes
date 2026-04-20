@@ -34,10 +34,9 @@ app.get('/test-db', async (req, res) => {
   }
 });
 
-// Save user profile data to "users" table
+// Save or update user profile data
 app.post('/users', async (req, res) => {
   try {
-    // Get data from frontend request body
     const {
       firstName,
       lastName,
@@ -48,20 +47,25 @@ app.post('/users', async (req, res) => {
       bio
     } = req.body;
 
-    // Insert data into database
-    const newUser = await pool.query(
-      `INSERT INTO users 
-      (first_name, last_name, email, phone, dob, gender, bio) 
-      VALUES ($1, $2, $3, $4, $5, $6, $7) 
-      RETURNING *`,
+    const savedUser = await pool.query(
+      `INSERT INTO users (first_name, last_name, email, phone, dob, gender, bio)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       ON CONFLICT (email)
+       DO UPDATE SET
+         first_name = EXCLUDED.first_name,
+         last_name = EXCLUDED.last_name,
+         phone = EXCLUDED.phone,
+         dob = EXCLUDED.dob,
+         gender = EXCLUDED.gender,
+         bio = EXCLUDED.bio
+       RETURNING *`,
       [firstName, lastName, email, phone, dob, gender, bio]
     );
 
-    // Send back the saved user
-    res.json(newUser.rows[0]);
+    res.json(savedUser.rows[0]);
   } catch (err) {
     console.error(err.message);
-    res.status(500).send('Error creating user');
+    res.status(500).json({ error: 'Error saving profile' });
   }
 });
 
@@ -73,6 +77,27 @@ app.get('/users', async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Error getting users');
+  }
+});
+
+// Get one user profile by email
+app.get('/users/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const result = await pool.query(
+      'SELECT * FROM users WHERE email = $1',
+      [email]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'User profile not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting user profile' });
   }
 });
 

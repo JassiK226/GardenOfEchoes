@@ -773,6 +773,7 @@
     showToast('Something went wrong');
   }
 }*/
+
 async function saveProfile(e) {
   e.preventDefault();
 
@@ -794,12 +795,26 @@ async function saveProfile(e) {
     });
 
     const result = await res.json();
-    console.log(result);
 
-    showToast('Profile saved!');
+    if (res.ok) {
+      const fullName = `${data.firstName} ${data.lastName}`.trim();
+
+      localStorage.setItem('fullName', fullName);
+      localStorage.setItem('email', data.email);
+
+      document.getElementById('sidebarName').textContent = fullName;
+      document.getElementById('sidebarEmail').textContent = data.email;
+      document.getElementById('sidebarInitial').textContent = data.firstName.charAt(0).toUpperCase();
+      document.getElementById('avatarPreview').textContent = data.firstName.charAt(0).toUpperCase();
+
+      showToast('Profile saved!');
+      console.log(result);
+    } else {
+      showToast(result.error || 'Error saving profile');
+    }
   } catch (err) {
     console.error(err);
-    alert('Error saving profile');
+    showToast('Something went wrong');
   }
 }
 
@@ -905,35 +920,49 @@ async function saveProfile(e) {
       clearTimeout(t._timer);
       t._timer = setTimeout(() => t.style.opacity = '0', 2800);
     }
-  
-  window.addEventListener('DOMContentLoaded', () => {
-    const fullName = localStorage.getItem('fullName');
-    const email = localStorage.getItem('email');
 
-    if (!fullName) return;
+window.addEventListener('DOMContentLoaded', async () => {
+  const fullName = localStorage.getItem('fullName');
+  const email = localStorage.getItem('email');
 
-    const nameParts = fullName.trim().split(' ');
-    const firstName = nameParts[0] || '';
-    const lastName = nameParts.slice(1).join(' ') || '';
+  if (!fullName) return;
 
-    const sidebarName = document.getElementById('sidebarName');
-    const sidebarEmail = document.getElementById('sidebarEmail');
-    const sidebarInitial = document.getElementById('sidebarInitial');
-    const avatarPreview = document.getElementById('avatarPreview');
+  const nameParts = fullName.trim().split(' ');
+  const firstName = nameParts[0] || '';
+  const lastName = nameParts.slice(1).join(' ') || '';
 
-    const firstInput = document.getElementById('p-first');
-    const lastInput = document.getElementById('p-last');
-    const emailInput = document.getElementById('p-email');
+  document.getElementById('sidebarName').textContent = fullName;
+  document.getElementById('sidebarEmail').textContent = email || '';
+  document.getElementById('sidebarInitial').textContent = firstName.charAt(0).toUpperCase();
+  document.getElementById('avatarPreview').textContent = firstName.charAt(0).toUpperCase();
 
-    if (sidebarName) sidebarName.textContent = fullName;
-    if (sidebarEmail) sidebarEmail.textContent = email || '';
-    if (sidebarInitial) sidebarInitial.textContent = firstName.charAt(0).toUpperCase();
-    if (avatarPreview) avatarPreview.textContent = firstName.charAt(0).toUpperCase();
+  try {
+    const res = await fetch(`/users/${encodeURIComponent(email)}`);
+    
+    if (res.ok) {
+      const user = await res.json();
 
-    if (firstInput) firstInput.value = firstName;
-    if (lastInput) lastInput.value = lastName;
-    if (emailInput) emailInput.value = email || '';
-  });
+      document.getElementById('p-first').value = user.first_name || '';
+      document.getElementById('p-last').value = user.last_name || '';
+      document.getElementById('p-email').value = user.email || '';
+      document.getElementById('p-phone').value = user.phone || '';
+      document.getElementById('p-dob').value = user.dob ? user.dob.split('T')[0] : '';
+      document.getElementById('p-gender').value = user.gender || '';
+      document.getElementById('p-bio').value = user.bio || '';
+    } else {
+      document.getElementById('p-first').value = firstName;
+      document.getElementById('p-last').value = lastName;
+      document.getElementById('p-email').value = email || '';
+    }
+  } catch (err) {
+    console.error('Error loading profile:', err);
+
+    document.getElementById('p-first').value = firstName;
+    document.getElementById('p-last').value = lastName;
+    document.getElementById('p-email').value = email || '';
+  }
+});
+
 </script>
 </body>
 </html>
