@@ -540,6 +540,39 @@ app.put('/shipping-addresses/:id', async (req, res) => {
   }
 });
 
+// Get all loved ones (for testing/debugging)
+app.get('/all-loved-ones', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM loved_ones ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting loved ones' });
+  }
+});
+
+// Get all payment methods (for testing/debugging)
+app.get('/all-payment-methods', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM payment_methods ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting payment methods' });
+  }
+});
+
+// Get all shipping addresses (for testing/debugging)
+app.get('/all-shipping-addresses', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM shipping_addresses ORDER BY id ASC');
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting shipping addresses' });
+  }
+});
+
 // Set server port from environment, or use 3000 if none is provided
 const PORT = process.env.PORT || 3000;
 
