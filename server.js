@@ -203,6 +203,73 @@ app.get('/loved-ones/:email', async (req, res) => {
   }
 });
 
+// Save a payment method
+app.post('/payment-methods', async (req, res) => {
+  try {
+    const {
+      userEmail,
+      cardName,
+      cardNumber,
+      expiry,
+      billingZip
+    } = req.body;
+
+    // Only save last 4 digits
+    const cleanCardNumber = cardNumber.replace(/\s/g, '');
+    const cardLast4 = cleanCardNumber.slice(-4);
+
+    // Simple card type detection
+    let cardType = 'Card';
+    if (cleanCardNumber.startsWith('4')) {
+      cardType = 'Visa';
+    } else if (/^5[1-5]/.test(cleanCardNumber)) {
+      cardType = 'Mastercard';
+    } else if (/^3[47]/.test(cleanCardNumber)) {
+      cardType = 'American Express';
+    } else if (/^6/.test(cleanCardNumber)) {
+      cardType = 'Discover';
+    }
+
+    // Check if user already has a default card
+    const existingDefault = await pool.query(
+      'SELECT * FROM payment_methods WHERE user_email = $1 AND is_default = TRUE',
+      [userEmail]
+    );
+
+    const isDefault = existingDefault.rows.length === 0;
+
+    const newPayment = await pool.query(
+      `INSERT INTO payment_methods
+      (user_email, card_name, card_last4, expiry, billing_zip, card_type, is_default)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *`,
+      [userEmail, cardName, cardLast4, expiry, billingZip, cardType, isDefault]
+    );
+
+    res.json(newPayment.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error saving payment method' });
+  }
+});
+
+// Get all payment methods for a user
+app.get('/payment-methods/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const result = await pool.query(
+      'SELECT * FROM payment_methods WHERE user_email = $1 ORDER BY is_default DESC, id ASC',
+      [email]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting payment methods' });
+  }
+});
+
 // Set server port (from environment or default 3000)
 const PORT = process.env.PORT || 3000;
 

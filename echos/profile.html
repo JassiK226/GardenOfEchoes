@@ -541,20 +541,7 @@
         <h2 class="pane-title">Saved Payment Methods</h2>
         <p class="pane-subtitle">Manage your saved credit and debit cards.</p>
 
-        <div class="saved-cards" id="paymentCardsList">
-          <!-- example default card -->
-          <div class="saved-card selected">
-            <div class="card-badge">Default</div>
-            <div class="saved-card-label">Visa</div>
-            <div class="saved-card-value">•••• •••• •••• 4242</div>
-            <div class="saved-card-sub">Expires 08 / 27</div>
-            <div class="card-actions">
-              <button class="card-action-btn">Edit</button>
-              <button class="card-action-btn">Remove</button>
-              <button class="card-action-btn">Set as Default</button>
-            </div>
-          </div>
-        </div>
+        <div class="saved-cards" id="paymentCardsList"></div>
 
         <div class="add-new-toggle" onclick="toggleAddPayment()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -886,29 +873,62 @@ function renderLovedOneCard(person) {
     function toggleAddPayment() {
       document.getElementById('addPaymentForm').classList.toggle('open');
     }
-    function savePayment(e) {
-      e.preventDefault();
-      const num  = document.getElementById('pay-number').value;
-      const last4 = num.replace(/\s/g,'').slice(-4);
-      const exp  = document.getElementById('pay-expiry').value;
-      const list = document.getElementById('paymentCardsList');
-      const card = document.createElement('div');
-      card.className = 'saved-card';
-      card.innerHTML = `
-        <div class="saved-card-label">Card</div>
-        <div class="saved-card-value">•••• •••• •••• ${last4}</div>
-        <div class="saved-card-sub">Expires ${exp}</div>
-        <div class="card-actions">
-          <button class="card-action-btn">Edit</button>
-          <button class="card-action-btn">Remove</button>
-          <button class="card-action-btn">Set as Default</button>
-        </div>
-      `;
-      list.appendChild(card);
+    async function savePayment(e) {
+  e.preventDefault();
+
+  const userEmail = localStorage.getItem('email');
+
+  const data = {
+    userEmail: userEmail,
+    cardName: document.getElementById('pay-name').value,
+    cardNumber: document.getElementById('pay-number').value,
+    expiry: document.getElementById('pay-expiry').value,
+    billingZip: document.getElementById('pay-zip').value
+  };
+
+  try {
+    const res = await fetch('/payment-methods', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      renderPaymentCard(result);
       e.target.reset();
       document.getElementById('addPaymentForm').classList.remove('open');
       showToast('Card saved!');
+    } else {
+      showToast(result.error || 'Error saving card');
     }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
+}
+
+function renderPaymentCard(card) {
+  const list = document.getElementById('paymentCardsList');
+
+  const cardDiv = document.createElement('div');
+  cardDiv.className = card.is_default ? 'saved-card selected' : 'saved-card';
+
+  cardDiv.innerHTML = `
+    ${card.is_default ? '<div class="card-badge">Default</div>' : ''}
+    <div class="saved-card-label">${card.card_type}</div>
+    <div class="saved-card-value">•••• •••• •••• ${card.card_last4}</div>
+    <div class="saved-card-sub">Expires ${card.expiry}</div>
+    <div class="card-actions">
+      <button class="card-action-btn">Edit</button>
+      <button class="card-action-btn">Remove</button>
+      <button class="card-action-btn">Set as Default</button>
+    </div>
+  `;
+
+  list.appendChild(cardDiv);
+}
 
     /* ── Shipping ── */
     function toggleAddShipping() {
@@ -1017,6 +1037,23 @@ window.addEventListener('DOMContentLoaded', async () => {
     }
   } catch (err) {
     console.error('Error loading loved ones:', err);
+  }
+
+    // Load payment methods
+  try {
+    const paymentRes = await fetch(`/payment-methods/${encodeURIComponent(email)}`);
+
+    if (paymentRes.ok) {
+      const cards = await paymentRes.json();
+
+      document.getElementById('paymentCardsList').innerHTML = '';
+
+      cards.forEach(card => {
+        renderPaymentCard(card);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading payment methods:', err);
   }
 });
 
