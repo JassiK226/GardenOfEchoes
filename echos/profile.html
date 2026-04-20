@@ -914,6 +914,7 @@ function renderPaymentCard(card) {
 
   const cardDiv = document.createElement('div');
   cardDiv.className = card.is_default ? 'saved-card selected' : 'saved-card';
+  cardDiv.setAttribute('data-id', card.id);
 
   cardDiv.innerHTML = `
     ${card.is_default ? '<div class="card-badge">Default</div>' : ''}
@@ -921,13 +922,110 @@ function renderPaymentCard(card) {
     <div class="saved-card-value">•••• •••• •••• ${card.card_last4}</div>
     <div class="saved-card-sub">Expires ${card.expiry}</div>
     <div class="card-actions">
-      <button class="card-action-btn">Edit</button>
-      <button class="card-action-btn">Remove</button>
-      <button class="card-action-btn">Set as Default</button>
+      <button class="card-action-btn" onclick="editPayment(${card.id}, '${card.card_name}', '${card.expiry}', '${card.billing_zip || ''}')">Edit</button>
+      <button class="card-action-btn" onclick="removePayment(${card.id})">Remove</button>
+      <button class="card-action-btn" onclick="setDefaultPayment(${card.id})">Set as Default</button>
     </div>
   `;
 
   list.appendChild(cardDiv);
+}
+
+async function removePayment(id) {
+  try {
+    const res = await fetch(`/payment-methods/${id}`, {
+      method: 'DELETE'
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast('Card removed!');
+      loadPaymentMethods();
+    } else {
+      showToast(result.error || 'Error removing card');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
+}
+
+async function setDefaultPayment(id) {
+  try {
+    const userEmail = localStorage.getItem('email');
+
+    const res = await fetch(`/payment-methods/${id}/default`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userEmail })
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast('Default card updated!');
+      loadPaymentMethods();
+    } else {
+      showToast(result.error || 'Error setting default card');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
+}
+
+async function editPayment(id, currentName, currentExpiry, currentZip) {
+  const newName = prompt('Enter updated card name:', currentName);
+  if (newName === null) return;
+
+  const newExpiry = prompt('Enter updated expiry (MM / YY):', currentExpiry);
+  if (newExpiry === null) return;
+
+  const newZip = prompt('Enter updated billing ZIP code:', currentZip);
+  if (newZip === null) return;
+
+  try {
+    const res = await fetch(`/payment-methods/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        cardName: newName,
+        expiry: newExpiry,
+        billingZip: newZip
+      })
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast('Card updated!');
+      loadPaymentMethods();
+    } else {
+      showToast(result.error || 'Error updating card');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
+}
+
+async function loadPaymentMethods() {
+  try {
+    const email = localStorage.getItem('email');
+    const paymentRes = await fetch(`/payment-methods/${encodeURIComponent(email)}`);
+
+    if (paymentRes.ok) {
+      const cards = await paymentRes.json();
+      document.getElementById('paymentCardsList').innerHTML = '';
+
+      cards.forEach(card => {
+        renderPaymentCard(card);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading payment methods:', err);
+  }
 }
 
     /* ── Shipping ── */
@@ -1041,7 +1139,7 @@ window.addEventListener('DOMContentLoaded', async () => {
 
     // Load payment methods
   try {
-    const paymentRes = await fetch(`/payment-methods/${encodeURIComponent(email)}`);
+    const paymentRes = await loadPaymentMethods();
 
     if (paymentRes.ok) {
       const cards = await paymentRes.json();

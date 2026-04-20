@@ -270,6 +270,83 @@ app.get('/payment-methods/:email', async (req, res) => {
   }
 });
 
+// Delete a payment method
+app.delete('/payment-methods/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const result = await pool.query(
+      'DELETE FROM payment_methods WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Payment method not found' });
+    }
+
+    res.json({ message: 'Payment method deleted successfully' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error deleting payment method' });
+  }
+});
+
+// Set a payment method as default
+app.put('/payment-methods/:id/default', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { userEmail } = req.body;
+
+    // First remove default from all this user's cards
+    await pool.query(
+      'UPDATE payment_methods SET is_default = FALSE WHERE user_email = $1',
+      [userEmail]
+    );
+
+    // Then set selected card as default
+    const result = await pool.query(
+      'UPDATE payment_methods SET is_default = TRUE WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Payment method not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error setting default payment method' });
+  }
+});
+
+// Update a payment method
+app.put('/payment-methods/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { cardName, expiry, billingZip } = req.body;
+
+    const result = await pool.query(
+      `UPDATE payment_methods
+       SET card_name = $1,
+           expiry = $2,
+           billing_zip = $3
+       WHERE id = $4
+       RETURNING *`,
+      [cardName, expiry, billingZip, id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Payment method not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error updating payment method' });
+  }
+});
+
 // Set server port (from environment or default 3000)
 const PORT = process.env.PORT || 3000;
 
