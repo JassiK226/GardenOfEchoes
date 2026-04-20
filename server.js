@@ -78,7 +78,9 @@ app.get('/users', async (req, res) => {
   try {
     // Useful for testing all saved users
     const allUsers = await pool.query('SELECT * FROM users ORDER BY id ASC');
-    res.json(allUsers.rows);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(allUsers.rows, null, 2));
+    
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Error getting users');
