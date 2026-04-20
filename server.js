@@ -5,15 +5,16 @@ const pool = require('./db'); // connection to PostgreSQL database
 const path = require('path'); // helps work with file paths
 require('dotenv').config(); // loads environment variables
 
-// Create Express 
+// Create Express app
 const app = express();
 console.log('Server file started');
 
+// Middleware
 app.use(cors()); // allows cross-origin requests
-app.use(express.json()); // allows server to read JSON data from requests
-app.use(express.static(path.join(__dirname, 'echos'))); // serves frontend files
+app.use(express.json()); // lets server read JSON data sent from frontend
+app.use(express.static(path.join(__dirname, 'echos'))); // serves frontend files from echos folder
 
-// Home route - serves homepage.html
+// Home route - serves homepage.html when user goes to main URL
 app.get('/', (req, res) => {
   res.sendFile(path.join(__dirname, 'echos', 'homepage.html'));
 });
@@ -21,7 +22,7 @@ app.get('/', (req, res) => {
 // Test database connection route
 app.get('/test-db', async (req, res) => {
   try {
-    // Runs simple query to check connection
+    // Runs a simple query to make sure PostgreSQL is connected
     const result = await pool.query('SELECT NOW()');
 
     res.json({
@@ -37,6 +38,7 @@ app.get('/test-db', async (req, res) => {
 // Save or update user profile data
 app.post('/users', async (req, res) => {
   try {
+    // Get profile form data from frontend
     const {
       firstName,
       lastName,
@@ -47,6 +49,7 @@ app.post('/users', async (req, res) => {
       bio
     } = req.body;
 
+    // Insert new profile row, or update it if the email already exists
     const savedUser = await pool.query(
       `INSERT INTO users (first_name, last_name, email, phone, dob, gender, bio)
        VALUES ($1, $2, $3, $4, $5, $6, $7)
@@ -62,6 +65,7 @@ app.post('/users', async (req, res) => {
       [firstName, lastName, email, phone, dob, gender, bio]
     );
 
+    // Send saved profile back to frontend
     res.json(savedUser.rows[0]);
   } catch (err) {
     console.error(err.message);
@@ -69,9 +73,10 @@ app.post('/users', async (req, res) => {
   }
 });
 
-// Get all users from "users" table
+// Get all users from users table
 app.get('/users', async (req, res) => {
   try {
+    // Useful for testing all saved users
     const allUsers = await pool.query('SELECT * FROM users ORDER BY id ASC');
     res.json(allUsers.rows);
   } catch (err) {
@@ -83,13 +88,14 @@ app.get('/users', async (req, res) => {
 // Get one user profile by email
 app.get('/users/:email', async (req, res) => {
   try {
-    const email = req.params.email;
+    const email = req.params.email; // get email from URL
 
     const result = await pool.query(
       'SELECT * FROM users WHERE email = $1',
       [email]
     );
 
+    // If no matching profile exists, return error
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'User profile not found' });
     }
@@ -104,10 +110,10 @@ app.get('/users/:email', async (req, res) => {
 // Sign up route - creates new account
 app.post('/signup', async (req, res) => {
   try {
-    // Get signup data
+    // Get signup data from frontend
     const { fullName, email, password } = req.body;
 
-    // Insert into accounts table
+    // Insert new account into accounts table
     const newAccount = await pool.query(
       `INSERT INTO accounts (full_name, email, password)
        VALUES ($1, $2, $3)
@@ -122,7 +128,7 @@ app.post('/signup', async (req, res) => {
   }
 });
 
-// Get all accounts (for testing/debugging)
+// Get all accounts (mainly for testing/debugging)
 app.get('/accounts', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM accounts ORDER BY id ASC');
@@ -133,24 +139,24 @@ app.get('/accounts', async (req, res) => {
   }
 });
 
-// Login route - checks if user exists
+// Login route - checks if user exists in accounts table
 app.post('/login', async (req, res) => {
   try {
-    // Get login data
+    // Get login info typed by user
     const { email, password } = req.body;
 
-    // Check if user exists with matching email and password
+    // Check if email and password match a saved account
     const result = await pool.query(
       'SELECT * FROM accounts WHERE email = $1 AND password = $2',
       [email, password]
     );
 
-    // If no user found → return error
+    // If no account found, return login error
     if (result.rows.length === 0) {
       return res.status(401).json({ error: 'Invalid email or password' });
     }
 
-    // If found → return user data
+    // If account found, return that account data
     res.json(result.rows[0]);
   } catch (err) {
     console.error(err.message);
@@ -161,6 +167,7 @@ app.post('/login', async (req, res) => {
 // Save a loved one
 app.post('/loved-ones', async (req, res) => {
   try {
+    // Get loved one information from frontend form
     const {
       userEmail,
       firstName,
@@ -171,6 +178,7 @@ app.post('/loved-ones', async (req, res) => {
       notes
     } = req.body;
 
+    // Insert loved one into loved_ones table
     const newLovedOne = await pool.query(
       `INSERT INTO loved_ones
       (user_email, first_name, last_name, birth_date, passed_date, cemetery, notes)
@@ -191,6 +199,7 @@ app.get('/loved-ones/:email', async (req, res) => {
   try {
     const email = req.params.email;
 
+    // Get all loved ones connected to that user's email
     const result = await pool.query(
       'SELECT * FROM loved_ones WHERE user_email = $1 ORDER BY id ASC',
       [email]
@@ -206,6 +215,7 @@ app.get('/loved-ones/:email', async (req, res) => {
 // Save a payment method
 app.post('/payment-methods', async (req, res) => {
   try {
+    // Get card form data from frontend
     const {
       userEmail,
       cardName,
@@ -214,11 +224,11 @@ app.post('/payment-methods', async (req, res) => {
       billingZip
     } = req.body;
 
-    // Only save last 4 digits
+    // Remove spaces from card number and keep only the last 4 digits
     const cleanCardNumber = cardNumber.replace(/\s/g, '');
     const cardLast4 = cleanCardNumber.slice(-4);
 
-    // Simple card type detection
+    // Simple card type detection based on first number(s)
     let cardType = 'Card';
     if (cleanCardNumber.startsWith('4')) {
       cardType = 'Visa';
@@ -230,14 +240,16 @@ app.post('/payment-methods', async (req, res) => {
       cardType = 'Discover';
     }
 
-    // Check if user already has a default card
+    // Check if user already has a default card saved
     const existingDefault = await pool.query(
       'SELECT * FROM payment_methods WHERE user_email = $1 AND is_default = TRUE',
       [userEmail]
     );
 
+    // If they do not have one yet, this new card becomes default
     const isDefault = existingDefault.rows.length === 0;
 
+    // Save payment method in database
     const newPayment = await pool.query(
       `INSERT INTO payment_methods
       (user_email, card_name, card_last4, expiry, billing_zip, card_type, is_default)
@@ -258,6 +270,7 @@ app.get('/payment-methods/:email', async (req, res) => {
   try {
     const email = req.params.email;
 
+    // Show default card first, then other cards
     const result = await pool.query(
       'SELECT * FROM payment_methods WHERE user_email = $1 ORDER BY is_default DESC, id ASC',
       [email]
@@ -275,6 +288,7 @@ app.delete('/payment-methods/:id', async (req, res) => {
   try {
     const id = req.params.id;
 
+    // Delete selected card by id
     const result = await pool.query(
       'DELETE FROM payment_methods WHERE id = $1 RETURNING *',
       [id]
@@ -297,13 +311,13 @@ app.put('/payment-methods/:id/default', async (req, res) => {
     const id = req.params.id;
     const { userEmail } = req.body;
 
-    // First remove default from all this user's cards
+    // Remove default status from all of this user's cards first
     await pool.query(
       'UPDATE payment_methods SET is_default = FALSE WHERE user_email = $1',
       [userEmail]
     );
 
-    // Then set selected card as default
+    // Then make selected card the new default
     const result = await pool.query(
       'UPDATE payment_methods SET is_default = TRUE WHERE id = $1 RETURNING *',
       [id]
@@ -326,6 +340,7 @@ app.put('/payment-methods/:id', async (req, res) => {
     const id = req.params.id;
     const { cardName, expiry, billingZip } = req.body;
 
+    // Update card info that user edited
     const result = await pool.query(
       `UPDATE payment_methods
        SET card_name = $1,
@@ -350,6 +365,7 @@ app.put('/payment-methods/:id', async (req, res) => {
 // Save a shipping address
 app.post('/shipping-addresses', async (req, res) => {
   try {
+    // Get address form data from frontend
     const {
       userEmail,
       firstName,
@@ -363,7 +379,7 @@ app.post('/shipping-addresses', async (req, res) => {
       phone
     } = req.body;
 
-    // First address for this user becomes default automatically
+    // First address saved for a user becomes default automatically
     const existingDefault = await pool.query(
       'SELECT * FROM shipping_addresses WHERE user_email = $1 AND is_default = TRUE',
       [userEmail]
@@ -371,6 +387,7 @@ app.post('/shipping-addresses', async (req, res) => {
 
     const isDefault = existingDefault.rows.length === 0;
 
+    // Insert new shipping address into database
     const newAddress = await pool.query(
       `INSERT INTO shipping_addresses
       (user_email, first_name, last_name, address_line1, address_line2, city, state, zip_code, country, phone, label, is_default)
@@ -404,6 +421,7 @@ app.get('/shipping-addresses/:email', async (req, res) => {
   try {
     const email = req.params.email;
 
+    // Show default address first, then the rest
     const result = await pool.query(
       'SELECT * FROM shipping_addresses WHERE user_email = $1 ORDER BY is_default DESC, id ASC',
       [email]
@@ -421,6 +439,7 @@ app.delete('/shipping-addresses/:id', async (req, res) => {
   try {
     const id = req.params.id;
 
+    // Delete selected address by id
     const deleted = await pool.query(
       'DELETE FROM shipping_addresses WHERE id = $1 RETURNING *',
       [id]
@@ -443,11 +462,13 @@ app.put('/shipping-addresses/:id/default', async (req, res) => {
     const id = req.params.id;
     const { userEmail } = req.body;
 
+    // Remove default from all addresses for this user first
     await pool.query(
       'UPDATE shipping_addresses SET is_default = FALSE WHERE user_email = $1',
       [userEmail]
     );
 
+    // Set chosen address as the new default
     const result = await pool.query(
       'UPDATE shipping_addresses SET is_default = TRUE WHERE id = $1 RETURNING *',
       [id]
@@ -480,6 +501,7 @@ app.put('/shipping-addresses/:id', async (req, res) => {
       phone
     } = req.body;
 
+    // Update selected address with new form data
     const result = await pool.query(
       `UPDATE shipping_addresses
        SET first_name = $1,
@@ -518,9 +540,7 @@ app.put('/shipping-addresses/:id', async (req, res) => {
   }
 });
 
-
-
-// Set server port (from environment or default 3000)
+// Set server port from environment, or use 3000 if none is provided
 const PORT = process.env.PORT || 3000;
 
 // Start server

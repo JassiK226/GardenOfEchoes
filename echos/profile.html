@@ -749,583 +749,614 @@
   }
 }*/
 
-async function saveProfile(e) {
-  e.preventDefault();
+  // Save profile information
+  async function saveProfile(e) {
+    e.preventDefault(); // stops page from refreshing when form is submitted
 
-  const data = {
-    firstName: document.getElementById('p-first').value,
-    lastName: document.getElementById('p-last').value,
-    email: document.getElementById('p-email').value,
-    phone: document.getElementById('p-phone').value,
-    dob: document.getElementById('p-dob').value,
-    gender: document.getElementById('p-gender').value,
-    bio: document.getElementById('p-bio').value
-  };
+    // Collect values from profile form
+    const data = {
+      firstName: document.getElementById('p-first').value,
+      lastName: document.getElementById('p-last').value,
+      email: document.getElementById('p-email').value,
+      phone: document.getElementById('p-phone').value,
+      dob: document.getElementById('p-dob').value,
+      gender: document.getElementById('p-gender').value,
+      bio: document.getElementById('p-bio').value
+    };
 
-  try {
-    const res = await fetch('/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      const fullName = `${data.firstName} ${data.lastName}`.trim();
-
-      localStorage.setItem('fullName', fullName);
-      localStorage.setItem('email', data.email);
-
-      document.getElementById('sidebarName').textContent = fullName;
-      document.getElementById('sidebarEmail').textContent = data.email;
-      document.getElementById('sidebarInitial').textContent = data.firstName.charAt(0).toUpperCase();
-      document.getElementById('avatarPreview').textContent = data.firstName.charAt(0).toUpperCase();
-
-      showToast('Profile saved!');
-      console.log(result);
-    } else {
-      showToast(result.error || 'Error saving profile');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Something went wrong');
-  }
-}
-
-    /* ── Loved One ── */
-    function toggleAddLovedOne() {
-      const f = document.getElementById('addLovedOneForm');
-      f.classList.toggle('open');
-    }
-    async function saveLovedOne(e) {
-  e.preventDefault();
-
-  const userEmail = localStorage.getItem('email');
-
-  const data = {
-    userEmail: userEmail,
-    firstName: document.getElementById('lo-first').value,
-    lastName: document.getElementById('lo-last').value,
-    birthDate: document.getElementById('lo-bday').value,
-    passedDate: document.getElementById('lo-passed').value,
-    cemetery: document.getElementById('lo-cemetery').value,
-    notes: document.getElementById('lo-notes').value
-  };
-
-  try {
-    const res = await fetch('/loved-ones', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      renderLovedOneCard(result);
-      e.target.reset();
-      document.getElementById('addLovedOneForm').classList.remove('open');
-      showToast('Loved one saved.');
-    } else {
-      showToast(result.error || 'Error saving loved one');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Something went wrong');
-  }
-}
-
-function renderLovedOneCard(person) {
-  const list = document.getElementById('lovedOneList');
-
-  const card = document.createElement('div');
-  card.className = 'loved-one-card';
-
-  const birthText = person.birth_date ? `Born: ${person.birth_date.split('T')[0]}` : '';
-  const passedText = person.passed_date ? `Passed: ${person.passed_date.split('T')[0]}` : '';
-  const cemeteryText = person.cemetery ? `<p>Cemetery: ${person.cemetery}</p>` : '';
-  const notesText = person.notes ? `<p>Notes: ${person.notes}</p>` : '';
-
-  card.innerHTML = `
-    <h4>${person.first_name} ${person.last_name}</h4>
-    <p>${birthText} ${birthText && passedText ? '· ' : ''}${passedText}</p>
-    ${cemeteryText}
-    ${notesText}
-  `;
-
-  list.appendChild(card);
-}
-
-    /* ── Payment ── */
-    function toggleAddPayment() {
-      document.getElementById('addPaymentForm').classList.toggle('open');
-    }
-    async function savePayment(e) {
-  e.preventDefault();
-
-  const userEmail = localStorage.getItem('email');
-
-  const data = {
-    userEmail: userEmail,
-    cardName: document.getElementById('pay-name').value,
-    cardNumber: document.getElementById('pay-number').value,
-    expiry: document.getElementById('pay-expiry').value,
-    billingZip: document.getElementById('pay-zip').value
-  };
-
-  try {
-    const res = await fetch('/payment-methods', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      renderPaymentCard(result);
-      e.target.reset();
-      document.getElementById('addPaymentForm').classList.remove('open');
-      showToast('Card saved!');
-    } else {
-      showToast(result.error || 'Error saving card');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Something went wrong');
-  }
-}
-
-function renderPaymentCard(card) {
-  const list = document.getElementById('paymentCardsList');
-
-  const cardDiv = document.createElement('div');
-  cardDiv.className = card.is_default ? 'saved-card selected' : 'saved-card';
-  cardDiv.setAttribute('data-id', card.id);
-
-  cardDiv.innerHTML = `
-    ${card.is_default ? '<div class="card-badge">Default</div>' : ''}
-    <div class="saved-card-label">${card.card_type}</div>
-    <div class="saved-card-value">•••• •••• •••• ${card.card_last4}</div>
-    <div class="saved-card-sub">Expires ${card.expiry}</div>
-    <div class="card-actions">
-      <button class="card-action-btn" onclick="editPayment(${card.id}, '${card.card_name}', '${card.expiry}', '${card.billing_zip || ''}')">Edit</button>
-      <button class="card-action-btn" onclick="removePayment(${card.id})">Remove</button>
-      <button class="card-action-btn" onclick="setDefaultPayment(${card.id})">Set as Default</button>
-    </div>
-  `;
-
-  list.appendChild(cardDiv);
-}
-
-async function removePayment(id) {
-  try {
-    const res = await fetch(`/payment-methods/${id}`, {
-      method: 'DELETE'
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      showToast('Card removed!');
-      loadPaymentMethods();
-    } else {
-      showToast(result.error || 'Error removing card');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Something went wrong');
-  }
-}
-
-async function setDefaultPayment(id) {
-  try {
-    const userEmail = localStorage.getItem('email');
-
-    const res = await fetch(`/payment-methods/${id}/default`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userEmail })
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      showToast('Default card updated!');
-      loadPaymentMethods();
-    } else {
-      showToast(result.error || 'Error setting default card');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Something went wrong');
-  }
-}
-
-async function editPayment(id, currentName, currentExpiry, currentZip) {
-  const newName = prompt('Enter updated card name:', currentName);
-  if (newName === null) return;
-
-  const newExpiry = prompt('Enter updated expiry (MM / YY):', currentExpiry);
-  if (newExpiry === null) return;
-
-  const newZip = prompt('Enter updated billing ZIP code:', currentZip);
-  if (newZip === null) return;
-
-  try {
-    const res = await fetch(`/payment-methods/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        cardName: newName,
-        expiry: newExpiry,
-        billingZip: newZip
-      })
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      showToast('Card updated!');
-      loadPaymentMethods();
-    } else {
-      showToast(result.error || 'Error updating card');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Something went wrong');
-  }
-}
-
-async function loadPaymentMethods() {
-  try {
-    const email = localStorage.getItem('email');
-    const paymentRes = await fetch(`/payment-methods/${encodeURIComponent(email)}`);
-
-    if (paymentRes.ok) {
-      const cards = await paymentRes.json();
-      document.getElementById('paymentCardsList').innerHTML = '';
-
-      cards.forEach(card => {
-        renderPaymentCard(card);
+    try {
+      // Send profile data to backend
+      const res = await fetch('/users', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
       });
-    }
-  } catch (err) {
-    console.error('Error loading payment methods:', err);
-  }
-}
 
-    /* ── Shipping ── */
-    function toggleAddShipping() {
-      document.getElementById('addShippingForm').classList.toggle('open');
-    }
-    async function saveShipping(e) {
-  e.preventDefault();
+      const result = await res.json();
 
-  const userEmail = localStorage.getItem('email');
+      if (res.ok) {
+        // Put updated name and email into localStorage
+        const fullName = `${data.firstName} ${data.lastName}`.trim();
 
-  const data = {
-    userEmail: userEmail,
-    firstName: document.getElementById('sh-first').value,
-    lastName: document.getElementById('sh-last').value,
-    addressLine1: document.getElementById('sh-addr1').value,
-    addressLine2: document.getElementById('sh-addr2').value,
-    city: document.getElementById('sh-city').value,
-    state: document.getElementById('sh-state').value,
-    zipCode: document.getElementById('sh-zip').value,
-    country: document.getElementById('sh-country').value,
-    phone: document.getElementById('sh-phone').value
-  };
+        localStorage.setItem('fullName', fullName);
+        localStorage.setItem('email', data.email);
 
-  try {
-    const res = await fetch('/shipping-addresses', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
+        // Update sidebar profile info right away
+        document.getElementById('sidebarName').textContent = fullName;
+        document.getElementById('sidebarEmail').textContent = data.email;
+        document.getElementById('sidebarInitial').textContent = data.firstName.charAt(0).toUpperCase();
+        document.getElementById('avatarPreview').textContent = data.firstName.charAt(0).toUpperCase();
 
-    const result = await res.json();
-
-    if (res.ok) {
-      e.target.reset();
-      document.getElementById('addShippingForm').classList.remove('open');
-      showToast('Address saved!');
-      loadShippingAddresses();
-    } else {
-      showToast(result.error || 'Error saving address');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Something went wrong');
-  }
-}
-
-function renderShippingCard(address) {
-  const list = document.getElementById('shippingAddressList');
-
-  const card = document.createElement('div');
-  card.className = address.is_default ? 'saved-card selected' : 'saved-card';
-  card.setAttribute('data-id', address.id);
-
-  card.innerHTML = `
-    ${address.is_default ? '<div class="card-badge">Default</div>' : ''}
-    <div class="saved-card-label">${address.label || 'Address'}</div>
-    <div class="saved-card-value">${address.first_name} ${address.last_name}</div>
-    <div class="saved-card-sub">
-      ${address.address_line1}${address.address_line2 ? ', ' + address.address_line2 : ''}, ${address.city}, ${address.state} ${address.zip_code}
-    </div>
-    <div class="card-actions">
-      <button class="card-action-btn" onclick="editShipping(
-        ${address.id},
-        '${(address.first_name || '').replace(/'/g, "\\'")}',
-        '${(address.last_name || '').replace(/'/g, "\\'")}',
-        '${(address.address_line1 || '').replace(/'/g, "\\'")}',
-        '${(address.address_line2 || '').replace(/'/g, "\\'")}',
-        '${(address.city || '').replace(/'/g, "\\'")}',
-        '${(address.state || '').replace(/'/g, "\\'")}',
-        '${(address.zip_code || '').replace(/'/g, "\\'")}',
-        '${(address.country || '').replace(/'/g, "\\'")}',
-        '${(address.phone || '').replace(/'/g, "\\'")}'
-      )">Edit</button>
-      <button class="card-action-btn" onclick="removeShipping(${address.id})">Remove</button>
-      <button class="card-action-btn" onclick="setDefaultShipping(${address.id})">Set as Default</button>
-    </div>
-  `;
-
-  list.appendChild(card);
-}
-
-async function loadShippingAddresses() {
-  try {
-    const email = localStorage.getItem('email');
-    const res = await fetch(`/shipping-addresses/${encodeURIComponent(email)}`);
-
-    if (res.ok) {
-      const addresses = await res.json();
-      document.getElementById('shippingAddressList').innerHTML = '';
-
-      addresses.forEach(address => {
-        renderShippingCard(address);
-      });
-    }
-  } catch (err) {
-    console.error('Error loading shipping addresses:', err);
-  }
-}
-
-async function removeShipping(id) {
-  try {
-    const res = await fetch(`/shipping-addresses/${id}`, {
-      method: 'DELETE'
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      showToast('Address removed!');
-      loadShippingAddresses();
-    } else {
-      showToast(result.error || 'Error removing address');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Something went wrong');
-  }
-}
-
-async function setDefaultShipping(id) {
-  try {
-    const userEmail = localStorage.getItem('email');
-
-    const res = await fetch(`/shipping-addresses/${id}/default`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userEmail })
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      showToast('Default address updated!');
-      loadShippingAddresses();
-    } else {
-      showToast(result.error || 'Error setting default address');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Something went wrong');
-  }
-}
-
-async function editShipping(
-  id,
-  currentFirst,
-  currentLast,
-  currentAddr1,
-  currentAddr2,
-  currentCity,
-  currentState,
-  currentZip,
-  currentCountry,
-  currentPhone
-) {
-  const firstName = prompt('First name:', currentFirst);
-  if (firstName === null) return;
-
-  const lastName = prompt('Last name:', currentLast);
-  if (lastName === null) return;
-
-  const addressLine1 = prompt('Address line 1:', currentAddr1);
-  if (addressLine1 === null) return;
-
-  const addressLine2 = prompt('Address line 2:', currentAddr2);
-  if (addressLine2 === null) return;
-
-  const city = prompt('City:', currentCity);
-  if (city === null) return;
-
-  const state = prompt('State:', currentState);
-  if (state === null) return;
-
-  const zipCode = prompt('ZIP code:', currentZip);
-  if (zipCode === null) return;
-
-  const country = prompt('Country:', currentCountry);
-  if (country === null) return;
-
-  const phone = prompt('Phone:', currentPhone);
-  if (phone === null) return;
-
-  try {
-    const res = await fetch(`/shipping-addresses/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        addressLine1,
-        addressLine2,
-        city,
-        state,
-        zipCode,
-        country,
-        phone
-      })
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      showToast('Address updated!');
-      loadShippingAddresses();
-    } else {
-      showToast(result.error || 'Error updating address');
-    }
-  } catch (err) {
-    console.error(err);
-    showToast('Something went wrong');
-  }
-}
-
-    /* ── Toast notification ── */
-    function showToast(msg) {
-      let t = document.getElementById('toast');
-      if (!t) {
-        t = document.createElement('div');
-        t.id = 'toast';
-        t.style.cssText = `
-          position:fixed;bottom:28px;right:28px;background:#1a1a1a;color:#fff;
-          padding:12px 22px;border-radius:8px;font-size:13.5px;font-weight:600;
-          box-shadow:0 4px 18px rgba(0,0,0,.25);z-index:9999;
-          transition:opacity .3s;
-        `;
-        document.body.appendChild(t);
+        showToast('Profile saved!');
+        console.log(result);
+      } else {
+        showToast(result.error || 'Error saving profile');
       }
-      t.textContent = msg;
-      t.style.opacity = '1';
-      clearTimeout(t._timer);
-      t._timer = setTimeout(() => t.style.opacity = '0', 2800);
+    } catch (err) {
+      console.error(err);
+      showToast('Something went wrong');
     }
+  }
 
-window.addEventListener('DOMContentLoaded', async () => {
-  const fullName = localStorage.getItem('fullName');
-  const email = localStorage.getItem('email');
+  /* ── Loved One ── */
 
-  if (!fullName) return;
+  // Open or close the loved one form
+  function toggleAddLovedOne() {
+    const f = document.getElementById('addLovedOneForm');
+    f.classList.toggle('open');
+  }
 
-  const nameParts = fullName.trim().split(' ');
-  const firstName = nameParts[0] || '';
-  const lastName = nameParts.slice(1).join(' ') || '';
+  // Save loved one information
+  async function saveLovedOne(e) {
+    e.preventDefault();
 
-  document.getElementById('sidebarName').textContent = fullName;
-  document.getElementById('sidebarEmail').textContent = email || '';
-  document.getElementById('sidebarInitial').textContent = firstName.charAt(0).toUpperCase();
-  document.getElementById('avatarPreview').textContent = firstName.charAt(0).toUpperCase();
+    // Get logged in user's email from localStorage
+    const userEmail = localStorage.getItem('email');
 
-  try {
-    const res = await fetch(`/users/${encodeURIComponent(email)}`);
-    
-    if (res.ok) {
-      const user = await res.json();
+    // Collect loved one form data
+    const data = {
+      userEmail: userEmail,
+      firstName: document.getElementById('lo-first').value,
+      lastName: document.getElementById('lo-last').value,
+      birthDate: document.getElementById('lo-bday').value,
+      passedDate: document.getElementById('lo-passed').value,
+      cemetery: document.getElementById('lo-cemetery').value,
+      notes: document.getElementById('lo-notes').value
+    };
 
-      document.getElementById('p-first').value = user.first_name || '';
-      document.getElementById('p-last').value = user.last_name || '';
-      document.getElementById('p-email').value = user.email || '';
-      document.getElementById('p-phone').value = user.phone || '';
-      document.getElementById('p-dob').value = user.dob ? user.dob.split('T')[0] : '';
-      document.getElementById('p-gender').value = user.gender || '';
-      document.getElementById('p-bio').value = user.bio || '';
-    } else {
+    try {
+      // Send loved one data to backend
+      const res = await fetch('/loved-ones', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        // Add new loved one card to the page
+        renderLovedOneCard(result);
+        e.target.reset();
+        document.getElementById('addLovedOneForm').classList.remove('open');
+        showToast('Loved one saved.');
+      } else {
+        showToast(result.error || 'Error saving loved one');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Something went wrong');
+    }
+  }
+
+  // Show loved one card on the page
+  function renderLovedOneCard(person) {
+    const list = document.getElementById('lovedOneList');
+
+    const card = document.createElement('div');
+    card.className = 'loved-one-card';
+
+    const birthText = person.birth_date ? `Born: ${person.birth_date.split('T')[0]}` : '';
+    const passedText = person.passed_date ? `Passed: ${person.passed_date.split('T')[0]}` : '';
+    const cemeteryText = person.cemetery ? `<p>Cemetery: ${person.cemetery}</p>` : '';
+    const notesText = person.notes ? `<p>Notes: ${person.notes}</p>` : '';
+
+    card.innerHTML = `
+      <h4>${person.first_name} ${person.last_name}</h4>
+      <p>${birthText} ${birthText && passedText ? '· ' : ''}${passedText}</p>
+      ${cemeteryText}
+      ${notesText}
+    `;
+
+    list.appendChild(card);
+  }
+
+  /* ── Payment ── */
+
+  // Open or close the payment form
+  function toggleAddPayment() {
+    document.getElementById('addPaymentForm').classList.toggle('open');
+  }
+
+  // Save payment card
+  async function savePayment(e) {
+    e.preventDefault();
+
+    const userEmail = localStorage.getItem('email');
+
+    // Collect payment form data
+    const data = {
+      userEmail: userEmail,
+      cardName: document.getElementById('pay-name').value,
+      cardNumber: document.getElementById('pay-number').value,
+      expiry: document.getElementById('pay-expiry').value,
+      billingZip: document.getElementById('pay-zip').value
+    };
+
+    try {
+      // Send card info to backend
+      const res = await fetch('/payment-methods', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        // Add new card to page right away
+        renderPaymentCard(result);
+        e.target.reset();
+        document.getElementById('addPaymentForm').classList.remove('open');
+        showToast('Card saved!');
+      } else {
+        showToast(result.error || 'Error saving card');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Something went wrong');
+    }
+  }
+
+  // Show payment card on page
+  function renderPaymentCard(card) {
+    const list = document.getElementById('paymentCardsList');
+
+    const cardDiv = document.createElement('div');
+    cardDiv.className = card.is_default ? 'saved-card selected' : 'saved-card';
+    cardDiv.setAttribute('data-id', card.id);
+
+    cardDiv.innerHTML = `
+      ${card.is_default ? '<div class="card-badge">Default</div>' : ''}
+      <div class="saved-card-label">${card.card_type}</div>
+      <div class="saved-card-value">•••• •••• •••• ${card.card_last4}</div>
+      <div class="saved-card-sub">Expires ${card.expiry}</div>
+      <div class="card-actions">
+        <button class="card-action-btn" onclick="editPayment(${card.id}, '${card.card_name}', '${card.expiry}', '${card.billing_zip || ''}')">Edit</button>
+        <button class="card-action-btn" onclick="removePayment(${card.id})">Remove</button>
+        <button class="card-action-btn" onclick="setDefaultPayment(${card.id})">Set as Default</button>
+      </div>
+    `;
+
+    list.appendChild(cardDiv);
+  }
+
+  // Remove selected payment card
+  async function removePayment(id) {
+    try {
+      const res = await fetch(`/payment-methods/${id}`, {
+        method: 'DELETE'
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        showToast('Card removed!');
+        loadPaymentMethods();
+      } else {
+        showToast(result.error || 'Error removing card');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Something went wrong');
+    }
+  }
+
+  // Set selected card as default
+  async function setDefaultPayment(id) {
+    try {
+      const userEmail = localStorage.getItem('email');
+
+      const res = await fetch(`/payment-methods/${id}/default`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userEmail })
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        showToast('Default card updated!');
+        loadPaymentMethods();
+      } else {
+        showToast(result.error || 'Error setting default card');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Something went wrong');
+    }
+  }
+
+  // Edit selected payment card using prompts
+  async function editPayment(id, currentName, currentExpiry, currentZip) {
+    const newName = prompt('Enter updated card name:', currentName);
+    if (newName === null) return;
+
+    const newExpiry = prompt('Enter updated expiry (MM / YY):', currentExpiry);
+    if (newExpiry === null) return;
+
+    const newZip = prompt('Enter updated billing ZIP code:', currentZip);
+    if (newZip === null) return;
+
+    try {
+      const res = await fetch(`/payment-methods/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          cardName: newName,
+          expiry: newExpiry,
+          billingZip: newZip
+        })
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        showToast('Card updated!');
+        loadPaymentMethods();
+      } else {
+        showToast(result.error || 'Error updating card');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Something went wrong');
+    }
+  }
+
+  // Load all payment methods for current user
+  async function loadPaymentMethods() {
+    try {
+      const email = localStorage.getItem('email');
+      const paymentRes = await fetch(`/payment-methods/${encodeURIComponent(email)}`);
+
+      if (paymentRes.ok) {
+        const cards = await paymentRes.json();
+        document.getElementById('paymentCardsList').innerHTML = '';
+
+        cards.forEach(card => {
+          renderPaymentCard(card);
+        });
+      }
+    } catch (err) {
+      console.error('Error loading payment methods:', err);
+    }
+  }
+
+  /* ── Shipping ── */
+
+  // Open or close shipping address form
+  function toggleAddShipping() {
+    document.getElementById('addShippingForm').classList.toggle('open');
+  }
+
+  // Save shipping address
+  async function saveShipping(e) {
+    e.preventDefault();
+
+    const userEmail = localStorage.getItem('email');
+
+    // Collect shipping form data
+    const data = {
+      userEmail: userEmail,
+      firstName: document.getElementById('sh-first').value,
+      lastName: document.getElementById('sh-last').value,
+      addressLine1: document.getElementById('sh-addr1').value,
+      addressLine2: document.getElementById('sh-addr2').value,
+      city: document.getElementById('sh-city').value,
+      state: document.getElementById('sh-state').value,
+      zipCode: document.getElementById('sh-zip').value,
+      country: document.getElementById('sh-country').value,
+      phone: document.getElementById('sh-phone').value
+    };
+
+    try {
+      // Send shipping address to backend
+      const res = await fetch('/shipping-addresses', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        e.target.reset();
+        document.getElementById('addShippingForm').classList.remove('open');
+        showToast('Address saved!');
+        loadShippingAddresses();
+      } else {
+        showToast(result.error || 'Error saving address');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Something went wrong');
+    }
+  }
+
+  // Show shipping address card on the page
+  function renderShippingCard(address) {
+    const list = document.getElementById('shippingAddressList');
+
+    const card = document.createElement('div');
+    card.className = address.is_default ? 'saved-card selected' : 'saved-card';
+    card.setAttribute('data-id', address.id);
+
+    card.innerHTML = `
+      ${address.is_default ? '<div class="card-badge">Default</div>' : ''}
+      <div class="saved-card-label">${address.label || 'Address'}</div>
+      <div class="saved-card-value">${address.first_name} ${address.last_name}</div>
+      <div class="saved-card-sub">
+        ${address.address_line1}${address.address_line2 ? ', ' + address.address_line2 : ''}, ${address.city}, ${address.state} ${address.zip_code}
+      </div>
+      <div class="card-actions">
+        <button class="card-action-btn" onclick="editShipping(
+          ${address.id},
+          '${(address.first_name || '').replace(/'/g, "\\'")}',
+          '${(address.last_name || '').replace(/'/g, "\\'")}',
+          '${(address.address_line1 || '').replace(/'/g, "\\'")}',
+          '${(address.address_line2 || '').replace(/'/g, "\\'")}',
+          '${(address.city || '').replace(/'/g, "\\'")}',
+          '${(address.state || '').replace(/'/g, "\\'")}',
+          '${(address.zip_code || '').replace(/'/g, "\\'")}',
+          '${(address.country || '').replace(/'/g, "\\'")}',
+          '${(address.phone || '').replace(/'/g, "\\'")}'
+        )">Edit</button>
+        <button class="card-action-btn" onclick="removeShipping(${address.id})">Remove</button>
+        <button class="card-action-btn" onclick="setDefaultShipping(${address.id})">Set as Default</button>
+      </div>
+    `;
+
+    list.appendChild(card);
+  }
+
+  // Load all shipping addresses for current user
+  async function loadShippingAddresses() {
+    try {
+      const email = localStorage.getItem('email');
+      const res = await fetch(`/shipping-addresses/${encodeURIComponent(email)}`);
+
+      if (res.ok) {
+        const addresses = await res.json();
+        document.getElementById('shippingAddressList').innerHTML = '';
+
+        addresses.forEach(address => {
+          renderShippingCard(address);
+        });
+      }
+    } catch (err) {
+      console.error('Error loading shipping addresses:', err);
+    }
+  }
+
+  // Remove selected shipping address
+  async function removeShipping(id) {
+    try {
+      const res = await fetch(`/shipping-addresses/${id}`, {
+        method: 'DELETE'
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        showToast('Address removed!');
+        loadShippingAddresses();
+      } else {
+        showToast(result.error || 'Error removing address');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Something went wrong');
+    }
+  }
+
+  // Set selected shipping address as default
+  async function setDefaultShipping(id) {
+    try {
+      const userEmail = localStorage.getItem('email');
+
+      const res = await fetch(`/shipping-addresses/${id}/default`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ userEmail })
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        showToast('Default address updated!');
+        loadShippingAddresses();
+      } else {
+        showToast(result.error || 'Error setting default address');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Something went wrong');
+    }
+  }
+
+  // Edit shipping address using prompts
+  async function editShipping(
+    id,
+    currentFirst,
+    currentLast,
+    currentAddr1,
+    currentAddr2,
+    currentCity,
+    currentState,
+    currentZip,
+    currentCountry,
+    currentPhone
+  ) {
+    const firstName = prompt('First name:', currentFirst);
+    if (firstName === null) return;
+
+    const lastName = prompt('Last name:', currentLast);
+    if (lastName === null) return;
+
+    const addressLine1 = prompt('Address line 1:', currentAddr1);
+    if (addressLine1 === null) return;
+
+    const addressLine2 = prompt('Address line 2:', currentAddr2);
+    if (addressLine2 === null) return;
+
+    const city = prompt('City:', currentCity);
+    if (city === null) return;
+
+    const state = prompt('State:', currentState);
+    if (state === null) return;
+
+    const zipCode = prompt('ZIP code:', currentZip);
+    if (zipCode === null) return;
+
+    const country = prompt('Country:', currentCountry);
+    if (country === null) return;
+
+    const phone = prompt('Phone:', currentPhone);
+    if (phone === null) return;
+
+    try {
+      const res = await fetch(`/shipping-addresses/${id}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          firstName,
+          lastName,
+          addressLine1,
+          addressLine2,
+          city,
+          state,
+          zipCode,
+          country,
+          phone
+        })
+      });
+
+      const result = await res.json();
+
+      if (res.ok) {
+        showToast('Address updated!');
+        loadShippingAddresses();
+      } else {
+        showToast(result.error || 'Error updating address');
+      }
+    } catch (err) {
+      console.error(err);
+      showToast('Something went wrong');
+    }
+  }
+
+  /* ── Toast notification ── */
+
+  // Show small popup message at bottom right
+  function showToast(msg) {
+    let t = document.getElementById('toast');
+    if (!t) {
+      t = document.createElement('div');
+      t.id = 'toast';
+      t.style.cssText = `
+        position:fixed;bottom:28px;right:28px;background:#1a1a1a;color:#fff;
+        padding:12px 22px;border-radius:8px;font-size:13.5px;font-weight:600;
+        box-shadow:0 4px 18px rgba(0,0,0,.25);z-index:9999;
+        transition:opacity .3s;
+      `;
+      document.body.appendChild(t);
+    }
+    t.textContent = msg;
+    t.style.opacity = '1';
+    clearTimeout(t._timer);
+    t._timer = setTimeout(() => t.style.opacity = '0', 2800);
+  }
+
+  // Run this when the page first loads
+  window.addEventListener('DOMContentLoaded', async () => {
+    const fullName = localStorage.getItem('fullName');
+    const email = localStorage.getItem('email');
+
+    if (!fullName) return;
+
+    // Split full name into first and last name
+    const nameParts = fullName.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    // Show user info in sidebar
+    document.getElementById('sidebarName').textContent = fullName;
+    document.getElementById('sidebarEmail').textContent = email || '';
+    document.getElementById('sidebarInitial').textContent = firstName.charAt(0).toUpperCase();
+    document.getElementById('avatarPreview').textContent = firstName.charAt(0).toUpperCase();
+
+    try {
+      // Load saved profile data from database
+      const res = await fetch(`/users/${encodeURIComponent(email)}`);
+      
+      if (res.ok) {
+        const user = await res.json();
+
+        document.getElementById('p-first').value = user.first_name || '';
+        document.getElementById('p-last').value = user.last_name || '';
+        document.getElementById('p-email').value = user.email || '';
+        document.getElementById('p-phone').value = user.phone || '';
+        document.getElementById('p-dob').value = user.dob ? user.dob.split('T')[0] : '';
+        document.getElementById('p-gender').value = user.gender || '';
+        document.getElementById('p-bio').value = user.bio || '';
+      } else {
+        // If no saved profile in database yet, use localStorage values
+        document.getElementById('p-first').value = firstName;
+        document.getElementById('p-last').value = lastName;
+        document.getElementById('p-email').value = email || '';
+      }
+    } catch (err) {
+      console.error('Error loading profile:', err);
+
       document.getElementById('p-first').value = firstName;
       document.getElementById('p-last').value = lastName;
       document.getElementById('p-email').value = email || '';
     }
-  } catch (err) {
-    console.error('Error loading profile:', err);
 
-    document.getElementById('p-first').value = firstName;
-    document.getElementById('p-last').value = lastName;
-    document.getElementById('p-email').value = email || '';
-  }
+    try {
+      // Load loved ones saved for this user
+      const lovedRes = await fetch(`/loved-ones/${encodeURIComponent(email)}`);
 
-    // Load loved ones for this user
-  try {
-    const lovedRes = await fetch(`/loved-ones/${encodeURIComponent(email)}`);
+      if (lovedRes.ok) {
+        const lovedOnes = await lovedRes.json();
 
-    if (lovedRes.ok) {
-      const lovedOnes = await lovedRes.json();
+        document.getElementById('lovedOneList').innerHTML = '';
 
-      document.getElementById('lovedOneList').innerHTML = '';
-
-      lovedOnes.forEach(person => {
-        renderLovedOneCard(person);
-      });
+        lovedOnes.forEach(person => {
+          renderLovedOneCard(person);
+        });
+      }
+    } catch (err) {
+      console.error('Error loading loved ones:', err);
     }
-  } catch (err) {
-    console.error('Error loading loved ones:', err);
-  }
 
     // Load payment methods
-  try {
-    const paymentRes = await loadPaymentMethods();
+    await loadPaymentMethods();
 
-    if (paymentRes.ok) {
-      const cards = await paymentRes.json();
-
-      document.getElementById('paymentCardsList').innerHTML = '';
-
-      cards.forEach(card => {
-        renderPaymentCard(card);
-      });
-    }
-  } catch (err) {
-    console.error('Error loading payment methods:', err);
-  }
-
-  await loadShippingAddresses();
-});
-
+    // Load shipping addresses
+    await loadShippingAddresses();
+  });
 </script>
 </body>
 </html>
+
