@@ -583,19 +583,7 @@
         <h2 class="pane-title">Saved Shipping Addresses</h2>
         <p class="pane-subtitle">Manage your delivery addresses for faster checkout.</p>
 
-        <div class="saved-cards" id="shippingAddressList">
-          <div class="saved-card selected">
-            <div class="card-badge">Default</div>
-            <div class="saved-card-label">Home</div>
-            <div class="saved-card-value">Jane Smith</div>
-            <div class="saved-card-sub">123 Garden Lane, Los Angeles, CA 90001</div>
-            <div class="card-actions">
-              <button class="card-action-btn">Edit</button>
-              <button class="card-action-btn">Remove</button>
-              <button class="card-action-btn">Set as Default</button>
-            </div>
-          </div>
-        </div>
+        <div class="saved-cards" id="shippingAddressList"></div>
 
         <div class="add-new-toggle" onclick="toggleAddShipping()">
           <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
@@ -1032,32 +1020,213 @@ async function loadPaymentMethods() {
     function toggleAddShipping() {
       document.getElementById('addShippingForm').classList.toggle('open');
     }
-    function saveShipping(e) {
-      e.preventDefault();
-      const first = document.getElementById('sh-first').value;
-      const last  = document.getElementById('sh-last').value;
-      const addr1 = document.getElementById('sh-addr1').value;
-      const city  = document.getElementById('sh-city').value;
-      const state = document.getElementById('sh-state').value;
-      const zip   = document.getElementById('sh-zip').value;
-      const list  = document.getElementById('shippingAddressList');
-      const card  = document.createElement('div');
-      card.className = 'saved-card';
-      card.innerHTML = `
-        <div class="saved-card-label">Address</div>
-        <div class="saved-card-value">${first} ${last}</div>
-        <div class="saved-card-sub">${addr1}, ${city}, ${state} ${zip}</div>
-        <div class="card-actions">
-          <button class="card-action-btn">Edit</button>
-          <button class="card-action-btn">Remove</button>
-          <button class="card-action-btn">Set as Default</button>
-        </div>
-      `;
-      list.appendChild(card);
+    async function saveShipping(e) {
+  e.preventDefault();
+
+  const userEmail = localStorage.getItem('email');
+
+  const data = {
+    userEmail: userEmail,
+    firstName: document.getElementById('sh-first').value,
+    lastName: document.getElementById('sh-last').value,
+    addressLine1: document.getElementById('sh-addr1').value,
+    addressLine2: document.getElementById('sh-addr2').value,
+    city: document.getElementById('sh-city').value,
+    state: document.getElementById('sh-state').value,
+    zipCode: document.getElementById('sh-zip').value,
+    country: document.getElementById('sh-country').value,
+    phone: document.getElementById('sh-phone').value
+  };
+
+  try {
+    const res = await fetch('/shipping-addresses', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
       e.target.reset();
       document.getElementById('addShippingForm').classList.remove('open');
       showToast('Address saved!');
+      loadShippingAddresses();
+    } else {
+      showToast(result.error || 'Error saving address');
     }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
+}
+
+function renderShippingCard(address) {
+  const list = document.getElementById('shippingAddressList');
+
+  const card = document.createElement('div');
+  card.className = address.is_default ? 'saved-card selected' : 'saved-card';
+  card.setAttribute('data-id', address.id);
+
+  card.innerHTML = `
+    ${address.is_default ? '<div class="card-badge">Default</div>' : ''}
+    <div class="saved-card-label">${address.label || 'Address'}</div>
+    <div class="saved-card-value">${address.first_name} ${address.last_name}</div>
+    <div class="saved-card-sub">
+      ${address.address_line1}${address.address_line2 ? ', ' + address.address_line2 : ''}, ${address.city}, ${address.state} ${address.zip_code}
+    </div>
+    <div class="card-actions">
+      <button class="card-action-btn" onclick="editShipping(
+        ${address.id},
+        '${(address.first_name || '').replace(/'/g, "\\'")}',
+        '${(address.last_name || '').replace(/'/g, "\\'")}',
+        '${(address.address_line1 || '').replace(/'/g, "\\'")}',
+        '${(address.address_line2 || '').replace(/'/g, "\\'")}',
+        '${(address.city || '').replace(/'/g, "\\'")}',
+        '${(address.state || '').replace(/'/g, "\\'")}',
+        '${(address.zip_code || '').replace(/'/g, "\\'")}',
+        '${(address.country || '').replace(/'/g, "\\'")}',
+        '${(address.phone || '').replace(/'/g, "\\'")}'
+      )">Edit</button>
+      <button class="card-action-btn" onclick="removeShipping(${address.id})">Remove</button>
+      <button class="card-action-btn" onclick="setDefaultShipping(${address.id})">Set as Default</button>
+    </div>
+  `;
+
+  list.appendChild(card);
+}
+
+async function loadShippingAddresses() {
+  try {
+    const email = localStorage.getItem('email');
+    const res = await fetch(`/shipping-addresses/${encodeURIComponent(email)}`);
+
+    if (res.ok) {
+      const addresses = await res.json();
+      document.getElementById('shippingAddressList').innerHTML = '';
+
+      addresses.forEach(address => {
+        renderShippingCard(address);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading shipping addresses:', err);
+  }
+}
+
+async function removeShipping(id) {
+  try {
+    const res = await fetch(`/shipping-addresses/${id}`, {
+      method: 'DELETE'
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast('Address removed!');
+      loadShippingAddresses();
+    } else {
+      showToast(result.error || 'Error removing address');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
+}
+
+async function setDefaultShipping(id) {
+  try {
+    const userEmail = localStorage.getItem('email');
+
+    const res = await fetch(`/shipping-addresses/${id}/default`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userEmail })
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast('Default address updated!');
+      loadShippingAddresses();
+    } else {
+      showToast(result.error || 'Error setting default address');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
+}
+
+async function editShipping(
+  id,
+  currentFirst,
+  currentLast,
+  currentAddr1,
+  currentAddr2,
+  currentCity,
+  currentState,
+  currentZip,
+  currentCountry,
+  currentPhone
+) {
+  const firstName = prompt('First name:', currentFirst);
+  if (firstName === null) return;
+
+  const lastName = prompt('Last name:', currentLast);
+  if (lastName === null) return;
+
+  const addressLine1 = prompt('Address line 1:', currentAddr1);
+  if (addressLine1 === null) return;
+
+  const addressLine2 = prompt('Address line 2:', currentAddr2);
+  if (addressLine2 === null) return;
+
+  const city = prompt('City:', currentCity);
+  if (city === null) return;
+
+  const state = prompt('State:', currentState);
+  if (state === null) return;
+
+  const zipCode = prompt('ZIP code:', currentZip);
+  if (zipCode === null) return;
+
+  const country = prompt('Country:', currentCountry);
+  if (country === null) return;
+
+  const phone = prompt('Phone:', currentPhone);
+  if (phone === null) return;
+
+  try {
+    const res = await fetch(`/shipping-addresses/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        zipCode,
+        country,
+        phone
+      })
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast('Address updated!');
+      loadShippingAddresses();
+    } else {
+      showToast(result.error || 'Error updating address');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
+}
 
     /* ── Toast notification ── */
     function showToast(msg) {
@@ -1153,6 +1322,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   } catch (err) {
     console.error('Error loading payment methods:', err);
   }
+
+  await loadShippingAddresses();
 });
 
 </script>

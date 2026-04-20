@@ -347,6 +347,179 @@ app.put('/payment-methods/:id', async (req, res) => {
   }
 });
 
+// Save a shipping address
+app.post('/shipping-addresses', async (req, res) => {
+  try {
+    const {
+      userEmail,
+      firstName,
+      lastName,
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      zipCode,
+      country,
+      phone
+    } = req.body;
+
+    // First address for this user becomes default automatically
+    const existingDefault = await pool.query(
+      'SELECT * FROM shipping_addresses WHERE user_email = $1 AND is_default = TRUE',
+      [userEmail]
+    );
+
+    const isDefault = existingDefault.rows.length === 0;
+
+    const newAddress = await pool.query(
+      `INSERT INTO shipping_addresses
+      (user_email, first_name, last_name, address_line1, address_line2, city, state, zip_code, country, phone, label, is_default)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      RETURNING *`,
+      [
+        userEmail,
+        firstName,
+        lastName,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        zipCode,
+        country,
+        phone,
+        'Home',
+        isDefault
+      ]
+    );
+
+    res.json(newAddress.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error saving address' });
+  }
+});
+
+// Get all shipping addresses for a user
+app.get('/shipping-addresses/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const result = await pool.query(
+      'SELECT * FROM shipping_addresses WHERE user_email = $1 ORDER BY is_default DESC, id ASC',
+      [email]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting addresses' });
+  }
+});
+
+// Delete a shipping address
+app.delete('/shipping-addresses/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const deleted = await pool.query(
+      'DELETE FROM shipping_addresses WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (deleted.rows.length === 0) {
+      return res.status(404).json({ error: 'Address not found' });
+    }
+
+    res.json({ message: 'Address deleted successfully' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error deleting address' });
+  }
+});
+
+// Set a shipping address as default
+app.put('/shipping-addresses/:id/default', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const { userEmail } = req.body;
+
+    await pool.query(
+      'UPDATE shipping_addresses SET is_default = FALSE WHERE user_email = $1',
+      [userEmail]
+    );
+
+    const result = await pool.query(
+      'UPDATE shipping_addresses SET is_default = TRUE WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Address not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error setting default address' });
+  }
+});
+
+// Update a shipping address
+app.put('/shipping-addresses/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+    const {
+      firstName,
+      lastName,
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      zipCode,
+      country,
+      phone
+    } = req.body;
+
+    const result = await pool.query(
+      `UPDATE shipping_addresses
+       SET first_name = $1,
+           last_name = $2,
+           address_line1 = $3,
+           address_line2 = $4,
+           city = $5,
+           state = $6,
+           zip_code = $7,
+           country = $8,
+           phone = $9
+       WHERE id = $10
+       RETURNING *`,
+      [
+        firstName,
+        lastName,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        zipCode,
+        country,
+        phone,
+        id
+      ]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Address not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error updating address' });
+  }
+});
+
+
+
 // Set server port (from environment or default 3000)
 const PORT = process.env.PORT || 3000;
 
