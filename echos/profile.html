@@ -823,24 +823,64 @@ async function saveProfile(e) {
       const f = document.getElementById('addLovedOneForm');
       f.classList.toggle('open');
     }
-    function saveLovedOne(e) {
-      e.preventDefault();
-      const first   = document.getElementById('lo-first').value;
-      const last    = document.getElementById('lo-last').value;
-      const bday    = document.getElementById('lo-bday').value;
-      const passed  = document.getElementById('lo-passed').value;
-      const list    = document.getElementById('lovedOneList');
-      const card    = document.createElement('div');
-      card.className = 'loved-one-card';
-      card.innerHTML = `
-        <h4>${first} ${last}</h4>
-        <p>${bday ? 'Born: ' + bday : ''} ${passed ? '· Passed: ' + passed : ''}</p>
-      `;
-      list.appendChild(card);
+    async function saveLovedOne(e) {
+  e.preventDefault();
+
+  const userEmail = localStorage.getItem('email');
+
+  const data = {
+    userEmail: userEmail,
+    firstName: document.getElementById('lo-first').value,
+    lastName: document.getElementById('lo-last').value,
+    birthDate: document.getElementById('lo-bday').value,
+    passedDate: document.getElementById('lo-passed').value,
+    cemetery: document.getElementById('lo-cemetery').value,
+    notes: document.getElementById('lo-notes').value
+  };
+
+  try {
+    const res = await fetch('/loved-ones', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      renderLovedOneCard(result);
       e.target.reset();
       document.getElementById('addLovedOneForm').classList.remove('open');
       showToast('Loved one saved.');
+    } else {
+      showToast(result.error || 'Error saving loved one');
     }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
+}
+
+function renderLovedOneCard(person) {
+  const list = document.getElementById('lovedOneList');
+
+  const card = document.createElement('div');
+  card.className = 'loved-one-card';
+
+  const birthText = person.birth_date ? `Born: ${person.birth_date.split('T')[0]}` : '';
+  const passedText = person.passed_date ? `Passed: ${person.passed_date.split('T')[0]}` : '';
+  const cemeteryText = person.cemetery ? `<p>Cemetery: ${person.cemetery}</p>` : '';
+  const notesText = person.notes ? `<p>Notes: ${person.notes}</p>` : '';
+
+  card.innerHTML = `
+    <h4>${person.first_name} ${person.last_name}</h4>
+    <p>${birthText} ${birthText && passedText ? '· ' : ''}${passedText}</p>
+    ${cemeteryText}
+    ${notesText}
+  `;
+
+  list.appendChild(card);
+}
 
     /* ── Payment ── */
     function toggleAddPayment() {
@@ -960,6 +1000,23 @@ window.addEventListener('DOMContentLoaded', async () => {
     document.getElementById('p-first').value = firstName;
     document.getElementById('p-last').value = lastName;
     document.getElementById('p-email').value = email || '';
+  }
+
+    // Load loved ones for this user
+  try {
+    const lovedRes = await fetch(`/loved-ones/${encodeURIComponent(email)}`);
+
+    if (lovedRes.ok) {
+      const lovedOnes = await lovedRes.json();
+
+      document.getElementById('lovedOneList').innerHTML = '';
+
+      lovedOnes.forEach(person => {
+        renderLovedOneCard(person);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading loved ones:', err);
   }
 });
 

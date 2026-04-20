@@ -158,6 +158,51 @@ app.post('/login', async (req, res) => {
   }
 });
 
+// Save a loved one
+app.post('/loved-ones', async (req, res) => {
+  try {
+    const {
+      userEmail,
+      firstName,
+      lastName,
+      birthDate,
+      passedDate,
+      cemetery,
+      notes
+    } = req.body;
+
+    const newLovedOne = await pool.query(
+      `INSERT INTO loved_ones
+      (user_email, first_name, last_name, birth_date, passed_date, cemetery, notes)
+      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      RETURNING *`,
+      [userEmail, firstName, lastName, birthDate, passedDate, cemetery, notes]
+    );
+
+    res.json(newLovedOne.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error saving loved one' });
+  }
+});
+
+// Get all loved ones for a user
+app.get('/loved-ones/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const result = await pool.query(
+      'SELECT * FROM loved_ones WHERE user_email = $1 ORDER BY id ASC',
+      [email]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting loved ones' });
+  }
+});
+
 // Set server port (from environment or default 3000)
 const PORT = process.env.PORT || 3000;
 
