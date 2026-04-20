@@ -1,0 +1,573 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GardenOfEchos — Donations</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #fff;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ══ Nav ══ */
+    .main-nav {
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      height: 96px;
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+      gap: 0;
+    }
+    .logo { display: flex; align-items: center; margin-right: 36px; white-space: nowrap; }
+    .logo img { height: 90px; width: auto; display: block; }
+    .main-nav-links { display: flex; align-items: center; gap: 4px; flex: 1; }
+    .main-nav-links a {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px; font-size: 13.5px; color: #333;
+      white-space: nowrap; border-radius: 4px; transition: background .15s;
+    }
+    .main-nav-links a:hover { background: #f5f5f5; }
+    .main-nav-links a svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .nav-donation {
+      background: #7c3aed !important; color: #fff !important;
+      border-radius: 5px !important; padding: 6px 16px !important; font-weight: 600 !important;
+    }
+    .nav-donation:hover { background: #6d28d9 !important; }
+
+    /* ══ Category Nav ══ */
+    .cat-nav {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 28px; height: 44px; background: #fafafa;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .cat-nav a {
+      padding: 8px 18px; font-size: 13.5px; color: #444;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .cat-nav a:hover { color: #c0392b; }
+    .cat-nav a .arrow { font-size: 10px; margin-top: 1px; }
+    .cat-item { position: relative; }
+    .cat-item:hover .dropdown { display: block; }
+    .dropdown {
+      display: none; position: absolute; top: 100%; left: 0;
+      background: #fff; border: 1px solid #e0e0e0; min-width: 180px;
+      z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.1);
+    }
+    .dropdown a {
+      display: block; padding: 9px 16px; font-size: 13px;
+      color: #333; border-bottom: 1px solid #f0f0f0;
+    }
+    .dropdown a:hover { background: #f9f9f9; color: #c0392b; }
+
+    /* ══ Hero ══ */
+    .hero {
+      text-align: center;
+      padding: 56px 20px 40px;
+      background: #fff;
+    }
+    .hero-icon {
+      font-size: 36px;
+      margin-bottom: 14px;
+    }
+    .hero h1 {
+      font-size: 34px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 12px;
+    }
+    .hero p {
+      font-size: 15px;
+      color: #666;
+      max-width: 520px;
+      margin: 0 auto;
+      line-height: 1.6;
+    }
+
+    /* ══ Section: Our Mission ══ */
+    .mission-section {
+      max-width: 960px;
+      margin: 48px auto;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 40px;
+      align-items: center;
+    }
+    .mission-text h2 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+    }
+    .mission-text p {
+      font-size: 14px;
+      color: #555;
+      line-height: 1.8;
+      margin-bottom: 14px;
+    }
+    .mission-image {
+      border-radius: 10px;
+      overflow: hidden;
+      height: 260px;
+      background: linear-gradient(145deg, #e8f5e9, #c8e6c9);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+    }
+    .mission-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    /* Painted fallback for when image isn't available */
+    .mission-image-painted {
+      width: 100%;
+      height: 100%;
+      background:
+        radial-gradient(ellipse 160px 130px at 50% 50%, rgba(255,220,100,.25) 0%, transparent 70%),
+        linear-gradient(145deg, #3a6b35 0%, #2d5a28 40%, #1e3d1a 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    .mission-image-painted::before {
+      content: '';
+      position: absolute;
+      width: 180px;
+      height: 140px;
+      border-radius: 50%;
+      background: radial-gradient(ellipse, rgba(100,160,80,.6) 0%, rgba(60,110,40,.3) 50%, transparent 80%);
+    }
+
+    /* ══ Where Donation Goes ══ */
+    .where-section {
+      background: #f9f9fb;
+      padding: 56px 20px;
+    }
+    .where-inner {
+      max-width: 860px;
+      margin: 0 auto;
+    }
+    .where-inner h2 {
+      text-align: center;
+      font-size: 26px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+    .where-inner .where-sub {
+      text-align: center;
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 40px;
+    }
+    .where-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 28px;
+    }
+    .where-item {
+      display: flex;
+      gap: 16px;
+      align-items: flex-start;
+    }
+    .where-icon {
+      width: 44px;
+      height: 44px;
+      border-radius: 10px;
+      background: #fff0f4;
+      border: 1px solid #f9c3cf;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+    .where-item h3 {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    .where-item p {
+      font-size: 13px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    /* ══ Donation Form ══ */
+    .form-section {
+      padding: 60px 20px 80px;
+      background: #fff;
+    }
+    .form-inner {
+      max-width: 600px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .form-inner h2 {
+      font-size: 26px;
+      font-weight: 800;
+      color: #1a1a1a;
+      margin-bottom: 8px;
+    }
+    .form-inner .form-sub {
+      font-size: 14px;
+      color: #888;
+      margin-bottom: 36px;
+      line-height: 1.6;
+    }
+
+    .form-card {
+      background: #fff;
+      border: 1px solid #e8e8e8;
+      border-radius: 12px;
+      padding: 32px 36px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.07);
+      text-align: left;
+    }
+    .form-card label.section-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 16px;
+    }
+    .form-card label.section-label svg {
+      width: 16px;
+      height: 16px;
+      color: #7c3aed;
+    }
+
+    /* Amount pills */
+    .amount-pills {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-bottom: 16px;
+    }
+    .pill {
+      padding: 9px 22px;
+      border: 2px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #444;
+      cursor: pointer;
+      background: #fff;
+      transition: border-color .15s, background .15s, color .15s;
+    }
+    .pill:hover { border-color: #7c3aed; color: #7c3aed; }
+    .pill.selected { border-color: #7c3aed; background: #7c3aed; color: #fff; }
+
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    .form-group label span.req { color: #e0546a; }
+    .form-group input,
+    .form-group textarea {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 13.5px;
+      color: #333;
+      background: #fff;
+      transition: border-color .15s;
+      outline: none;
+      font-family: inherit;
+      resize: vertical;
+    }
+    .form-group input:focus,
+    .form-group textarea:focus { border-color: #7c3aed; }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: #bbb; }
+
+    .btn-donate {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      background: #7c3aed;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .3px;
+      transition: background .18s;
+      font-family: inherit;
+      margin-top: 4px;
+    }
+    .btn-donate:hover { background: #6d28d9; }
+
+    .form-footer-note {
+      font-size: 12px;
+      color: #aaa;
+      text-align: center;
+      margin-top: 20px;
+      line-height: 1.6;
+    }
+
+    /* ══ Responsive ══ */
+    @media (max-width: 760px) {
+      .mission-section { grid-template-columns: 1fr; }
+      .where-grid { grid-template-columns: 1fr; }
+      .main-nav { padding: 0 14px; height: 72px; }
+      .logo img { height: 62px; }
+      .main-nav-links a span { display: none; }
+      .form-card { padding: 24px 20px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ Main Nav ══ -->
+  <nav class="main-nav">
+    <a href="homepage.html" class="logo"><img src="logo.png" alt="Garden of Echoes"></a>
+    <div class="main-nav-links">
+      <a href="subscriptions.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>The Garden Program</span>
+      </a>
+      <a href="login.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>My Account</span>
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Cart</span>
+      </a>
+      <a href="contact.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Contact Us</span>
+      </a>
+      <a href="donation.html" class="nav-donation"><span>Donation</span></a>
+    </div>
+  </nav>
+
+  <!-- ══ Category Nav ══ -->
+  <nav class="cat-nav">
+    <div class="cat-item">
+      <a href="#">Anniversary <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Anniversary Flowers</a>
+        <a href="#">Anniversary Wreaths</a>
+        <a href="#">Anniversary Baskets</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Occasions <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Birthday</a>
+        <a href="#">Wedding</a>
+        <a href="#">Graduation</a>
+        <a href="#">Get Well Soon</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Sympathy <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Funeral Flowers</a>
+        <a href="#">Sympathy Wreaths</a>
+        <a href="#">Memorial Arrangements</a>
+        <a href="#">Casket Flowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Flowers <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Roses</a>
+        <a href="#">Lilies</a>
+        <a href="#">Orchids</a>
+        <a href="#">Tulips</a>
+        <a href="#">Sunflowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Other Items <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Vases</a>
+        <a href="#">Gift Baskets</a>
+        <a href="#">Candles</a>
+        <a href="#">Cards</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ Hero ══ -->
+  <div class="hero">
+    <div class="hero-icon">✝</div>
+    <h1>Honoring Those We've Lost</h1>
+    <p>Help us bring beauty and dignity to the gravesites of loved ones. Every donation provides fresh flowers for families who cannot afford to decorate their memorial sites.</p>
+  </div>
+
+  <!-- ══ Our Mission ══ -->
+  <div class="mission-section">
+    <div class="mission-text">
+      <h2>Our Mission</h2>
+      <p>We believe that every person deserves to be remembered with dignity and beauty, regardless of their family's financial circumstances. Many families struggle with the cost of maintaining and decorating gravesites with flowers and memorial arrangements.</p>
+      <p>Through your generous donations, we provide fresh, beautiful flower arrangements to gravesites of passed family members whose loved ones cannot afford these meaningful tributes. Your contribution ensures that no memorial goes unadorned, and no memory goes unhonored.</p>
+    </div>
+    <div class="mission-image">
+      <img src="donate.jpg" alt="Hands embracing a heart with flowers">
+    </div>
+  </div>
+
+  <!-- ══ Where Donation Goes ══ -->
+  <div class="where-section">
+    <div class="where-inner">
+      <h2>Where Your Donation Goes</h2>
+      <p class="where-sub">Your donation brings comfort to families and honors the memory of those who have passed</p>
+      <div class="where-grid">
+        <div class="where-item">
+          <div class="where-icon">🌸</div>
+          <div>
+            <h3>Fresh Flowers</h3>
+            <p>We source beautiful, seasonal flowers and create thoughtful arrangements for each gravesite.</p>
+          </div>
+        </div>
+        <div class="where-item">
+          <div class="where-icon">📍</div>
+          <div>
+            <h3>Dignified Placement</h3>
+            <p>Our team personally delivers and arranges flowers at each memorial site with care and respect.</p>
+          </div>
+        </div>
+        <div class="where-item">
+          <div class="where-icon">🔄</div>
+          <div>
+            <h3>Ongoing Care</h3>
+            <p>Subscription donations help gravesites remain beautiful throughout the year, especially on special occasions.</p>
+          </div>
+        </div>
+        <div class="where-item">
+          <div class="where-icon">💜</div>
+          <div>
+            <h3>Family Support</h3>
+            <p>We coordinate directly with families to understand their wishes and honor their loved ones meaningfully.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ══ Donation Form ══ -->
+  <div class="form-section">
+    <div class="form-inner">
+      <h2>Make a Difference Today</h2>
+      <p class="form-sub">Your donation brings comfort to families and honors the memory of those who have passed.</p>
+
+      <div class="form-card">
+        <label class="section-label">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+          Make a Donation
+        </label>
+        <p style="font-size:13px; color:#666; margin-bottom:16px;">Your contribution helps families honor their loved ones with beautiful flowers.</p>
+
+        <div class="form-group">
+          <label>Select Donation Amount</label>
+          <div class="amount-pills">
+            <button class="pill" onclick="selectPill(this, 25)">$25</button>
+            <button class="pill" onclick="selectPill(this, 50)">$50</button>
+            <button class="pill selected" onclick="selectPill(this, 100)">$100</button>
+            <button class="pill" onclick="selectPill(this, 250)">$250</button>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="custom-amount">Or Enter Custom Amount</label>
+          <input type="number" id="custom-amount" placeholder="$ 100" min="1" oninput="onCustomAmount(this)">
+        </div>
+
+        <div class="form-group">
+          <label for="donor-name">Full Name <span class="req">*</span></label>
+          <input type="text" id="donor-name" placeholder="Jane Smith">
+        </div>
+
+        <div class="form-group">
+          <label for="donor-email">Email Address <span class="req">*</span></label>
+          <input type="email" id="donor-email" placeholder="jane@email.com">
+        </div>
+
+        <div class="form-group">
+          <label for="donor-message">Message (Optional)</label>
+          <textarea id="donor-message" rows="3" placeholder="Share why you're donating or dedicate this donation in memory of someone special..."></textarea>
+        </div>
+
+        <button class="btn-donate" id="donateBtn" onclick="goToCheckout()">Donate $100</button>
+      </div>
+
+      <p class="form-footer-note">All donations are tax-deductible. We are committed to transparency and ensuring every contribution directly supports families in need.</p>
+    </div>
+  </div>
+
+  <script>
+    let selectedAmount = 100;
+
+    function selectPill(el, amount) {
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
+      el.classList.add('selected');
+      selectedAmount = amount;
+      document.getElementById('custom-amount').value = '';
+      document.getElementById('donateBtn').textContent = 'Donate $' + amount;
+    }
+
+    function onCustomAmount(el) {
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
+      const val = parseFloat(el.value);
+      if (!isNaN(val) && val > 0) {
+        selectedAmount = val;
+        document.getElementById('donateBtn').textContent = 'Donate $' + val.toFixed(2);
+      } else {
+        selectedAmount = 0;
+        document.getElementById('donateBtn').textContent = 'Donate';
+      }
+    }
+
+    function goToCheckout() {
+      const name = document.getElementById('donor-name').value.trim();
+      const email = document.getElementById('donor-email').value.trim();
+
+      if (!name) {
+        alert('Please enter your full name.');
+        document.getElementById('donor-name').focus();
+        return;
+      }
+      if (!email) {
+        alert('Please enter your email address.');
+        document.getElementById('donor-email').focus();
+        return;
+      }
+      if (!selectedAmount || selectedAmount <= 0) {
+        alert('Please select or enter a donation amount.');
+        return;
+      }
+
+      const params = new URLSearchParams({
+        planId: 'donation',
+        planName: 'Donation',
+        planPrice: '$' + selectedAmount.toFixed(2),
+        amount: selectedAmount.toFixed(2)
+      });
+      window.location.href = 'checkout.html?' + params.toString();
+    }
+  </script>
+
+</body>
+</html>

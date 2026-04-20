@@ -1,0 +1,939 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GardenOfEchos — My Profile</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #f4f5f7;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ══════════════════════════════
+       SHARED NAV (same as homepage)
+    ══════════════════════════════ */
+    .main-nav {
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      height: 96px;
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .logo { display: flex; align-items: center; margin-right: 36px; }
+    .logo img { height: 90px; width: auto; display: block; }
+    .main-nav-links { display: flex; align-items: center; gap: 4px; flex: 1; }
+    .main-nav-links a {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px; font-size: 13.5px; color: #333;
+      white-space: nowrap; border-radius: 4px; transition: background .15s;
+    }
+    .main-nav-links a:hover { background: #f5f5f5; }
+    .main-nav-links a svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .nav-donation {
+      background: #7c3aed !important; color: #fff !important;
+      border-radius: 5px !important; padding: 6px 16px !important; font-weight: 600 !important;
+    }
+    .nav-donation:hover { background: #6d28d9 !important; }
+    .cat-nav {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 28px; height: 44px; background: #fafafa;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .cat-nav a {
+      padding: 8px 18px; font-size: 13.5px; color: #444;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .cat-nav a:hover { color: #c0392b; }
+    .cat-nav a .arrow { font-size: 10px; margin-top: 1px; }
+    .cat-item { position: relative; }
+    .cat-item:hover .dropdown { display: block; }
+    .dropdown {
+      display: none; position: absolute; top: 100%; left: 0;
+      background: #fff; border: 1px solid #e0e0e0; min-width: 180px;
+      z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.1);
+    }
+    .dropdown a {
+      display: block; padding: 9px 16px; font-size: 13px;
+      color: #333; border-bottom: 1px solid #f0f0f0;
+    }
+    .dropdown a:hover { background: #f9f9f9; color: #c0392b; }
+
+    /* ══════════════════════════════
+       PAGE LAYOUT
+    ══════════════════════════════ */
+    .page-wrap {
+      max-width: 1100px;
+      margin: 36px auto 60px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 240px 1fr;
+      gap: 24px;
+      align-items: start;
+    }
+
+    /* ── Sidebar ── */
+    .sidebar {
+      background: #fff;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07);
+    }
+    .sidebar-avatar {
+      background: linear-gradient(145deg, #e0546a, #c0392b);
+      padding: 32px 20px 24px;
+      text-align: center;
+    }
+    .avatar-circle {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      background: rgba(255,255,255,.25);
+      border: 3px solid rgba(255,255,255,.6);
+      margin: 0 auto 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; color: #fff; font-weight: 700;
+    }
+    .sidebar-name { color: #fff; font-size: 15px; font-weight: 700; }
+    .sidebar-email { color: rgba(255,255,255,.75); font-size: 12px; margin-top: 3px; }
+    .sidebar-nav { list-style: none; padding: 8px 0; }
+    .sidebar-nav li a {
+      display: flex; align-items: center; gap: 10px;
+      padding: 11px 20px; font-size: 13.5px; color: #555;
+      transition: background .15s, color .15s; cursor: pointer;
+      border-left: 3px solid transparent;
+    }
+    .sidebar-nav li a:hover { background: #fef5f6; color: #c0392b; }
+    .sidebar-nav li a.active {
+      background: #fef5f6; color: #c0392b;
+      border-left-color: #c0392b; font-weight: 600;
+    }
+    .sidebar-nav li a svg { width: 16px; height: 16px; flex-shrink: 0; }
+    .sidebar-divider { height: 1px; background: #f0f0f0; margin: 6px 0; }
+    .sidebar-nav .logout a { color: #999; }
+    .sidebar-nav .logout a:hover { color: #c0392b; background: #fef5f6; }
+
+    /* ── Main content ── */
+    .content-panel {
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 1px 6px rgba(0,0,0,.07);
+      padding: 32px 36px;
+      min-height: 520px;
+    }
+    .tab-pane { display: none; }
+    .tab-pane.active { display: block; }
+
+    /* ── Section headings ── */
+    .pane-title {
+      font-size: 19px; font-weight: 700; color: #1a1a1a;
+      margin-bottom: 6px;
+    }
+    .pane-subtitle {
+      font-size: 13px; color: #888; margin-bottom: 28px;
+    }
+    .section-divider {
+      height: 1px; background: #f0f0f0; margin: 28px 0;
+    }
+
+    /* ── Forms ── */
+    .form-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px 24px;
+    }
+    .form-grid.single { grid-template-columns: 1fr; }
+    .form-group { display: flex; flex-direction: column; gap: 5px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      font-size: 12.5px; font-weight: 600; color: #555; text-transform: uppercase;
+      letter-spacing: .5px;
+    }
+    .form-group input,
+    .form-group select,
+    .form-group textarea {
+      padding: 10px 12px;
+      border: 1px solid #e0e0e0;
+      border-radius: 6px;
+      font-size: 13.5px;
+      color: #333;
+      background: #fff;
+      transition: border-color .15s;
+      outline: none;
+      font-family: inherit;
+    }
+    .form-group input:focus,
+    .form-group select:focus,
+    .form-group textarea:focus { border-color: #e0546a; }
+    .form-group input::placeholder,
+    .form-group textarea::placeholder { color: #bbb; }
+    .form-group textarea { resize: vertical; min-height: 80px; }
+
+    /* ── Avatar upload row ── */
+    .avatar-upload-row {
+      display: flex; align-items: center; gap: 18px; margin-bottom: 28px;
+    }
+    .avatar-preview {
+      width: 72px; height: 72px; border-radius: 50%;
+      background: linear-gradient(145deg,#e0546a,#c0392b);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; color: #fff; font-weight: 700; flex-shrink: 0;
+    }
+    .avatar-upload-btn {
+      display: inline-block; padding: 8px 16px;
+      border: 1px solid #ddd; border-radius: 6px;
+      font-size: 13px; color: #555; cursor: pointer;
+      transition: background .15s;
+    }
+    .avatar-upload-btn:hover { background: #f5f5f5; }
+
+    /* ── Buttons ── */
+    .btn-save {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 24px; padding: 11px 28px;
+      background: #e0546a; color: #fff;
+      border: none; border-radius: 6px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      transition: background .18s;
+    }
+    .btn-save:hover { background: #c0392b; }
+    .btn-save-outline {
+      display: inline-flex; align-items: center; gap: 6px;
+      margin-top: 24px; padding: 11px 28px;
+      background: #fff; color: #e0546a;
+      border: 1.5px solid #e0546a; border-radius: 6px;
+      font-size: 14px; font-weight: 700; cursor: pointer;
+      margin-left: 10px; transition: background .18s, color .18s;
+    }
+    .btn-save-outline:hover { background: #fef5f6; }
+
+    /* ── Card display (payment/address cards) ── */
+    .saved-cards {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+      margin-bottom: 28px;
+    }
+    .saved-card {
+      border: 1px solid #e8e8e8; border-radius: 8px;
+      padding: 16px 18px; position: relative;
+      transition: box-shadow .15s;
+    }
+    .saved-card:hover { box-shadow: 0 2px 10px rgba(0,0,0,.08); }
+    .saved-card.selected { border-color: #e0546a; }
+    .saved-card-label {
+      font-size: 11px; font-weight: 700; color: #888;
+      text-transform: uppercase; letter-spacing: .6px; margin-bottom: 6px;
+    }
+    .saved-card-value { font-size: 14px; color: #222; font-weight: 500; }
+    .saved-card-sub { font-size: 12px; color: #aaa; margin-top: 2px; }
+    .card-badge {
+      position: absolute; top: 12px; right: 12px;
+      background: #e0546a; color: #fff;
+      font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 20px;
+    }
+    .card-actions { display: flex; gap: 10px; margin-top: 10px; }
+    .card-action-btn {
+      font-size: 12px; color: #888; cursor: pointer; border: none; background: none;
+      padding: 0; font-family: inherit;
+    }
+    .card-action-btn:hover { color: #c0392b; }
+
+    /* ── Add new card toggle ── */
+    .add-new-toggle {
+      display: inline-flex; align-items: center; gap: 6px;
+      font-size: 13.5px; color: #e0546a; cursor: pointer;
+      margin-bottom: 24px; font-weight: 600;
+    }
+    .add-new-toggle:hover { text-decoration: underline; }
+    .add-form { display: none; }
+    .add-form.open { display: block; }
+
+    /* ── Blank state ── */
+    .blank-state {
+      text-align: center; padding: 60px 20px;
+    }
+    .blank-icon {
+      font-size: 48px; margin-bottom: 16px; opacity: .4;
+    }
+    .blank-state h3 { font-size: 16px; color: #aaa; font-weight: 500; }
+    .blank-state p { font-size: 13px; color: #bbb; margin-top: 6px; }
+
+    /* ── Loved one card ── */
+    .loved-one-card {
+      border: 1px dashed #e0546a; border-radius: 8px;
+      padding: 18px 20px; margin-bottom: 16px; background: #fef9f9;
+    }
+    .loved-one-card h4 { font-size: 14px; font-weight: 700; color: #c0392b; margin-bottom: 2px; }
+    .loved-one-card p { font-size: 12.5px; color: #888; }
+
+    /* ── Responsive ── */
+    @media (max-width: 860px) {
+      .page-wrap { grid-template-columns: 1fr; }
+      .saved-cards { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 600px) {
+      .form-grid { grid-template-columns: 1fr; }
+      .content-panel { padding: 22px 18px; }
+      .main-nav { padding: 0 14px; height: 72px; }
+      .logo img { height: 62px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ Main Nav ══ -->
+  <nav class="main-nav">
+    <a href="homepage.html" class="logo"><img src="logo.png" alt="Garden of Echoes"></a>
+    <div class="main-nav-links">
+      <a href="subscriptions.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>The Garden Program</span>
+      </a>
+      <a href="profile.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>My Account</span>
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Cart</span>
+      </a>
+      <a href="contact.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Contact Us</span>
+      </a>
+      <a href="donation.html" class="nav-donation"><span>Donation</span></a>
+    </div>
+  </nav>
+
+  <!-- ══ Category Nav ══ -->
+  <nav class="cat-nav">
+    <div class="cat-item">
+      <a href="#">Anniversary <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Anniversary Flowers</a>
+        <a href="#">Anniversary Wreaths</a>
+        <a href="#">Anniversary Baskets</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Occasions <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Birthday</a>
+        <a href="#">Wedding</a>
+        <a href="#">Graduation</a>
+        <a href="#">Get Well Soon</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Sympathy <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Funeral Flowers</a>
+        <a href="#">Sympathy Wreaths</a>
+        <a href="#">Memorial Arrangements</a>
+        <a href="#">Casket Flowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Flowers <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Roses</a>
+        <a href="#">Lilies</a>
+        <a href="#">Orchids</a>
+        <a href="#">Tulips</a>
+        <a href="#">Sunflowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Other Items <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Vases</a>
+        <a href="#">Gift Baskets</a>
+        <a href="#">Candles</a>
+        <a href="#">Cards</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ Page Content ══ -->
+  <div class="page-wrap">
+
+    <!-- ── Sidebar ── -->
+    <aside class="sidebar">
+      <div class="sidebar-avatar">
+        <div class="avatar-circle" id="sidebarInitial">J</div>
+        <div class="sidebar-name" id="sidebarName">Jane Smith</div>
+        <div class="sidebar-email" id="sidebarEmail">jane@email.com</div>
+      </div>
+      <ul class="sidebar-nav">
+        <li>
+          <a href="#" class="active" onclick="switchTab('edit-profile', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+            Edit Profile
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="switchTab('loved-one', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/></svg>
+            Passed Loved One
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="switchTab('payment', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="1" y="4" width="22" height="16" rx="2" ry="2"/><line x1="1" y1="10" x2="23" y2="10"/></svg>
+            Saved Payment
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="switchTab('shipping', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+            Saved Shipping Address
+          </a>
+        </li>
+        <div class="sidebar-divider"></div>
+        <li>
+          <a href="#" onclick="switchTab('orders', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+            Order History
+          </a>
+        </li>
+        <li>
+          <a href="#" onclick="switchTab('subscriptions', this)">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 12h-4l-3 9L9 3l-3 9H2"/></svg>
+            Subscriptions
+          </a>
+        </li>
+        <div class="sidebar-divider"></div>
+        <li class="logout">
+          <a href="homepage.html">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+            Sign Out
+          </a>
+        </li>
+      </ul>
+    </aside>
+
+    <!-- ── Content Panel ── -->
+    <main class="content-panel">
+
+      <!-- ─ Edit Profile ─ -->
+      <div class="tab-pane active" id="pane-edit-profile">
+        <h2 class="pane-title">Edit Profile</h2>
+        <p class="pane-subtitle">Update your personal information and account details.</p>
+
+        <div class="avatar-upload-row">
+          <div class="avatar-preview" id="avatarPreview">J</div>
+          <div>
+            <label class="avatar-upload-btn" for="avatarInput">Upload New Photo</label>
+            <input type="file" id="avatarInput" accept="image/*" style="display:none" onchange="previewAvatar(this)">
+            <p style="font-size:12px;color:#bbb;margin-top:5px;">JPG, PNG or GIF · Max 2MB</p>
+          </div>
+        </div>
+
+        <form onsubmit="saveProfile(event)">
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="p-first">First Name</label>
+              <input type="text" id="p-first" placeholder="Jane">
+            </div>
+            <div class="form-group">
+              <label for="p-last">Last Name</label>
+              <input type="text" id="p-last" placeholder="Smith">
+            </div>
+            <div class="form-group">
+              <label for="p-email">Email Address</label>
+              <input type="email" id="p-email" placeholder="jane@email.com">
+            </div>
+            <div class="form-group">
+              <label for="p-phone">Phone Number</label>
+              <input type="tel" id="p-phone" placeholder="(555) 000-0000">
+            </div>
+            <div class="form-group">
+              <label for="p-dob">Date of Birth</label>
+              <input type="date" id="p-dob">
+            </div>
+            <div class="form-group">
+              <label for="p-gender">Gender</label>
+              <select id="p-gender">
+                <option value="">Prefer not to say</option>
+                <option>Female</option>
+                <option>Male</option>
+                <option>Non-binary</option>
+                <option>Other</option>
+              </select>
+            </div>
+            <div class="form-group full">
+              <label for="p-bio">Bio</label>
+              <textarea id="p-bio" placeholder="Tell us a little about yourself..."></textarea>
+            </div>
+          </div>
+          <div class="section-divider"></div>
+          <h3 style="font-size:14px;font-weight:700;color:#333;margin-bottom:18px;">Change Password</h3>
+          <div class="form-grid">
+            <div class="form-group">
+              <label for="p-current-pass">Current Password</label>
+              <input type="password" id="p-current-pass" placeholder="••••••••">
+            </div>
+            <div class="form-group"></div>
+            <div class="form-group">
+              <label for="p-new-pass">New Password</label>
+              <input type="password" id="p-new-pass" placeholder="••••••••">
+            </div>
+            <div class="form-group">
+              <label for="p-confirm-pass">Confirm New Password</label>
+              <input type="password" id="p-confirm-pass" placeholder="••••••••">
+            </div>
+          </div>
+          <button type="submit" class="btn-save">Save Changes</button>
+        </form>
+      </div>
+
+      <!-- ─ Passed Loved One ─ -->
+      <div class="tab-pane" id="pane-loved-one">
+        <h2 class="pane-title">Passed Loved One</h2>
+        <p class="pane-subtitle">Save information about your loved one to personalize memorial arrangements.</p>
+
+        <div id="lovedOneList"></div>
+
+        <div class="add-new-toggle" onclick="toggleAddLovedOne()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Add Loved One
+        </div>
+
+        <div class="add-form" id="addLovedOneForm">
+          <form onsubmit="saveLovedOne(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="lo-first">First Name</label>
+                <input type="text" id="lo-first" placeholder="Margaret" required>
+              </div>
+              <div class="form-group">
+                <label for="lo-last">Last Name</label>
+                <input type="text" id="lo-last" placeholder="Smith" required>
+              </div>
+              <div class="form-group">
+                <label for="lo-bday">Date of Birth</label>
+                <input type="date" id="lo-bday">
+              </div>
+              <div class="form-group">
+                <label for="lo-passed">Date Passed Away</label>
+                <input type="date" id="lo-passed">
+              </div>
+              <div class="form-group full">
+                <label for="lo-cemetery">Cemetery / Resting Place</label>
+                <input type="text" id="lo-cemetery" placeholder="e.g. Greenwood Memorial Park, Los Angeles, CA">
+              </div>
+              <div class="form-group full">
+                <label for="lo-notes">Notes</label>
+                <textarea id="lo-notes" placeholder="A note in their memory…"></textarea>
+              </div>
+            </div>
+            <button type="submit" class="btn-save">Save Loved One</button>
+            <button type="button" class="btn-save-outline" onclick="toggleAddLovedOne()">Cancel</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ─ Saved Payment ─ -->
+      <div class="tab-pane" id="pane-payment">
+        <h2 class="pane-title">Saved Payment Methods</h2>
+        <p class="pane-subtitle">Manage your saved credit and debit cards.</p>
+
+        <div class="saved-cards" id="paymentCardsList">
+          <!-- example default card -->
+          <div class="saved-card selected">
+            <div class="card-badge">Default</div>
+            <div class="saved-card-label">Visa</div>
+            <div class="saved-card-value">•••• •••• •••• 4242</div>
+            <div class="saved-card-sub">Expires 08 / 27</div>
+            <div class="card-actions">
+              <button class="card-action-btn">Edit</button>
+              <button class="card-action-btn">Remove</button>
+              <button class="card-action-btn">Set as Default</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="add-new-toggle" onclick="toggleAddPayment()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Add New Card
+        </div>
+
+        <div class="add-form" id="addPaymentForm">
+          <form onsubmit="savePayment(event)">
+            <div class="form-grid">
+              <div class="form-group full">
+                <label for="pay-name">Name on Card</label>
+                <input type="text" id="pay-name" placeholder="Jane Smith" required>
+              </div>
+              <div class="form-group full">
+                <label for="pay-number">Card Number</label>
+                <input type="text" id="pay-number" placeholder="1234 5678 9012 3456" maxlength="19" required>
+              </div>
+              <div class="form-group">
+                <label for="pay-expiry">Expiry Date</label>
+                <input type="text" id="pay-expiry" placeholder="MM / YY" maxlength="7" required>
+              </div>
+              <div class="form-group">
+                <label for="pay-cvv">CVV</label>
+                <input type="text" id="pay-cvv" placeholder="•••" maxlength="4" required>
+              </div>
+              <div class="form-group full">
+                <label for="pay-zip">Billing ZIP Code</label>
+                <input type="text" id="pay-zip" placeholder="90210">
+              </div>
+            </div>
+            <button type="submit" class="btn-save">Save Card</button>
+            <button type="button" class="btn-save-outline" onclick="toggleAddPayment()">Cancel</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ─ Saved Shipping Address ─ -->
+      <div class="tab-pane" id="pane-shipping">
+        <h2 class="pane-title">Saved Shipping Addresses</h2>
+        <p class="pane-subtitle">Manage your delivery addresses for faster checkout.</p>
+
+        <div class="saved-cards" id="shippingAddressList">
+          <div class="saved-card selected">
+            <div class="card-badge">Default</div>
+            <div class="saved-card-label">Home</div>
+            <div class="saved-card-value">Jane Smith</div>
+            <div class="saved-card-sub">123 Garden Lane, Los Angeles, CA 90001</div>
+            <div class="card-actions">
+              <button class="card-action-btn">Edit</button>
+              <button class="card-action-btn">Remove</button>
+              <button class="card-action-btn">Set as Default</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="add-new-toggle" onclick="toggleAddShipping()">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+          Add New Address
+        </div>
+
+        <div class="add-form" id="addShippingForm">
+          <form onsubmit="saveShipping(event)">
+            <div class="form-grid">
+              <div class="form-group">
+                <label for="sh-first">First Name</label>
+                <input type="text" id="sh-first" placeholder="Jane" required>
+              </div>
+              <div class="form-group">
+                <label for="sh-last">Last Name</label>
+                <input type="text" id="sh-last" placeholder="Smith" required>
+              </div>
+              <div class="form-group full">
+                <label for="sh-addr1">Address Line 1</label>
+                <input type="text" id="sh-addr1" placeholder="123 Garden Lane" required>
+              </div>
+              <div class="form-group full">
+                <label for="sh-addr2">Address Line 2 (optional)</label>
+                <input type="text" id="sh-addr2" placeholder="Apt, Suite, Unit…">
+              </div>
+              <div class="form-group">
+                <label for="sh-city">City</label>
+                <input type="text" id="sh-city" placeholder="Los Angeles" required>
+              </div>
+              <div class="form-group">
+                <label for="sh-state">State</label>
+                <input type="text" id="sh-state" placeholder="CA" required>
+              </div>
+              <div class="form-group">
+                <label for="sh-zip">ZIP Code</label>
+                <input type="text" id="sh-zip" placeholder="90001" required>
+              </div>
+              <div class="form-group">
+                <label for="sh-country">Country</label>
+                <select id="sh-country">
+                  <option>United States</option>
+                  <option>Canada</option>
+                  <option>Mexico</option>
+                  <option>United Kingdom</option>
+                  <option>Other</option>
+                </select>
+              </div>
+              <div class="form-group full">
+                <label for="sh-phone">Phone Number</label>
+                <input type="tel" id="sh-phone" placeholder="(555) 000-0000">
+              </div>
+            </div>
+            <button type="submit" class="btn-save">Save Address</button>
+            <button type="button" class="btn-save-outline" onclick="toggleAddShipping()">Cancel</button>
+          </form>
+        </div>
+      </div>
+
+      <!-- ─ Order History ─ -->
+      <div class="tab-pane" id="pane-orders">
+        <h2 class="pane-title">Order History</h2>
+        <p class="pane-subtitle">View all your past orders and their status.</p>
+        <div class="blank-state">
+          <div class="blank-icon">📦</div>
+          <h3>No orders yet</h3>
+          <p>When you place an order it will appear here.</p>
+        </div>
+      </div>
+
+      <!-- ─ Subscriptions ─ -->
+      <div class="tab-pane" id="pane-subscriptions">
+        <h2 class="pane-title">Subscriptions</h2>
+        <p class="pane-subtitle">Manage your recurring flower delivery subscriptions.</p>
+        <div class="blank-state">
+          <div class="blank-icon">🌸</div>
+          <h3>No active subscriptions</h3>
+          <p>Subscribe to a plan and manage it here.</p>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <script>
+    /* ── Tab switching ── */
+    function switchTab(id, el) {
+      event.preventDefault();
+      document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+      document.querySelectorAll('.sidebar-nav a').forEach(a => a.classList.remove('active'));
+      document.getElementById('pane-' + id).classList.add('active');
+      el.classList.add('active');
+    }
+
+    /* ── Avatar preview ── */
+    function previewAvatar(input) {
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
+        reader.onload = e => {
+          const preview = document.getElementById('avatarPreview');
+          preview.style.background = `url(${e.target.result}) center/cover`;
+          preview.textContent = '';
+        };
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
+
+    /* ── Save Profile ── */
+    /*function saveProfile(e) {
+      e.preventDefault();
+      const first = document.getElementById('p-first').value || 'User';
+      const last  = document.getElementById('p-last').value || '';
+      const email = document.getElementById('p-email').value || '';
+      document.getElementById('sidebarName').textContent    = (first + ' ' + last).trim();
+      document.getElementById('sidebarEmail').textContent   = email;
+      document.getElementById('sidebarInitial').textContent = first.charAt(0).toUpperCase();
+      document.getElementById('avatarPreview').textContent  = first.charAt(0).toUpperCase();
+      showToast('Profile saved!');
+    }
+      *//*
+     async function saveProfile(e) {
+  e.preventDefault();
+
+  const userData = {
+    firstName: document.getElementById('p-first').value,
+    lastName: document.getElementById('p-last').value,
+    email: document.getElementById('p-email').value,
+    phone: document.getElementById('p-phone').value,
+    dob: document.getElementById('p-dob').value,
+    gender: document.getElementById('p-gender').value,
+    bio: document.getElementById('p-bio').value
+  };
+
+  try {
+    const response = await fetch('/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(userData)
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      const first = userData.firstName || 'User';
+      const last = userData.lastName || '';
+      const email = userData.email || '';
+
+      document.getElementById('sidebarName').textContent = (first + ' ' + last).trim();
+      document.getElementById('sidebarEmail').textContent = email;
+      document.getElementById('sidebarInitial').textContent = first.charAt(0).toUpperCase();
+      document.getElementById('avatarPreview').textContent = first.charAt(0).toUpperCase();
+
+      showToast('Profile saved AND stored in database!');
+      console.log(data);
+
+    } else {
+      showToast('Error saving to database');
+      console.error(data);
+    }
+
+  } catch (error) {
+    console.error(error);
+    showToast('Something went wrong');
+  }
+}*/
+async function saveProfile(e) {
+  e.preventDefault();
+
+  const data = {
+    firstName: document.getElementById('p-first').value,
+    lastName: document.getElementById('p-last').value,
+    email: document.getElementById('p-email').value,
+    phone: document.getElementById('p-phone').value,
+    dob: document.getElementById('p-dob').value,
+    gender: document.getElementById('p-gender').value,
+    bio: document.getElementById('p-bio').value
+  };
+
+  try {
+    const res = await fetch('/users', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+    console.log(result);
+
+    showToast('Profile saved!');
+  } catch (err) {
+    console.error(err);
+    alert('Error saving profile');
+  }
+}
+
+    /* ── Loved One ── */
+    function toggleAddLovedOne() {
+      const f = document.getElementById('addLovedOneForm');
+      f.classList.toggle('open');
+    }
+    function saveLovedOne(e) {
+      e.preventDefault();
+      const first   = document.getElementById('lo-first').value;
+      const last    = document.getElementById('lo-last').value;
+      const bday    = document.getElementById('lo-bday').value;
+      const passed  = document.getElementById('lo-passed').value;
+      const list    = document.getElementById('lovedOneList');
+      const card    = document.createElement('div');
+      card.className = 'loved-one-card';
+      card.innerHTML = `
+        <h4>${first} ${last}</h4>
+        <p>${bday ? 'Born: ' + bday : ''} ${passed ? '· Passed: ' + passed : ''}</p>
+      `;
+      list.appendChild(card);
+      e.target.reset();
+      document.getElementById('addLovedOneForm').classList.remove('open');
+      showToast('Loved one saved.');
+    }
+
+    /* ── Payment ── */
+    function toggleAddPayment() {
+      document.getElementById('addPaymentForm').classList.toggle('open');
+    }
+    function savePayment(e) {
+      e.preventDefault();
+      const num  = document.getElementById('pay-number').value;
+      const last4 = num.replace(/\s/g,'').slice(-4);
+      const exp  = document.getElementById('pay-expiry').value;
+      const list = document.getElementById('paymentCardsList');
+      const card = document.createElement('div');
+      card.className = 'saved-card';
+      card.innerHTML = `
+        <div class="saved-card-label">Card</div>
+        <div class="saved-card-value">•••• •••• •••• ${last4}</div>
+        <div class="saved-card-sub">Expires ${exp}</div>
+        <div class="card-actions">
+          <button class="card-action-btn">Edit</button>
+          <button class="card-action-btn">Remove</button>
+          <button class="card-action-btn">Set as Default</button>
+        </div>
+      `;
+      list.appendChild(card);
+      e.target.reset();
+      document.getElementById('addPaymentForm').classList.remove('open');
+      showToast('Card saved!');
+    }
+
+    /* ── Shipping ── */
+    function toggleAddShipping() {
+      document.getElementById('addShippingForm').classList.toggle('open');
+    }
+    function saveShipping(e) {
+      e.preventDefault();
+      const first = document.getElementById('sh-first').value;
+      const last  = document.getElementById('sh-last').value;
+      const addr1 = document.getElementById('sh-addr1').value;
+      const city  = document.getElementById('sh-city').value;
+      const state = document.getElementById('sh-state').value;
+      const zip   = document.getElementById('sh-zip').value;
+      const list  = document.getElementById('shippingAddressList');
+      const card  = document.createElement('div');
+      card.className = 'saved-card';
+      card.innerHTML = `
+        <div class="saved-card-label">Address</div>
+        <div class="saved-card-value">${first} ${last}</div>
+        <div class="saved-card-sub">${addr1}, ${city}, ${state} ${zip}</div>
+        <div class="card-actions">
+          <button class="card-action-btn">Edit</button>
+          <button class="card-action-btn">Remove</button>
+          <button class="card-action-btn">Set as Default</button>
+        </div>
+      `;
+      list.appendChild(card);
+      e.target.reset();
+      document.getElementById('addShippingForm').classList.remove('open');
+      showToast('Address saved!');
+    }
+
+    /* ── Toast notification ── */
+    function showToast(msg) {
+      let t = document.getElementById('toast');
+      if (!t) {
+        t = document.createElement('div');
+        t.id = 'toast';
+        t.style.cssText = `
+          position:fixed;bottom:28px;right:28px;background:#1a1a1a;color:#fff;
+          padding:12px 22px;border-radius:8px;font-size:13.5px;font-weight:600;
+          box-shadow:0 4px 18px rgba(0,0,0,.25);z-index:9999;
+          transition:opacity .3s;
+        `;
+        document.body.appendChild(t);
+      }
+      t.textContent = msg;
+      t.style.opacity = '1';
+      clearTimeout(t._timer);
+      t._timer = setTimeout(() => t.style.opacity = '0', 2800);
+    }
+  
+  window.addEventListener('DOMContentLoaded', () => {
+    const fullName = localStorage.getItem('fullName');
+    const email = localStorage.getItem('email');
+
+    if (!fullName) return;
+
+    const nameParts = fullName.trim().split(' ');
+    const firstName = nameParts[0] || '';
+    const lastName = nameParts.slice(1).join(' ') || '';
+
+    const sidebarName = document.getElementById('sidebarName');
+    const sidebarEmail = document.getElementById('sidebarEmail');
+    const sidebarInitial = document.getElementById('sidebarInitial');
+    const avatarPreview = document.getElementById('avatarPreview');
+
+    const firstInput = document.getElementById('p-first');
+    const lastInput = document.getElementById('p-last');
+    const emailInput = document.getElementById('p-email');
+
+    if (sidebarName) sidebarName.textContent = fullName;
+    if (sidebarEmail) sidebarEmail.textContent = email || '';
+    if (sidebarInitial) sidebarInitial.textContent = firstName.charAt(0).toUpperCase();
+    if (avatarPreview) avatarPreview.textContent = firstName.charAt(0).toUpperCase();
+
+    if (firstInput) firstInput.value = firstName;
+    if (lastInput) lastInput.value = lastName;
+    if (emailInput) emailInput.value = email || '';
+  });
+</script>
+</body>
+</html>

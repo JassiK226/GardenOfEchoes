@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GardenOfEchos — Checkout</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #f4f5f7;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ══ Nav ══ */
+    .main-nav {
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      height: 96px;
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .logo { display: flex; align-items: center; margin-right: 36px; }
+    .logo img { height: 90px; width: auto; display: block; }
+    .main-nav-links { display: flex; align-items: center; gap: 4px; flex: 1; }
+    .main-nav-links a {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px; font-size: 13.5px; color: #333;
+      white-space: nowrap; border-radius: 4px; transition: background .15s;
+    }
+    .main-nav-links a:hover { background: #f5f5f5; }
+    .main-nav-links a svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .nav-donation {
+      background: #7c3aed !important; color: #fff !important;
+      border-radius: 5px !important; padding: 6px 16px !important; font-weight: 600 !important;
+    }
+    .nav-donation:hover { background: #6d28d9 !important; }
+
+    /* ══ Category Nav ══ */
+    .cat-nav {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 28px; height: 44px; background: #fafafa;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .cat-nav a {
+      padding: 8px 18px; font-size: 13.5px; color: #444;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .cat-nav a:hover { color: #c0392b; }
+    .cat-nav a .arrow { font-size: 10px; margin-top: 1px; }
+    .cat-item { position: relative; }
+    .cat-item:hover .dropdown { display: block; }
+    .dropdown {
+      display: none; position: absolute; top: 100%; left: 0;
+      background: #fff; border: 1px solid #e0e0e0; min-width: 180px;
+      z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.1);
+    }
+    .dropdown a {
+      display: block; padding: 9px 16px; font-size: 13px;
+      color: #333; border-bottom: 1px solid #f0f0f0;
+    }
+    .dropdown a:hover { background: #f9f9f9; color: #c0392b; }
+
+    /* ══ Page ══ */
+    .checkout-wrap {
+      max-width: 900px;
+      margin: 40px auto 80px;
+      padding: 0 20px;
+      display: grid;
+      grid-template-columns: 1fr 360px;
+      gap: 28px;
+      align-items: start;
+    }
+
+    /* ── Breadcrumb ── */
+    .breadcrumb {
+      grid-column: 1 / -1;
+      font-size: 13px;
+      color: #888;
+      margin-bottom: 4px;
+    }
+    .breadcrumb a { color: #e0546a; }
+    .breadcrumb a:hover { text-decoration: underline; }
+
+    /* ── Section card ── */
+    .section-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 28px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.07);
+      margin-bottom: 20px;
+    }
+    .section-card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    /* ── Form ── */
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .form-group { margin-bottom: 14px; }
+    .form-group.full { grid-column: 1 / -1; }
+    .form-group label {
+      display: block;
+      font-size: 12px;
+      color: #666;
+      font-weight: 500;
+      margin-bottom: 5px;
+    }
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #ddd;
+      border-radius: 5px;
+      font-size: 13.5px;
+      color: #333;
+      background: #fff;
+      transition: border-color .15s;
+      outline: none;
+      font-family: inherit;
+    }
+    .form-group input:focus,
+    .form-group select:focus { border-color: #e0546a; }
+    .form-group input::placeholder { color: #bbb; }
+
+    /* ── Card icons row ── */
+    .card-icons {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    .card-icon {
+      width: 44px;
+      height: 28px;
+      border: 1px solid #e0e0e0;
+      border-radius: 4px;
+      background: #f9f9f9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 11px;
+      font-weight: 700;
+      color: #555;
+    }
+
+    /* ── Order summary (right column) ── */
+    .summary-card {
+      background: #fff;
+      border-radius: 10px;
+      padding: 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,.07);
+      position: sticky;
+      top: 20px;
+    }
+    .summary-card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid #f0f0f0;
+    }
+
+    .plan-summary-box {
+      border-radius: 8px;
+      padding: 16px;
+      margin-bottom: 20px;
+    }
+    .plan-summary-box.bloom   { background: #fff0f4; border: 1px solid #f9c3cf; }
+    .plan-summary-box.seasonal { background: #f5f0ff; border: 1px solid #d0bbfa; }
+    .plan-summary-box.annual  { background: #fff5ee; border: 1px solid #fbc8a0; }
+
+    .plan-summary-name {
+      font-size: 14px;
+      font-weight: 800;
+      margin-bottom: 3px;
+    }
+    .bloom   .plan-summary-name { color: #e0546a; }
+    .seasonal .plan-summary-name { color: #7c3aed; }
+    .annual  .plan-summary-name { color: #ea6c1a; }
+
+    .plan-summary-freq {
+      font-size: 12px;
+      color: #888;
+      margin-bottom: 12px;
+    }
+
+    .summary-line {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      color: #555;
+      margin-bottom: 8px;
+    }
+    .summary-line.total {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
+      border-top: 1px solid #eee;
+      padding-top: 12px;
+      margin-top: 4px;
+    }
+
+    .btn-pay {
+      display: block;
+      width: 100%;
+      padding: 14px;
+      border: none;
+      border-radius: 6px;
+      background: #e0546a;
+      color: #fff;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      letter-spacing: .3px;
+      transition: background .18s;
+      font-family: inherit;
+      margin-top: 20px;
+    }
+    .btn-pay:hover { background: #c94060; }
+
+    .secure-note {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      font-size: 12px;
+      color: #aaa;
+      margin-top: 12px;
+    }
+    .secure-note svg { width: 13px; height: 13px; }
+
+    /* ── Success overlay ── */
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 500;
+      align-items: center;
+      justify-content: center;
+    }
+    .success-overlay.show { display: flex; }
+    .success-box {
+      background: #fff;
+      border-radius: 14px;
+      padding: 48px 52px;
+      text-align: center;
+      max-width: 380px;
+      box-shadow: 0 12px 50px rgba(0,0,0,.2);
+    }
+    .success-icon { font-size: 52px; margin-bottom: 16px; }
+    .success-box h2 { font-size: 22px; color: #1a1a1a; margin-bottom: 10px; }
+    .success-box p { font-size: 14px; color: #666; margin-bottom: 28px; line-height: 1.6; }
+    .btn-success {
+      display: inline-block;
+      padding: 11px 32px;
+      background: #e0546a;
+      color: #fff;
+      border-radius: 6px;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      font-family: inherit;
+      transition: background .18s;
+    }
+    .btn-success:hover { background: #c94060; }
+
+    /* ══ Responsive ══ */
+    @media (max-width: 760px) {
+      .checkout-wrap { grid-template-columns: 1fr; }
+      .summary-card { position: static; }
+      .main-nav { padding: 0 14px; height: 72px; }
+      .logo img { height: 62px; }
+      .main-nav-links a span { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ Main Nav ══ -->
+  <nav class="main-nav">
+    <a href="homepage.html" class="logo"><img src="logo.png" alt="Garden of Echoes"></a>
+    <div class="main-nav-links">
+      <a href="subscriptions.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>The Garden Program</span>
+      </a>
+      <a href="login.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>My Account</span>
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Cart</span>
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Contact Us</span>
+      </a>
+      <a href="#" class="nav-donation"><span>Donation</span></a>
+    </div>
+  </nav>
+
+  <!-- ══ Category Nav ══ -->
+  <nav class="cat-nav">
+    <div class="cat-item">
+      <a href="#">Anniversary <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Anniversary Flowers</a>
+        <a href="#">Anniversary Wreaths</a>
+        <a href="#">Anniversary Baskets</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Occasions <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Birthday</a>
+        <a href="#">Wedding</a>
+        <a href="#">Graduation</a>
+        <a href="#">Get Well Soon</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Sympathy <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Funeral Flowers</a>
+        <a href="#">Sympathy Wreaths</a>
+        <a href="#">Memorial Arrangements</a>
+        <a href="#">Casket Flowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Flowers <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Roses</a>
+        <a href="#">Lilies</a>
+        <a href="#">Orchids</a>
+        <a href="#">Tulips</a>
+        <a href="#">Sunflowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Other Items <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Vases</a>
+        <a href="#">Gift Baskets</a>
+        <a href="#">Candles</a>
+        <a href="#">Cards</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ Checkout ══ -->
+  <div class="checkout-wrap">
+
+    <div class="breadcrumb">
+      <a href="subscriptions.html">&#8592; Back to Plans</a>
+    </div>
+
+    <!-- Left: forms -->
+    <div>
+
+      <!-- Contact -->
+      <div class="section-card">
+        <h2>Contact Information</h2>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first-name">First Name</label>
+            <input type="text" id="first-name" placeholder="Jane">
+          </div>
+          <div class="form-group">
+            <label for="last-name">Last Name</label>
+            <input type="text" id="last-name" placeholder="Smith">
+          </div>
+          <div class="form-group full">
+            <label for="email">Email Address</label>
+            <input type="email" id="email" placeholder="jane@email.com">
+          </div>
+          <div class="form-group full">
+            <label for="phone">Phone (optional)</label>
+            <input type="tel" id="phone" placeholder="(555) 000-0000">
+          </div>
+        </div>
+      </div>
+
+      <!-- Delivery -->
+      <div class="section-card">
+        <h2>Delivery Address</h2>
+        <div class="form-row">
+          <div class="form-group full">
+            <label for="address">Street Address</label>
+            <input type="text" id="address" placeholder="123 Garden Lane">
+          </div>
+          <div class="form-group full">
+            <label for="address2">Apartment, Suite, etc. (optional)</label>
+            <input type="text" id="address2" placeholder="Apt 4B">
+          </div>
+          <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" id="city" placeholder="Los Angeles">
+          </div>
+          <div class="form-group">
+            <label for="state">State</label>
+            <select id="state">
+              <option value="">Select state</option>
+              <option>California</option>
+              <option>New York</option>
+              <option>Texas</option>
+              <option>Florida</option>
+              <option>Illinois</option>
+              <option>Other</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label for="zip">ZIP Code</label>
+            <input type="text" id="zip" placeholder="90001">
+          </div>
+        </div>
+      </div>
+
+      <!-- Payment -->
+      <div class="section-card">
+        <h2>Payment Details</h2>
+        <div class="card-icons">
+          <div class="card-icon">VISA</div>
+          <div class="card-icon">MC</div>
+          <div class="card-icon">AMEX</div>
+          <div class="card-icon">DISC</div>
+        </div>
+        <div class="form-row">
+          <div class="form-group full">
+            <label for="card-number">Card Number</label>
+            <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19">
+          </div>
+          <div class="form-group full">
+            <label for="card-name">Name on Card</label>
+            <input type="text" id="card-name" placeholder="Jane Smith">
+          </div>
+          <div class="form-group">
+            <label for="card-exp">Expiration Date</label>
+            <input type="text" id="card-exp" placeholder="MM / YY" maxlength="7">
+          </div>
+          <div class="form-group">
+            <label for="card-cvv">CVV</label>
+            <input type="text" id="card-cvv" placeholder="123" maxlength="4">
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- Right: order summary -->
+    <div class="summary-card">
+      <h2>Order Summary</h2>
+      <div class="plan-summary-box" id="summaryBox">
+        <p class="plan-summary-name" id="summaryName">—</p>
+        <p class="plan-summary-freq" id="summaryFreq">—</p>
+        <div class="summary-line">
+          <span id="summaryLineLabel">Annual subscription</span>
+          <span id="summaryPrice">—</span>
+        </div>
+        <div class="summary-line">
+          <span>Free delivery</span>
+          <span>$0.00</span>
+        </div>
+        <div class="summary-line total">
+          <span>Total today</span>
+          <span id="summaryTotal">—</span>
+        </div>
+      </div>
+
+      <button class="btn-pay" onclick="placeOrder()">Complete Subscription</button>
+      <p class="secure-note">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <rect x="3" y="11" width="18" height="11" rx="2" ry="2"/>
+          <path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        Secure &amp; encrypted checkout
+      </p>
+    </div>
+
+  </div>
+
+  <!-- ══ Success Modal ══ -->
+  <div class="success-overlay" id="successOverlay">
+    <div class="success-box">
+      <div class="success-icon">🌸</div>
+      <h2>You're Subscribed!</h2>
+      <p>Thank you for joining the Garden Program.<br>Your first delivery confirmation will be sent to your email shortly.</p>
+      <button class="btn-success" onclick="window.location.href='profile.html'">Go to My Account</button>
+    </div>
+  </div>
+
+  <script>
+    // Read plan params from URL
+    const params = new URLSearchParams(window.location.search);
+    const planId    = params.get('planId')    || 'bloom';
+    const planName  = params.get('planName')  || 'Bloom Plan';
+    const planPrice = params.get('planPrice') || '$250/year';
+    const amount    = parseFloat(params.get('amount') || '250');
+
+    const freqMap = {
+      bloom:    '(Every 3 Months)',
+      seasonal: '(Every 6 Months)',
+      annual:   '(Once a Year)',
+      donation: '(One-Time Donation)',
+    };
+
+    document.getElementById('summaryBox').classList.add(planId === 'donation' ? 'seasonal' : planId);
+    document.getElementById('summaryName').textContent  = planName.toUpperCase();
+    document.getElementById('summaryFreq').textContent  = freqMap[planId] || '';
+    document.getElementById('summaryLineLabel').textContent = planId === 'donation' ? 'Donation amount' : 'Annual subscription';
+    document.getElementById('summaryPrice').textContent = '$' + amount.toFixed(2);
+    document.getElementById('summaryTotal').textContent = '$' + amount.toFixed(2);
+    if (planId === 'donation') {
+      document.querySelector('.btn-pay').textContent = 'Complete Donation';
+    }
+
+    // Card number formatting
+    document.getElementById('card-number').addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').substring(0, 16);
+      this.value = v.replace(/(.{4})/g, '$1 ').trim();
+    });
+
+    // Expiry formatting
+    document.getElementById('card-exp').addEventListener('input', function () {
+      let v = this.value.replace(/\D/g, '').substring(0, 4);
+      if (v.length >= 3) v = v.substring(0, 2) + ' / ' + v.substring(2);
+      this.value = v;
+    });
+
+    function placeOrder() {
+      document.getElementById('successOverlay').classList.add('show');
+    }
+  </script>
+
+</body>
+</html>
