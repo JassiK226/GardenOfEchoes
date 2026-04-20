@@ -132,7 +132,8 @@ app.post('/signup', async (req, res) => {
 app.get('/accounts', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM accounts ORDER BY id ASC');
-    res.json(result.rows);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting accounts' });
@@ -205,7 +206,8 @@ app.get('/loved-ones/:email', async (req, res) => {
       [email]
     );
 
-    res.json(result.rows);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting loved ones' });
@@ -276,7 +278,8 @@ app.get('/payment-methods/:email', async (req, res) => {
       [email]
     );
 
-    res.json(result.rows);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting payment methods' });
@@ -427,7 +430,8 @@ app.get('/shipping-addresses/:email', async (req, res) => {
       [email]
     );
 
-    res.json(result.rows);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting addresses' });
@@ -544,7 +548,8 @@ app.put('/shipping-addresses/:id', async (req, res) => {
 app.get('/all-loved-ones', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM loved_ones ORDER BY id ASC');
-    res.json(result.rows);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting loved ones' });
@@ -555,7 +560,8 @@ app.get('/all-loved-ones', async (req, res) => {
 app.get('/all-payment-methods', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM payment_methods ORDER BY id ASC');
-    res.json(result.rows);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting payment methods' });
@@ -566,7 +572,8 @@ app.get('/all-payment-methods', async (req, res) => {
 app.get('/all-shipping-addresses', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM shipping_addresses ORDER BY id ASC');
-    res.json(result.rows);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting shipping addresses' });
