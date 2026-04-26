@@ -168,7 +168,6 @@ app.post('/login', async (req, res) => {
 });
 
 // Save a loved one
-// Save a loved one
 app.post('/loved-ones', async (req, res) => {
   try {
     const {
@@ -211,7 +210,9 @@ app.get('/loved-one/:id', async (req, res) => {
       return res.status(404).json({ error: 'Loved one not found' });
     }
 
-    res.json(result.rows[0]);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2)); 
+
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting loved one' });
@@ -296,7 +297,9 @@ app.put('/loved-ones/:id', async (req, res) => {
       return res.status(404).json({ error: 'Loved one not found' });
     }
 
-    res.json(result.rows[0]);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
+    
   } catch (err) {
     console.error('UPDATE LOVED ONE ERROR:', err.message);
     res.status(500).json({ error: 'Error updating loved one' });
