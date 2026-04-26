@@ -582,6 +582,40 @@ app.get('/all-shipping-addresses', async (req, res) => {
   }
 });
 
+// Save contact form message
+app.post('/contact-messages', async (req, res) => {
+  try {
+    // Get contact form data from frontend
+    const { name, email, phone, message } = req.body;
+
+    // Insert message into contact_messages table
+    const newMessage = await pool.query(
+      `INSERT INTO contact_messages (name, email, phone, message)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
+      [name, email, phone, message]
+    );
+
+    res.json(newMessage.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error saving contact message' });
+  }
+});
+
+// Get all contact messages for testing/debugging
+app.get('/contact-messages', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM contact_messages ORDER BY id ASC');
+
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting contact messages' });
+  }
+});
+
 // Set server port from environment, or use 3000 if none is provided
 const PORT = process.env.PORT || 3000;
 
