@@ -1458,7 +1458,7 @@ async function removeLovedOne(id) {
 
 async function editLovedOne(id) {
   try {
-    const res = await fetch(`/loved-ones/${id}`);
+    const res = await fetch(`/loved-one/${id}`);
     const person = await res.json();
 
     
