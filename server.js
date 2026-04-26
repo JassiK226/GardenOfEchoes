@@ -238,11 +238,12 @@ app.delete('/loved-ones/:id', async (req, res) => {
 });
 
 // Update a loved one
+// Update a loved one
 app.put('/loved-ones/:id', async (req, res) => {
   try {
     const id = req.params.id;
 
-    const {
+    let {
       firstName,
       lastName,
       birthDate,
@@ -251,6 +252,10 @@ app.put('/loved-ones/:id', async (req, res) => {
       notes,
       icon
     } = req.body;
+
+    // Convert empty dates to null so PostgreSQL accepts them
+    birthDate = birthDate || null;
+    passedDate = passedDate || null;
 
     const result = await pool.query(
       `UPDATE loved_ones
@@ -272,7 +277,7 @@ app.put('/loved-ones/:id', async (req, res) => {
 
     res.json(result.rows[0]);
   } catch (err) {
-    console.error(err.message);
+    console.error('UPDATE LOVED ONE ERROR:', err.message);
     res.status(500).json({ error: 'Error updating loved one' });
   }
 });
