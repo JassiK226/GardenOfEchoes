@@ -531,7 +531,41 @@
               </div>
               <div class="form-group">
                 <label for="lo-icon">Memory Icon</label>
-                <input type="text" id="lo-icon" placeholder="🌸" maxlength="2">
+                <select id="lo-icon">
+                  
+                  <!-- People -->
+                  <option value="👶">👶 Baby / Child</option>
+                  <option value="🧒">🧒 Kid</option>
+                  <option value="👩">👩 Woman</option>
+                  <option value="👨">👨 Man</option>
+                  <option value="👵">👵 Elderly Woman</option>
+                  <option value="👴">👴 Elderly Man</option>
+
+                  <!-- Pets -->
+                  <option value="🐶">🐶 Dog</option>
+                  <option value="🐱">🐱 Cat</option>
+                  <option value="🐾">🐾 Pet (General)</option>
+                  <option value="🐦">🐦 Bird</option>
+
+                  <!-- Memorial / Emotional -->
+                  <option value="🕊️">🕊️ Peace / Dove</option>
+                  <option value="🕯️">🕯️ Candle</option>
+                  <option value="❤️">❤️ Love</option>
+                  <option value="💔">💔 Loss</option>
+                  <option value="💜">💜 Remembrance</option>
+
+                  <!-- Nature -->
+                  <option value="🌸">🌸 Flower</option>
+                  <option value="🌹">🌹 Rose</option>
+                  <option value="🌻">🌻 Sunflower</option>
+                  <option value="🌼">🌼 Daisy</option>
+                  <option value="🦋">🦋 Butterfly</option>
+                  <option value="🌈">🌈 Rainbow</option>
+
+                  <!-- Spiritual -->
+                  <option value="✝️">✝️ Cross</option>
+                  <option value="⭐">⭐ Star</option>
+                </select>
               </div>
             </div>
             <button type="submit" class="btn-save">Save Loved One</button>
@@ -826,7 +860,7 @@
       passedDate: document.getElementById('lo-passed').value,
       cemetery: document.getElementById('lo-cemetery').value,
       notes: document.getElementById('lo-notes').value,
-      icon: document.getElementById('lo-icon').value || '🌸'
+      icon: document.getElementById('lo-icon').value || '🕊️'
     };
 
     try {
@@ -1350,22 +1384,7 @@
       document.getElementById('p-email').value = email || '';
     }
 
-    try {
-      // Load loved ones saved for this user
-      const lovedRes = await fetch(`/loved-ones/${encodeURIComponent(email)}`);
-
-      if (lovedRes.ok) {
-        const lovedOnes = await lovedRes.json();
-
-        document.getElementById('lovedOneList').innerHTML = '';
-
-        lovedOnes.forEach(person => {
-          renderLovedOneCard(person);
-        });
-      }
-    } catch (err) {
-      console.error('Error loading loved ones:', err);
-    }
+    await loadLovedOnes();
 
     // Load payment methods
     await loadPaymentMethods();
@@ -1386,7 +1405,8 @@
 async function loadLovedOnes() {
   try {
     const email = localStorage.getItem('email');
-    const res = await await loadLovedOnes();
+
+    const res = await fetch(`/loved-ones/${encodeURIComponent(email)}`);
 
     if (res.ok) {
       const lovedOnes = await res.json();
@@ -1440,7 +1460,10 @@ async function editLovedOne(id) {
   const notes = prompt('Notes:');
   if (notes === null) return;
 
-  const icon = prompt('Memory icon/emoji:', '🌸');
+  const icon = prompt(
+    'Choose icon: 👶 🧒 👩 👨 👵 👴 🐶 🐱 🐾 🐦 🕊️ 🕯️ ❤️ 💔 💜 🌸 🌹 🌻 🌼 🦋 🌈 ✝️ ⭐',
+    '🌸'
+  );
   if (icon === null) return;
 
   try {
