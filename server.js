@@ -755,6 +755,93 @@ app.get('/all-subscriptions', async (req, res) => {
   }
 });
 
+// Save a subscription
+app.post('/subscriptions', async (req, res) => {
+  try {
+    const {
+      userEmail,
+      lovedOneId,
+      planId,
+      planName,
+      planPrice,
+      amount,
+      firstName,
+      lastName,
+      email,
+      phone,
+      address,
+      address2,
+      city,
+      state,
+      zipCode
+    } = req.body;
+
+    const newSubscription = await pool.query(
+      `INSERT INTO subscriptions
+      (user_email, loved_one_id, plan_id, plan_name, plan_price, amount,
+       first_name, last_name, email, phone, address, address2, city, state, zip_code)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12, $13, $14, $15)
+       RETURNING *`,
+      [
+        userEmail,
+        lovedOneId,
+        planId,
+        planName,
+        planPrice,
+        amount,
+        firstName,
+        lastName,
+        email,
+        phone,
+        address,
+        address2,
+        city,
+        state,
+        zipCode
+      ]
+    );
+
+    res.json(newSubscription.rows[0]);
+  } catch (err) {
+    console.error('SUBSCRIPTION ERROR:', err.message);
+    res.status(500).json({ error: 'Error saving subscription' });
+  }
+});
+
+// Get subscriptions for one user
+app.get('/subscriptions/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const result = await pool.query(
+      `SELECT subscriptions.*, loved_ones.first_name AS loved_first_name, loved_ones.last_name AS loved_last_name
+       FROM subscriptions
+       LEFT JOIN loved_ones ON subscriptions.loved_one_id = loved_ones.id
+       WHERE subscriptions.user_email = $1
+       ORDER BY subscriptions.created_at DESC`,
+      [email]
+    );
+
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting subscriptions' });
+  }
+});
+
+// Get all subscriptions for testing
+app.get('/all-subscriptions', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM subscriptions ORDER BY id ASC');
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting subscriptions' });
+  }
+});
+
 // Set server port from environment, or use 3000 if none is provided
 const PORT = process.env.PORT || 3000;
 
