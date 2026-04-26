@@ -706,6 +706,7 @@
   </div>
 
   <script>
+    let editingLovedOneId = null;
     /* ── Tab switching ── */
     function switchTab(id, el) {
       event.preventDefault();
@@ -846,47 +847,61 @@
 
   // Save loved one information
   async function saveLovedOne(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    // Get logged in user's email from localStorage
-    const userEmail = localStorage.getItem('email');
+  const userEmail = localStorage.getItem('email');
 
-    // Collect loved one form data
-    const data = {
-      userEmail: userEmail,
-      firstName: document.getElementById('lo-first').value,
-      lastName: document.getElementById('lo-last').value,
-      birthDate: document.getElementById('lo-bday').value,
-      passedDate: document.getElementById('lo-passed').value,
-      cemetery: document.getElementById('lo-cemetery').value,
-      notes: document.getElementById('lo-notes').value,
-      icon: document.getElementById('lo-icon').value || '🕊️'
-    };
+  const data = {
+    userEmail,
+    firstName: document.getElementById('lo-first').value,
+    lastName: document.getElementById('lo-last').value,
+    birthDate: document.getElementById('lo-bday').value || null,
+    passedDate: document.getElementById('lo-passed').value || null,
+    cemetery: document.getElementById('lo-cemetery').value,
+    notes: document.getElementById('lo-notes').value,
+    icon: document.getElementById('lo-icon').value || '🌸'
+  };
 
-    try {
-      // Send loved one data to backend
-      const res = await fetch('/loved-ones', {
+  try {
+    let res;
+
+    if (editingLovedOneId) {
+      // UPDATE
+      res = await fetch(`/loved-ones/${editingLovedOneId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    } else {
+      // CREATE
+      res = await fetch('/loved-ones', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        // Add new loved one card to the page
-        renderLovedOneCard(result);
-        e.target.reset();
-        document.getElementById('addLovedOneForm').classList.remove('open');
-        showToast('Loved one saved.');
-      } else {
-        showToast(result.error || 'Error saving loved one');
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('Something went wrong');
     }
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast(editingLovedOneId ? 'Updated!' : 'Saved!');
+
+      // Reset everything
+      editingLovedOneId = null;
+      e.target.reset();
+      document.getElementById('addLovedOneForm').classList.remove('open');
+
+      loadLovedOnes(); // reload list
+
+    } else {
+      showToast(result.error || 'Error saving');
+    }
+
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
   }
+}
 
   // Show loved one card on the page
  function renderLovedOneCard(person) {
@@ -1442,56 +1457,29 @@ async function removeLovedOne(id) {
 }
 
 async function editLovedOne(id) {
-  const firstName = prompt('First name:');
-  if (firstName === null) return;
-
-  const lastName = prompt('Last name:');
-  if (lastName === null) return;
-
-  const birthDate = prompt('Birth date (YYYY-MM-DD):');
-  if (birthDate === null) return;
-
-  const passedDate = prompt('Passed date (YYYY-MM-DD):');
-  if (passedDate === null) return;
-
-  const cemetery = prompt('Cemetery:');
-  if (cemetery === null) return;
-
-  const notes = prompt('Notes:');
-  if (notes === null) return;
-
-  const icon = prompt(
-    'Choose icon: 👶 🧒 👩 👨 👵 👴 🐶 🐱 🐾 🐦 🕊️ 🕯️ ❤️ 💔 💜 🌸 🌹 🌻 🌼 🦋 🌈 ✝️ ⭐',
-    '🌸'
-  );
-  if (icon === null) return;
-
   try {
-    const res = await fetch(`/loved-ones/${id}`, {
-      method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        firstName,
-        lastName,
-        birthDate,
-        passedDate,
-        cemetery,
-        notes,
-        icon
-      })
-    });
+    const res = await fetch(`/loved-ones/${id}`);
+    const person = await res.json();
 
-    const result = await res.json();
+    
+    // Open the form
+    document.getElementById('addLovedOneForm').classList.add('open');
 
-    if (res.ok) {
-      showToast('Loved one updated.');
-      loadLovedOnes();
-    } else {
-      showToast(result.error || 'Error updating loved one');
-    }
+    // Fill in existing values
+    document.getElementById('lo-first').value = person.first_name || '';
+    document.getElementById('lo-last').value = person.last_name || '';
+    document.getElementById('lo-bday').value = person.birth_date ? person.birth_date.split('T')[0] : '';
+    document.getElementById('lo-passed').value = person.passed_date ? person.passed_date.split('T')[0] : '';
+    document.getElementById('lo-cemetery').value = person.cemetery || '';
+    document.getElementById('lo-notes').value = person.notes || '';
+    document.getElementById('lo-icon').value = person.icon || '🌸';
+
+    // Track that we are editing
+    editingLovedOneId = id;
+
   } catch (err) {
     console.error(err);
-    showToast('Something went wrong');
+    showToast('Error loading loved one');
   }
 }
 </script>
