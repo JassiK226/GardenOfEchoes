@@ -695,11 +695,7 @@
       <div class="tab-pane" id="pane-subscriptions">
         <h2 class="pane-title">Subscriptions</h2>
         <p class="pane-subtitle">Manage your recurring flower delivery subscriptions.</p>
-        <div class="blank-state">
-          <div class="blank-icon">🌸</div>
-          <h3>No active subscriptions</h3>
-          <p>Subscribe to a plan and manage it here.</p>
-        </div>
+        <div id="subscriptionsList"></div>
       </div>
 
     </main>
@@ -1406,6 +1402,8 @@
 
     // Load shipping addresses
     await loadShippingAddresses();
+
+    await loadSubscriptions();
   });
 
   function signOut(e) {
@@ -1480,6 +1478,48 @@ async function editLovedOne(id) {
   } catch (err) {
     console.error(err);
     showToast('Error loading loved one');
+  }
+}
+
+async function loadSubscriptions() {
+  try {
+    const email = localStorage.getItem('email');
+
+    const res = await fetch(`/subscriptions/${encodeURIComponent(email)}`);
+
+    if (res.ok) {
+      const subscriptions = await res.json();
+      const list = document.getElementById('subscriptionsList');
+      list.innerHTML = '';
+
+      if (subscriptions.length === 0) {
+        list.innerHTML = `
+          <div class="blank-state">
+            <div class="blank-icon">🌸</div>
+            <h3>No active subscriptions</h3>
+            <p>Subscribe to a plan and manage it here.</p>
+          </div>
+        `;
+        return;
+      }
+
+      subscriptions.forEach(sub => {
+        const card = document.createElement('div');
+        card.className = 'loved-one-card';
+
+        card.innerHTML = `
+          <h4>${sub.plan_name}</h4>
+          <p>Price: ${sub.plan_price}</p>
+          <p>Status: ${sub.status}</p>
+          <p>For: ${sub.loved_first_name || ''} ${sub.loved_last_name || ''}</p>
+          <p>Delivery: ${sub.address}, ${sub.city}, ${sub.state} ${sub.zip_code}</p>
+        `;
+
+        list.appendChild(card);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading subscriptions:', err);
   }
 }
 </script>

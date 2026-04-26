@@ -231,7 +231,7 @@ app.get('/loved-ones/:email', async (req, res) => {
     );
 
     res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(result.rows, null, 2));
+    res.send(JSON.stringify(result.rows[0], null, 2));
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting loved ones' });
@@ -299,7 +299,7 @@ app.put('/loved-ones/:id', async (req, res) => {
 
     res.setHeader('Content-Type', 'application/json');
     res.send(JSON.stringify(result.rows, null, 2));
-    
+
   } catch (err) {
     console.error('UPDATE LOVED ONE ERROR:', err.message);
     res.status(500).json({ error: 'Error updating loved one' });
@@ -703,6 +703,55 @@ app.get('/contact-messages', async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting contact messages' });
+  }
+});
+
+// Save a subscription
+app.post('/subscriptions', async (req, res) => {
+  try {
+    const { userEmail, planId, planName, planPrice, amount } = req.body;
+
+    const newSubscription = await pool.query(
+      `INSERT INTO subscriptions
+       (user_email, plan_id, plan_name, plan_price, amount)
+       VALUES ($1, $2, $3, $4, $5)
+       RETURNING *`,
+      [userEmail, planId, planName, planPrice, amount]
+    );
+
+    res.json(newSubscription.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error saving subscription' });
+  }
+});
+
+// Get subscriptions for one user
+app.get('/subscriptions/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const result = await pool.query(
+      'SELECT * FROM subscriptions WHERE user_email = $1 ORDER BY id DESC',
+      [email]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting subscriptions' });
+  }
+});
+
+// Get all subscriptions for testing/debugging
+app.get('/all-subscriptions', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM subscriptions ORDER BY id ASC');
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting subscriptions' });
   }
 });
 
