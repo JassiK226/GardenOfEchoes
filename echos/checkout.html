@@ -401,7 +401,7 @@
         <h2>Choose Loved One</h2>
         <div class="form-group full">
           <label for="loved-one-select">Who is this subscription for?</label>
-          <select id="loved-one-select">
+          <select id="lovedOneSelect" required>
             <option value="">Select loved one</option>
           </select>
         </div>
@@ -635,6 +635,31 @@
 }
 
 window.addEventListener('DOMContentLoaded', loadLovedOnesForCheckout);
+
+async function loadLovedOnesDropdown() {
+  const email = localStorage.getItem('email');
+  const select = document.getElementById('lovedOneSelect');
+
+  if (!email || !select) return;
+
+  try {
+    const res = await fetch(`/loved-ones/${encodeURIComponent(email)}`);
+    const lovedOnes = await res.json();
+
+    select.innerHTML = '<option value="">Select loved one</option>';
+
+    lovedOnes.forEach(person => {
+      const option = document.createElement('option');
+      option.value = person.id;
+      option.textContent = `${person.icon || '🌸'} ${person.first_name} ${person.last_name}`;
+      select.appendChild(option);
+    });
+  } catch (err) {
+    console.error('Error loading loved ones:', err);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', loadLovedOnesDropdown);
 </script>
 
 </body>
