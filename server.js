@@ -210,30 +210,24 @@ app.get('/loved-one/:id', async (req, res) => {
       return res.status(404).json({ error: 'Loved one not found' });
     }
 
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(result.rows, null, 2)); 
-
+    res.json(result.rows[0]);
   } catch (err) {
-    console.error(err.message);
     res.status(500).json({ error: 'Error getting loved one' });
   }
 });
 
-// Get all loved ones for a user
+// Get all loved ones for one user
 app.get('/loved-ones/:email', async (req, res) => {
   try {
     const email = req.params.email;
 
-    // Get all loved ones connected to that user's email
     const result = await pool.query(
       'SELECT * FROM loved_ones WHERE user_email = $1 ORDER BY id ASC',
       [email]
     );
 
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(result.rows[0], null, 2));
+    res.json(result.rows);
   } catch (err) {
-    console.error(err.message);
     res.status(500).json({ error: 'Error getting loved ones' });
   }
 });
