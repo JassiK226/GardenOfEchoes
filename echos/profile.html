@@ -1512,7 +1512,7 @@ async function loadSubscriptions() {
           <p>Price: ${sub.plan_price}</p>
           <p>Status: ${sub.status}</p>
           <p>For: ${sub.loved_first_name || ''} ${sub.loved_last_name || ''}</p>
-          <p>Delivery: ${sub.address}, ${sub.city}, ${sub.state} ${sub.zip_code}</p>
+          <p>Delivery: ${sub.address_line1 || ''}${sub.address_line2 ? ', ' + sub.address_line2 : ''}, ${sub.city || ''}, ${sub.state || ''} ${sub.zip_code || ''}</p>
         `;
 
         list.appendChild(card);
