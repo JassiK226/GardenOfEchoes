@@ -168,9 +168,9 @@ app.post('/login', async (req, res) => {
 });
 
 // Save a loved one
+// Save a loved one
 app.post('/loved-ones', async (req, res) => {
   try {
-    // Get loved one information from frontend form
     const {
       userEmail,
       firstName,
@@ -178,16 +178,16 @@ app.post('/loved-ones', async (req, res) => {
       birthDate,
       passedDate,
       cemetery,
-      notes
+      notes,
+      icon
     } = req.body;
 
-    // Insert loved one into loved_ones table
     const newLovedOne = await pool.query(
       `INSERT INTO loved_ones
-      (user_email, first_name, last_name, birth_date, passed_date, cemetery, notes)
-      VALUES ($1, $2, $3, $4, $5, $6, $7)
+      (user_email, first_name, last_name, birth_date, passed_date, cemetery, notes, icon)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
       RETURNING *`,
-      [userEmail, firstName, lastName, birthDate, passedDate, cemetery, notes]
+      [userEmail, firstName, lastName, birthDate, passedDate, cemetery, notes, icon || '🌸']
     );
 
     res.json(newLovedOne.rows[0]);
@@ -213,6 +213,67 @@ app.get('/loved-ones/:email', async (req, res) => {
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting loved ones' });
+  }
+});
+
+// Delete a loved one
+app.delete('/loved-ones/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const result = await pool.query(
+      'DELETE FROM loved_ones WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Loved one not found' });
+    }
+
+    res.json({ message: 'Loved one deleted successfully' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error deleting loved one' });
+  }
+});
+
+// Update a loved one
+app.put('/loved-ones/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const {
+      firstName,
+      lastName,
+      birthDate,
+      passedDate,
+      cemetery,
+      notes,
+      icon
+    } = req.body;
+
+    const result = await pool.query(
+      `UPDATE loved_ones
+       SET first_name = $1,
+           last_name = $2,
+           birth_date = $3,
+           passed_date = $4,
+           cemetery = $5,
+           notes = $6,
+           icon = $7
+       WHERE id = $8
+       RETURNING *`,
+      [firstName, lastName, birthDate, passedDate, cemetery, notes, icon || '🌸', id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Loved one not found' });
+    }
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error updating loved one' });
   }
 });
 

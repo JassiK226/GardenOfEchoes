@@ -529,6 +529,10 @@
                 <label for="lo-notes">Notes</label>
                 <textarea id="lo-notes" placeholder="A note in their memory…"></textarea>
               </div>
+              <div class="form-group">
+                <label for="lo-icon">Memory Icon</label>
+                <input type="text" id="lo-icon" placeholder="🌸" maxlength="2">
+              </div>
             </div>
             <button type="submit" class="btn-save">Save Loved One</button>
             <button type="button" class="btn-save-outline" onclick="toggleAddLovedOne()">Cancel</button>
@@ -821,7 +825,8 @@
       birthDate: document.getElementById('lo-bday').value,
       passedDate: document.getElementById('lo-passed').value,
       cemetery: document.getElementById('lo-cemetery').value,
-      notes: document.getElementById('lo-notes').value
+      notes: document.getElementById('lo-notes').value,
+      icon: document.getElementById('lo-icon').value || '🌸'
     };
 
     try {
@@ -850,26 +855,38 @@
   }
 
   // Show loved one card on the page
-  function renderLovedOneCard(person) {
-    const list = document.getElementById('lovedOneList');
+ function renderLovedOneCard(person) {
+  const list = document.getElementById('lovedOneList');
 
-    const card = document.createElement('div');
-    card.className = 'loved-one-card';
+  const card = document.createElement('div');
+  card.className = 'loved-one-card';
 
-    const birthText = person.birth_date ? `Born: ${person.birth_date.split('T')[0]}` : '';
-    const passedText = person.passed_date ? `Passed: ${person.passed_date.split('T')[0]}` : '';
-    const cemeteryText = person.cemetery ? `<p>Cemetery: ${person.cemetery}</p>` : '';
-    const notesText = person.notes ? `<p>Notes: ${person.notes}</p>` : '';
+  const birthText = person.birth_date ? person.birth_date.split('T')[0] : '';
+  const passedText = person.passed_date ? person.passed_date.split('T')[0] : '';
+  const icon = person.icon || '🌸';
 
-    card.innerHTML = `
-      <h4>${person.first_name} ${person.last_name}</h4>
-      <p>${birthText} ${birthText && passedText ? '· ' : ''}${passedText}</p>
-      ${cemeteryText}
-      ${notesText}
-    `;
+  card.innerHTML = `
+    <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:14px;">
+      <div style="display:flex; gap:14px;">
+        <div style="font-size:28px; width:38px; text-align:center;">${icon}</div>
 
-    list.appendChild(card);
-  }
+        <div>
+          <h4>${person.first_name} ${person.last_name}</h4>
+          <p>Born: ${birthText} · Passed: ${passedText}</p>
+          <p>Cemetery: ${person.cemetery || ''}</p>
+          <p>Notes: ${person.notes || ''}</p>
+        </div>
+      </div>
+
+      <div style="display:flex; gap:10px;">
+        <button class="card-action-btn" onclick="editLovedOne(${person.id})">Edit</button>
+        <button class="card-action-btn" onclick="removeLovedOne(${person.id})">Remove</button>
+      </div>
+    </div>
+  `;
+
+  list.appendChild(card);
+}
 
   /* ── Payment ── */
 
@@ -1364,6 +1381,95 @@
   localStorage.removeItem('email');
 
   window.location.href = 'homepage.html';
+}
+
+async function loadLovedOnes() {
+  try {
+    const email = localStorage.getItem('email');
+    const res = await await loadLovedOnes();
+
+    if (res.ok) {
+      const lovedOnes = await res.json();
+      document.getElementById('lovedOneList').innerHTML = '';
+
+      lovedOnes.forEach(person => {
+        renderLovedOneCard(person);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading loved ones:', err);
+  }
+}
+
+async function removeLovedOne(id) {
+  try {
+    const res = await fetch(`/loved-ones/${id}`, {
+      method: 'DELETE'
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast('Loved one removed.');
+      loadLovedOnes();
+    } else {
+      showToast(result.error || 'Error removing loved one');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
+}
+
+async function editLovedOne(id) {
+  const firstName = prompt('First name:');
+  if (firstName === null) return;
+
+  const lastName = prompt('Last name:');
+  if (lastName === null) return;
+
+  const birthDate = prompt('Birth date (YYYY-MM-DD):');
+  if (birthDate === null) return;
+
+  const passedDate = prompt('Passed date (YYYY-MM-DD):');
+  if (passedDate === null) return;
+
+  const cemetery = prompt('Cemetery:');
+  if (cemetery === null) return;
+
+  const notes = prompt('Notes:');
+  if (notes === null) return;
+
+  const icon = prompt('Memory icon/emoji:', '🌸');
+  if (icon === null) return;
+
+  try {
+    const res = await fetch(`/loved-ones/${id}`, {
+      method: 'PUT',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        firstName,
+        lastName,
+        birthDate,
+        passedDate,
+        cemetery,
+        notes,
+        icon
+      })
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast('Loved one updated.');
+      loadLovedOnes();
+    } else {
+      showToast(result.error || 'Error updating loved one');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
+  }
 }
 </script>
 
