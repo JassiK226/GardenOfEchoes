@@ -703,19 +703,24 @@ app.get('/contact-messages', async (req, res) => {
 // Save a subscription
 app.post('/subscriptions', async (req, res) => {
   try {
-    const { userEmail, planId, planName, planPrice, amount } = req.body;
+    const {
+      userEmail, planId, planName, planPrice, amount, lovedOneId,
+      addressLine1, addressLine2, city, state, zipCode
+    } = req.body;
 
-    const newSubscription = await pool.query(
+    const result = await pool.query(
       `INSERT INTO subscriptions
-       (user_email, plan_id, plan_name, plan_price, amount)
-       VALUES ($1, $2, $3, $4, $5)
-       RETURNING *`,
-      [userEmail, planId, planName, planPrice, amount]
+      (user_email, plan_id, plan_name, plan_price, amount, status, loved_one_id,
+       address_line1, address_line2, city, state, zip_code)
+      VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12)
+      RETURNING *`,
+      [userEmail, planId, planName, planPrice, amount, 'Active', lovedOneId,
+       addressLine1, addressLine2, city, state, zipCode]
     );
 
-    res.json(newSubscription.rows[0]);
+    res.json(result.rows[0]);
   } catch (err) {
-    console.error(err.message);
+    console.error('SUBSCRIPTION ERROR:', err.message);
     res.status(500).json({ error: 'Error saving subscription' });
   }
 });
@@ -726,11 +731,16 @@ app.get('/subscriptions/:email', async (req, res) => {
     const email = req.params.email;
 
     const result = await pool.query(
-      'SELECT * FROM subscriptions WHERE user_email = $1 ORDER BY id DESC',
+      `SELECT s.*, l.first_name AS loved_first_name, l.last_name AS loved_last_name
+       FROM subscriptions s
+       LEFT JOIN loved_ones l ON s.loved_one_id = l.id
+       WHERE s.user_email = $1
+       ORDER BY s.id DESC`,
       [email]
     );
 
-    res.json(result.rows);
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
   } catch (err) {
     console.error(err.message);
     res.status(500).json({ error: 'Error getting subscriptions' });
