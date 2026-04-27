@@ -1513,6 +1513,10 @@ async function loadSubscriptions() {
           <p>Status: ${sub.status}</p>
           <p>For: ${sub.loved_first_name || ''} ${sub.loved_last_name || ''}</p>
           <p>Delivery: ${sub.address_line1 || ''}${sub.address_line2 ? ', ' + sub.address_line2 : ''}, ${sub.city || ''}, ${sub.state || ''} ${sub.zip_code || ''}</p>
+
+          <div class="card-actions">
+            <button class="card-action-btn" onclick="removeSubscription(${sub.id})">Unsubscribe</button>
+          </div>
         `;
 
         list.appendChild(card);
@@ -1520,6 +1524,30 @@ async function loadSubscriptions() {
     }
   } catch (err) {
     console.error('Error loading subscriptions:', err);
+  }
+}
+
+async function removeSubscription(id) {
+  const confirmDelete = confirm('Are you sure you want to unsubscribe from this plan?');
+
+  if (!confirmDelete) return;
+
+  try {
+    const res = await fetch(`/subscriptions/${id}`, {
+      method: 'DELETE'
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast('Subscription removed.');
+      loadSubscriptions();
+    } else {
+      showToast(result.error || 'Error removing subscription');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
   }
 }
 </script>

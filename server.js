@@ -846,6 +846,27 @@ app.get('/all-subscriptions', async (req, res) => {
   }
 });
 
+// Delete / unsubscribe from a subscription
+app.delete('/subscriptions/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const result = await pool.query(
+      'DELETE FROM subscriptions WHERE id = $1 RETURNING *',
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Subscription not found' });
+    }
+
+    res.json({ message: 'Subscription removed successfully' });
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error removing subscription' });
+  }
+});
+
 // Set server port from environment, or use 3000 if none is provided
 const PORT = process.env.PORT || 3000;
 
