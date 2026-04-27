@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GardenOfEchoes — Log In</title>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+      color: #333;
+      background: #f4f5f7;
+      min-height: 100vh;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ══ Nav (same as homepage) ══ */
+    .main-nav {
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      height: 96px;
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .logo { display: flex; align-items: center; margin-right: 36px; }
+    .logo img { height: 90px; width: auto; display: block; }
+    .main-nav-links { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: flex-end; }
+    .main-nav-links a {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px; font-size: 13.5px; color: #333;
+      white-space: nowrap; border-radius: 4px; transition: background .15s;
+    }
+    .main-nav-links a:hover { background: #f5f5f5; }
+    .main-nav-links a svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .nav-donation {
+      background: #7c3aed !important; color: #fff !important;
+      border-radius: 5px !important; padding: 6px 16px !important; font-weight: 600 !important;
+    }
+    .nav-donation:hover { background: #6d28d9 !important; }
+
+    /* ══ Category Nav ══ */
+    .cat-nav {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 28px; height: 44px; background: #fafafa;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .cat-nav a {
+      padding: 8px 18px; font-size: 13.5px; color: #444;
+      display: flex; align-items: center; gap: 3px;
+    }
+    .cat-nav a:hover { color: #c0392b; }
+    .cat-nav a .arrow { font-size: 10px; margin-top: 1px; }
+    .cat-item { position: relative; }
+    .cat-item:hover .dropdown { display: block; }
+    .dropdown {
+      display: none; position: absolute; top: 100%; left: 0;
+      background: #fff; border: 1px solid #e0e0e0; min-width: 180px;
+      z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.1);
+    }
+    .dropdown a {
+      display: block; padding: 9px 16px; font-size: 13px;
+      color: #333; border-bottom: 1px solid #f0f0f0;
+    }
+    .dropdown a:hover { background: #f9f9f9; color: #c0392b; }
+
+    /* ══ Login card area ══ */
+    .login-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 52px 20px 60px;
+    }
+    .card {
+      display: flex;
+      width: 820px;
+      min-height: 480px;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 8px 40px rgba(0,0,0,.13);
+    }
+
+    /* ── Left panel ── */
+    .panel-left {
+      flex: 1;
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      padding: 48px 40px;
+      background: linear-gradient(145deg, rgba(235,80,90,.88) 0%, rgba(220,60,100,.85) 100%);
+      overflow: hidden;
+    }
+    .panel-left::before {
+      content: ''; position: absolute; top: -60px; left: -60px;
+      width: 280px; height: 280px; border-radius: 50%;
+      background: rgba(255,255,255,.07);
+    }
+    .panel-left::after {
+      content: ''; position: absolute; bottom: -80px; right: -50px;
+      width: 320px; height: 320px; border-radius: 50%;
+      background: rgba(255,255,255,.06);
+    }
+    .leaf-1 {
+      position: absolute; top: 20px; right: 30px;
+      width: 120px; height: 200px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      background: rgba(255,255,255,.08); transform: rotate(-25deg);
+    }
+    .leaf-2 {
+      position: absolute; bottom: 40px; left: 20px;
+      width: 100px; height: 170px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      background: rgba(255,255,255,.07); transform: rotate(30deg);
+    }
+    .leaf-3 {
+      position: absolute; top: 50%; left: -20px;
+      width: 80px; height: 140px;
+      border-radius: 50% 50% 50% 50% / 60% 60% 40% 40%;
+      background: rgba(0,0,0,.07); transform: rotate(15deg) translateY(-50%);
+    }
+    .panel-left-content { position: relative; z-index: 2; text-align: center; }
+    .panel-left h2 {
+      color: #fff; font-size: 22px; font-weight: 700;
+      margin-bottom: 30px; line-height: 1.35;
+    }
+    .btn-signup {
+      display: inline-block; padding: 10px 36px;
+      border: 2px solid #fff; border-radius: 4px;
+      color: #fff; font-size: 14px; font-weight: 600;
+      cursor: pointer; background: transparent; letter-spacing: .4px;
+      transition: background .18s, color .18s;
+    }
+    .btn-signup:hover { background: #fff; color: #e0546a; }
+
+    /* ── Right panel ── */
+    .panel-right {
+      flex: 1.1; background: #fff;
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      padding: 52px 52px;
+    }
+    .panel-right h1 {
+      font-size: 26px; font-weight: 700; color: #1a1a1a;
+      margin-bottom: 6px; text-align: center;
+    }
+    .subtitle { font-size: 13px; color: #888; margin-bottom: 32px; text-align: center; }
+
+    /* ── Form ── */
+    .form-wrap { width: 100%; max-width: 320px; }
+    .form-group { margin-bottom: 18px; }
+    .form-group label {
+      display: block; font-size: 12.5px; color: #555;
+      margin-bottom: 5px; font-weight: 500;
+    }
+    .form-group input {
+      width: 100%; padding: 10px 12px;
+      border: 1px solid #ddd; border-radius: 4px;
+      font-size: 13.5px; color: #333; background: #fff;
+      transition: border-color .15s; outline: none; font-family: inherit;
+    }
+    .form-group input:focus { border-color: #e0546a; }
+    .form-group input::placeholder { color: #bbb; }
+    .btn-login {
+      display: block; width: 100%; padding: 12px;
+      background: #e0546a; color: #fff; border: none; border-radius: 4px;
+      font-size: 15px; font-weight: 700; cursor: pointer; letter-spacing: .3px;
+      transition: background .18s; margin-top: 8px; font-family: inherit;
+    }
+    .btn-login:hover { background: #c94060; }
+    .forgot-link {
+      display: block; text-align: center; margin-top: 16px;
+      font-size: 12.5px; color: #e0546a;
+    }
+    .forgot-link:hover { text-decoration: underline; }
+    .back-link {
+      display: block; text-align: center; margin-top: 16px;
+      font-size: 12.5px; color: #888;
+    }
+    .back-link span { color: #e0546a; cursor: pointer; }
+    .back-link span:hover { text-decoration: underline; }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .login-wrap { padding: 24px 14px 40px; }
+      .card { flex-direction: column; width: 100%; }
+      .panel-left { padding: 40px 28px; min-height: 200px; }
+      .panel-right { padding: 36px 28px; }
+      .main-nav { padding: 0 14px; height: 72px; }
+      .logo img { height: 62px; }
+      .main-nav-links a span { display: none; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ══ Main Nav ══ -->
+  <nav class="main-nav">
+    <a href="homepage.html" class="logo"><img src="logo.png" alt="Garden of Echoes"></a>
+    <div class="main-nav-links">
+      <a href="subscriptions.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>The Garden Program</span>
+      </a>
+      <a href="login.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>My Account</span>
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Cart</span>
+      </a>
+      <a href="about.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>About Us</span>
+      </a>
+      <a href="contact.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Contact Us</span>
+      </a>
+      <a href="donation.html" class="nav-donation"><span>Donation</span></a>
+    </div>
+  </nav>
+
+  <!-- ══ Category Nav ══ -->
+  <nav class="cat-nav">
+    <div class="cat-item">
+      <a href="#">Anniversary <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Anniversary Flowers</a>
+        <a href="#">Anniversary Wreaths</a>
+        <a href="#">Anniversary Baskets</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Occasions <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Birthday</a>
+        <a href="#">Wedding</a>
+        <a href="#">Graduation</a>
+        <a href="#">Get Well Soon</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Sympathy <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Funeral Flowers</a>
+        <a href="#">Sympathy Wreaths</a>
+        <a href="#">Memorial Arrangements</a>
+        <a href="#">Casket Flowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Flowers <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Roses</a>
+        <a href="#">Lilies</a>
+        <a href="#">Orchids</a>
+        <a href="#">Tulips</a>
+        <a href="#">Sunflowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Other Items <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Vases</a>
+        <a href="#">Gift Baskets</a>
+        <a href="#">Candles</a>
+        <a href="#">Cards</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ══ Login Card ══ -->
+  <div class="login-wrap">
+    <div class="card">
+
+      <!-- Left panel -->
+      <div class="panel-left">
+        <div class="leaf-1"></div>
+        <div class="leaf-2"></div>
+        <div class="leaf-3"></div>
+        <div class="panel-left-content" id="leftContent">
+          <h2>Create New Account</h2>
+          <a class="btn-signup" onclick="showSignup()">Sign up</a>
+        </div>
+      </div>
+
+      <!-- Right panel -->
+      <div class="panel-right">
+
+        <!-- Login Form -->
+        <div id="loginSection">
+          <h1>Log In</h1>
+          <p class="subtitle">Welcome Back To Garden of Echoes.</p>
+              <form class="form-wrap" onsubmit="handleLogin(event)">
+              <div class="form-group">
+              <label for="login-email">Login</label>
+              <input type="text" id="login-email" placeholder="jairuno" autocomplete="username">
+            </div>
+            <div class="form-group">
+              <label for="login-pass">Password</label>
+              <input type="password" id="login-pass" placeholder="••••••••" autocomplete="current-password">
+            </div>
+            <button type="submit" class="btn-login">Log In</button>
+            <p id="loginMessage" style="margin-top:10px; font-size:13px; color:#c94060;"></p>
+            <a href="#" class="forgot-link">Forgot Password?</a>
+          </form>
+        </div>
+
+        <!-- Sign Up Form -->
+        <div id="signupSection" style="display:none;">
+          <h1>Create Account</h1>
+          <p class="subtitle">Join Garden of Echoes today.</p>
+          <form class="form-wrap" onsubmit="handleSignup(event)">
+            <div class="form-group">
+              <label for="signup-name">Full Name</label>
+              <input type="text" id="signup-name" placeholder="Jane Smith" autocomplete="name">
+            </div>
+            <div class="form-group">
+              <label for="signup-email">Email</label>
+              <input type="email" id="signup-email" placeholder="jane@email.com" autocomplete="email">
+            </div>
+            <div class="form-group">
+              <label for="signup-pass">Password</label>
+              <input type="password" id="signup-pass" placeholder="••••••••" autocomplete="new-password">
+            </div>
+            <div class="form-group">
+              <label for="signup-confirm">Confirm Password</label>
+              <input type="password" id="signup-confirm" placeholder="••••••••" autocomplete="new-password">
+            </div>
+            <button type="submit" class="btn-login">Create Account</button>
+            <p id="signupMessage" style="margin-top:10px; font-size:13px; color:#c94060;"></p>
+            <p class="back-link">Already have an account? <span onclick="showLogin()">Log In</span></p>
+          </form>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  
+  <script>
+    /*function goToProfile(e) {
+      e.preventDefault();
+      window.location.href = 'profile.html';
+    }
+    function showSignup() {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('signupSection').style.display = 'block';
+      document.getElementById('leftContent').innerHTML = `
+        <h2>Already Have an Account?</h2>
+        <a class="btn-signup" onclick="showLogin()">Log In</a>
+      `;
+    }
+    function showLogin() {
+      document.getElementById('signupSection').style.display = 'none';
+      document.getElementById('loginSection').style.display = 'block';
+      document.getElementById('leftContent').innerHTML = `
+        <h2>Create New Account</h2>
+        <a class="btn-signup" onclick="showSignup()">Sign up</a>
+      `;
+    }*/
+  
+  function goToProfile(e) {
+    e.preventDefault();
+    window.location.href = 'profile.html';
+  }
+
+  function showSignup() {
+    document.getElementById('loginSection').style.display = 'none';
+    document.getElementById('signupSection').style.display = 'block';
+    document.getElementById('leftContent').innerHTML = `
+      <h2>Already Have an Account?</h2>
+      <a class="btn-signup" onclick="showLogin()">Log In</a>
+    `;
+  }
+
+  function showLogin() {
+    document.getElementById('signupSection').style.display = 'none';
+    document.getElementById('loginSection').style.display = 'block';
+    document.getElementById('leftContent').innerHTML = `
+      <h2>Create New Account</h2>
+      <a class="btn-signup" onclick="showSignup()">Sign up</a>
+    `;
+  }
+
+ // Function to handle signup form submission
+async function handleSignup(e) {
+  e.preventDefault(); // prevent page from refreshing
+
+  // Get user input values from form
+  const fullName = document.getElementById('signup-name').value;
+  const email = document.getElementById('signup-email').value;
+  const password = document.getElementById('signup-pass').value;
+  const confirmPassword = document.getElementById('signup-confirm').value;
+  const signupMessage = document.getElementById('signupMessage');
+
+  // Check if passwords match before sending to backend
+  if (password !== confirmPassword) {
+    signupMessage.textContent = 'Passwords do not match.';
+    return; // stop execution if passwords don’t match
+  }
+
+  try {
+    // Send signup data to backend
+    const response = await fetch('/signup', {
+      method: 'POST', // POST request to create new account
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ fullName, email, password }) // convert data to JSON
+    });
+
+    const data = await response.json(); // get response from server
+
+    // If signup is successful
+    if (response.ok) {
+      // Save user info in storage so it can be used on profile page
+      localStorage.setItem('fullName', fullName);
+      localStorage.setItem('email', email);
+
+      // Show success message
+      signupMessage.style.color = 'green';
+      signupMessage.textContent = 'Account created successfully!';
+
+      // Redirect to profile page after short delay
+      setTimeout(() => {
+        window.location.href = 'profile.html';
+      }, 1000);
+
+    } else {
+      // If signup fails (e.g., duplicate email)
+      signupMessage.style.color = '#c94060';
+      signupMessage.textContent = data.error || 'Error creating account.';
+    }
+
+  } catch (error) {
+    // If something goes wrong (server error, network issue)
+    console.error(error);
+    signupMessage.style.color = '#c94060';
+    signupMessage.textContent = 'Something went wrong.';
+  }
+}
+
+  // Function to handle login form submission
+async function handleLogin(e) {
+  e.preventDefault(); // prevent page refresh when form is submitted
+
+  // Get values entered by user
+  const email = document.getElementById('login-email').value;
+  const password = document.getElementById('login-pass').value;
+  const loginMessage = document.getElementById('loginMessage');
+
+  try {
+    // Send login request to backend
+    const response = await fetch('/login', {
+      method: 'POST', // POST request to send data
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }) // convert data to JSON
+    });
+
+    const data = await response.json(); // get response from server
+
+    // If login is successful
+    if (response.ok) {
+      // Save user info in storage so it can be used on other pages
+      localStorage.setItem('fullName', data.full_name);
+      localStorage.setItem('email', data.email);
+
+      // Show success message
+      loginMessage.style.color = 'green';
+      loginMessage.textContent = 'Login successful!';
+
+      // Redirect user to profile page
+      setTimeout(() => {
+        window.location.href = 'profile.html';
+      }, 800);
+
+    } else {
+      // If login fails (wrong email/password)
+      loginMessage.style.color = '#c94060';
+      loginMessage.textContent = data.error || 'Invalid email or password';
+    }
+
+  } catch (error) {
+    // If something goes wrong (server error, network error, etc.)
+    console.error(error);
+    loginMessage.style.color = '#c94060';
+    loginMessage.textContent = 'Something went wrong.';
+  }
+}
+  </script>
+  
+
+</body>
+</html>
