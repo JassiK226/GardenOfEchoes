@@ -123,35 +123,6 @@
       object-fit: cover;
       display: block;
     }
-    /* CSS-painted hero since we have no real image */
-    .hero-painted {
-      width: 100%;
-      height: 100%;
-      background:
-        radial-gradient(ellipse 220px 180px at 50% 55%, rgba(200,200,180,.18) 0%, transparent 70%),
-        radial-gradient(ellipse 90px 90px at 45% 50%, rgba(255,255,220,.12) 0%, transparent 60%),
-        linear-gradient(170deg, #2a2a1e 0%, #1a1a0e 40%, #0e0e08 100%);
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-    .hero-painted::before {
-      content: '';
-      position: absolute;
-      width: 260px;
-      height: 200px;
-      border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(80,120,60,.55) 0%, rgba(40,70,30,.3) 50%, transparent 80%);
-      box-shadow: inset 0 0 40px rgba(0,0,0,.4);
-    }
-    .hero-painted::after {
-      content: '';
-      position: absolute;
-      width: 200px;
-      height: 160px;
-      border-radius: 50%;
-      background: radial-gradient(ellipse, rgba(230,210,160,.25) 10%, rgba(200,180,120,.1) 50%, transparent 75%);
-    }
 
     /* ── Page Body ── */
     .page-body {
@@ -652,7 +623,7 @@
 
   <!-- ── Hero ── -->
   <div class="hero">
-    <div class="hero-painted"></div>
+    <img src="logo.png" alt="Garden of Echoes" class="hero-img">
   </div>
 
   <!-- ── Page Body ── -->
