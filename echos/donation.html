@@ -483,10 +483,10 @@
         <div class="form-group">
           <label>Select Donation Amount</label>
           <div class="amount-pills">
-            <button class="pill" onclick="selectPill(this, 25)">$25</button>
-            <button class="pill" onclick="selectPill(this, 50)">$50</button>
-            <button class="pill selected" onclick="selectPill(this, 100)">$100</button>
-            <button class="pill" onclick="selectPill(this, 250)">$250</button>
+            <button type="button" class="pill" onclick="selectPill(this, 25)">$25</button>
+            <button type="button" class="pill" onclick="selectPill(this, 50)">$50</button>
+            <button type="button" class="pill selected" onclick="selectPill(this, 100)">$100</button>
+            <button type="button" class="pill" onclick="selectPill(this, 250)">$250</button>
           </div>
         </div>
 
@@ -510,7 +510,7 @@
           <textarea id="donor-message" rows="3" placeholder="Share why you're donating or dedicate this donation in memory of someone special..."></textarea>
         </div>
 
-        <button class="btn-donate" id="donateBtn" onclick="goToCheckout()">Donate $100</button>
+        <button type="button" class="btn-donate" id="donateBtn" onclick="goToCheckout()">Donate $100</button>
       </div>
 
       <p class="form-footer-note">All donations are tax-deductible. We are committed to transparency and ensuring every contribution directly supports families in need.</p>
@@ -540,33 +540,62 @@
       }
     }
 
-    function goToCheckout() {
-      const name = document.getElementById('donor-name').value.trim();
-      const email = document.getElementById('donor-email').value.trim();
+    async function goToCheckout() {
+  const name = document.getElementById('donor-name').value.trim();
+  const email = document.getElementById('donor-email').value.trim();
+  const message = document.getElementById('donor-message').value.trim();
 
-      if (!name) {
-        alert('Please enter your full name.');
-        document.getElementById('donor-name').focus();
-        return;
-      }
-      if (!email) {
-        alert('Please enter your email address.');
-        document.getElementById('donor-email').focus();
-        return;
-      }
-      if (!selectedAmount || selectedAmount <= 0) {
-        alert('Please select or enter a donation amount.');
-        return;
-      }
+  if (!name) {
+    alert('Please enter your full name.');
+    document.getElementById('donor-name').focus();
+    return;
+  }
 
-      const params = new URLSearchParams({
-        planId: 'donation',
-        planName: 'Donation',
-        planPrice: '$' + selectedAmount.toFixed(2),
-        amount: selectedAmount.toFixed(2)
-      });
-      window.location.href = 'checkout.html?' + params.toString();
+  if (!email) {
+    alert('Please enter your email address.');
+    document.getElementById('donor-email').focus();
+    return;
+  }
+
+  if (!selectedAmount || selectedAmount <= 0) {
+    alert('Please select or enter a donation amount.');
+    return;
+  }
+
+  const data = {
+    donorName: name,
+    donorEmail: email,
+    message: message,
+    amount: selectedAmount
+  };
+
+  try {
+    const res = await fetch('/donations', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      alert('Thank you! Your donation was saved.');
+
+      document.getElementById('donor-name').value = '';
+      document.getElementById('donor-email').value = '';
+      document.getElementById('donor-message').value = '';
+      document.getElementById('custom-amount').value = '';
+
+      selectedAmount = 100;
+      document.getElementById('donateBtn').textContent = 'Donate $100';
+    } else {
+      alert(result.error || 'Error saving donation');
     }
+  } catch (err) {
+    console.error(err);
+    alert('Something went wrong');
+  }
+}
   </script>
 
 <script>

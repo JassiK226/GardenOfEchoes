@@ -867,6 +867,38 @@ app.delete('/subscriptions/:id', async (req, res) => {
   }
 });
 
+// Save donation
+app.post('/donations', async (req, res) => {
+  try {
+    const { donorName, donorEmail, message, amount } = req.body;
+
+    const result = await pool.query(
+      `INSERT INTO donations (donor_name, donor_email, message, amount)
+       VALUES ($1, $2, $3, $4)
+       RETURNING *`,
+      [donorName, donorEmail, message, amount]
+    );
+
+    res.json(result.rows[0]);
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error saving donation' });
+  }
+});
+
+// View all donations
+app.get('/donations', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT * FROM donations ORDER BY id ASC');
+
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(result.rows, null, 2));
+  } catch (err) {
+    console.error(err.message);
+    res.status(500).json({ error: 'Error getting donations' });
+  }
+});
+
 // Set server port from environment, or use 3000 if none is provided
 const PORT = process.env.PORT || 3000;
 
