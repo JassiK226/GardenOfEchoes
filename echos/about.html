@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>GardenOfEchoes — About Us</title>
+  <style>
+    :root {
+      --font-size: 16px;
+      --background: #fff;
+      --foreground: oklch(14.5% 0 0);
+      --card: #fff;
+      --muted: #ececf0;
+      --muted-foreground: #717182;
+      --accent: #e9ebef;
+      --border: rgba(0,0,0,.1);
+      --input-background: #f3f3f5;
+      --radius: .625rem;
+      --color-green-100: oklch(96.2% .044 156.743);
+      --color-green-600: oklch(62.7% .194 149.214);
+      --color-blue-100: oklch(93.2% .032 255.585);
+      --color-blue-600: oklch(54.6% .245 262.881);
+      --color-purple-100: oklch(94.6% .033 307.174);
+      --color-purple-600: oklch(55.8% .288 302.321);
+    }
+    *, *::before, *::after {
+      box-sizing: border-box;
+      border: 0 solid;
+      margin: 0;
+      padding: 0;
+    }
+    html {
+      font-size: var(--font-size);
+      line-height: 1.5;
+      font-family: ui-sans-serif, system-ui, sans-serif;
+      -webkit-text-size-adjust: 100%;
+    }
+    body {
+      background-color: var(--background);
+      color: var(--foreground);
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      font-size: 14px;
+    }
+    a { text-decoration: none; color: inherit; }
+
+    /* ── Main Nav ── */
+    .main-nav {
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      height: 96px;
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+    }
+    .logo { display: flex; align-items: center; margin-right: 36px; }
+    .logo img { height: 90px; width: auto; display: block; }
+    .main-nav-links { display: flex; align-items: center; gap: 4px; flex: 1; justify-content: flex-end; }
+    .main-nav-links a {
+      display: flex; align-items: center; gap: 5px;
+      padding: 6px 12px; font-size: 13.5px; color: #333;
+      white-space: nowrap; border-radius: 4px; transition: background .15s;
+    }
+    .main-nav-links a:hover { background: #f5f5f5; }
+    .main-nav-links a svg { width: 15px; height: 15px; flex-shrink: 0; }
+    .nav-donation {
+      background: #e0546a !important; color: #fff !important;
+      border-radius: 5px !important; padding: 6px 16px !important; font-weight: 600 !important;
+    }
+    .nav-donation:hover { background: #c94060 !important; }
+
+    /* ── Category Nav ── */
+    .cat-nav {
+      display: flex; align-items: center; justify-content: center;
+      padding: 0 28px; height: 44px; background: #e0546a;
+      border-bottom: 1px solid #c94060;
+    }
+    .cat-nav a {
+      padding: 8px 18px; font-size: 13.5px; color: #fff;
+      display: flex; align-items: center; gap: 3px; font-weight: 500;
+    }
+    .cat-nav a:hover { color: rgba(255,255,255,.75); }
+    .cat-nav a .arrow { font-size: 10px; margin-top: 1px; }
+    .cat-item { position: relative; }
+    .cat-item:hover .dropdown { display: block; }
+    .dropdown {
+      display: none; position: absolute; top: 100%; left: 0;
+      background: #fff; border: 1px solid #e0e0e0; min-width: 180px;
+      z-index: 100; box-shadow: 0 4px 16px rgba(0,0,0,.1);
+    }
+    .dropdown a {
+      display: block; padding: 9px 16px; font-size: 13px;
+      color: #333; border-bottom: 1px solid #f0f0f0; font-weight: 400;
+    }
+    .dropdown a:hover { background: #f9f9f9; color: #c0392b; }
+
+    /* ── Page ── */
+    .page {
+      max-width: 720px;
+      margin: 0 auto;
+      padding: 0 24px 80px;
+    }
+
+    /* ── Page Title ── */
+    .page-title {
+      text-align: center;
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -0.02em;
+      padding: 48px 0 36px;
+    }
+
+    /* ── Intro Section ── */
+    .intro-section {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 36px;
+      align-items: center;
+      margin-bottom: 56px;
+    }
+    .intro-text h2 {
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 14px;
+      line-height: 1.4;
+    }
+    .intro-text p {
+      font-size: 0.875rem;
+      color: var(--muted-foreground);
+      line-height: 1.625;
+      margin-bottom: 12px;
+    }
+    .intro-text p:last-child { margin-bottom: 0; }
+    .intro-image {
+      border-radius: var(--radius);
+      overflow: hidden;
+      aspect-ratio: 4 / 3;
+    }
+    .intro-image img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+    .intro-image-fallback {
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(145deg, #d4e8d0 0%, #a8c8a0 40%, #7aaa70 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 56px;
+    }
+
+    /* ── Divider ── */
+    .section-divider {
+      height: 1px;
+      background: var(--border);
+      margin: 0 0 48px;
+    }
+
+    /* ── How We Work ── */
+    .section-heading {
+      text-align: center;
+      margin-bottom: 36px;
+    }
+    .section-heading h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -0.02em;
+    }
+
+    .how-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 20px;
+      margin-bottom: 56px;
+    }
+    .how-card {
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 28px 22px 24px;
+      text-align: center;
+    }
+    .how-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 16px;
+    }
+    .how-icon svg { width: 22px; height: 22px; }
+    .how-icon.blue   { background: var(--color-blue-100);   color: oklch(54.6% .245 262.881); }
+    .how-icon.green  { background: var(--color-green-100);  color: oklch(62.7% .194 149.214); }
+    .how-icon.purple { background: var(--color-purple-100); color: oklch(55.8% .288 302.321); }
+    .how-card h3 {
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: #111;
+      margin-bottom: 8px;
+    }
+    .how-card p {
+      font-size: 0.8rem;
+      color: var(--muted-foreground);
+      line-height: 1.6;
+    }
+
+    /* ── Our Commitment ── */
+    .commitment-section {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    .commitment-section h2 {
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: #111;
+      letter-spacing: -0.02em;
+      margin-bottom: 16px;
+    }
+    .commitment-section p {
+      font-size: 0.9rem;
+      color: var(--muted-foreground);
+      line-height: 1.625;
+      max-width: 520px;
+      margin: 0 auto 12px;
+    }
+
+    /* ── Footer ── */
+    footer {
+      background: #1a1a2e;
+      color: #ccc;
+      padding: 28px 20px;
+      text-align: center;
+      font-size: 0.8rem;
+      color: #555;
+    }
+
+    /* ── Responsive ── */
+    @media (max-width: 680px) {
+      .intro-section { grid-template-columns: 1fr; }
+      .how-grid { grid-template-columns: 1fr; }
+      .main-nav { padding: 0 14px; height: 72px; }
+      .logo img { height: 62px; }
+      .main-nav-links a span { display: none; }
+      .cat-nav { overflow-x: auto; justify-content: flex-start; padding: 0 10px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- ── Main Nav ── -->
+  <nav class="main-nav">
+    <a href="homepage.html" class="logo"><img src="logo.png" alt="Garden of Echoes"></a>
+    <div class="main-nav-links">
+      <a href="subscriptions.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+        <span>The Garden Program</span>
+      </a>
+      <a href="login.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+        <span>My Account</span>
+      </a>
+      <a href="#">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        <span>Cart</span>
+      </a>
+      <a href="about.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+        <span>About Us</span>
+      </a>
+      <a href="contact.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+        <span>Contact Us</span>
+      </a>
+      <a href="donation.html" class="nav-donation"><span>Donation</span></a>
+    </div>
+  </nav>
+
+  <!-- ── Category Nav ── -->
+  <nav class="cat-nav">
+    <div class="cat-item">
+      <a href="#">Anniversary <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Anniversary Flowers</a>
+        <a href="#">Anniversary Wreaths</a>
+        <a href="#">Anniversary Baskets</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Occasions <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Birthday</a>
+        <a href="#">Wedding</a>
+        <a href="#">Graduation</a>
+        <a href="#">Get Well Soon</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Sympathy <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Funeral Flowers</a>
+        <a href="#">Sympathy Wreaths</a>
+        <a href="#">Memorial Arrangements</a>
+        <a href="#">Casket Flowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Flowers <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Roses</a>
+        <a href="#">Lilies</a>
+        <a href="#">Orchids</a>
+        <a href="#">Tulips</a>
+        <a href="#">Sunflowers</a>
+      </div>
+    </div>
+    <div class="cat-item">
+      <a href="#">Other Items <span class="arrow">▾</span></a>
+      <div class="dropdown">
+        <a href="#">Vases</a>
+        <a href="#">Gift Baskets</a>
+        <a href="#">Candles</a>
+        <a href="#">Cards</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ── Page Content ── -->
+  <div class="page">
+
+    <h1 class="page-title">About Us</h1>
+
+    <!-- Intro -->
+    <div class="intro-section">
+      <div class="intro-text">
+        <h2>Honoring Memories with Fresh Flowers</h2>
+        <p>We understand the importance of honoring your loved ones with beautiful, fresh flower arrangements. Our service makes it easy to send heartfelt tributes directly to cemeteries, ensuring your loved ones are never forgotten.</p>
+        <p>Founded on compassion and respect, we've created a seamless way to keep memories alive through the timeless beauty of flowers.</p>
+      </div>
+      <div class="intro-image">
+        <img src="flowerbycemetery.avif" alt="Flowers at a memorial" onerror="this.style.display='none';this.nextElementSibling.style.display='flex'">
+        <div class="intro-image-fallback" style="display:none;">🌸</div>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- How We Work -->
+    <div class="section-heading">
+      <h2>How We Work</h2>
+    </div>
+
+    <div class="how-grid">
+      <div class="how-card">
+        <div class="how-icon blue">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"/>
+          </svg>
+        </div>
+        <h3>You Place an Order</h3>
+        <p>Simply select your bouquet and provide the cemetery details. We handle the rest.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon green">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/>
+            <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+          </svg>
+        </div>
+        <h3>Local Florists Create</h3>
+        <p>We partner with trusted local flower shops who carefully craft each arrangement.</p>
+      </div>
+      <div class="how-card">
+        <div class="how-icon purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <rect x="1" y="3" width="15" height="13" rx="1"/>
+            <path d="M16 8h4l3 5v3h-7V8z"/>
+            <circle cx="5.5" cy="18.5" r="2.5"/>
+            <circle cx="18.5" cy="18.5" r="2.5"/>
+          </svg>
+        </div>
+        <h3>Delivered with Care</h3>
+        <p>Fresh flowers are delivered directly to the cemetery, honoring your loved ones.</p>
+      </div>
+    </div>
+
+    <div class="section-divider"></div>
+
+    <!-- Our Commitment -->
+    <div class="commitment-section">
+      <h2>Our Commitment</h2>
+      <p>Every arrangement is handled with the utmost care and respect. We're honored to be part of your journey in remembering those who meant the world to you.</p>
+      <p>From our family to yours, thank you for trusting us with something so meaningful.</p>
+    </div>
+
+  </div>
+
+  <!-- ── Footer ── -->
+  <footer>
+    &copy; 2026 GardenOfEchoes. Honoring memories, one bouquet at a time.
+  </footer>
+
+</body>
+</html>
