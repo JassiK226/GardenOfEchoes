@@ -904,16 +904,18 @@ app.post('/generate-preview', async (req, res) => {
     const { prompt } = req.body;
 
     const response = await fetch(
-      'https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({ inputs: prompt })
-      }
-    );
+    'https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5',
+    {
+      method: 'POST',
+      headers: {
+        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        inputs: prompt
+      })
+    }
+  );
 
     if (!response.ok) {
       const errorText = await response.text();
