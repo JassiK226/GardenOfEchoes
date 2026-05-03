@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>All Flower Bouquets</title>
+  <title>All Flower Products</title>
   <style>
     * {
       margin: 0;
@@ -577,52 +577,41 @@
 
   <!-- ── Category Navigation ── -->
   <nav class="cat-nav">
-    <div class="cat-item">
-      <a href="#">Anniversary <span class="arrow">▾</span></a>
-      <div class="dropdown">
-        <a href="#">Anniversary Flowers</a>
-        <a href="#">Anniversary Wreaths</a>
-        <a href="#">Anniversary Baskets</a>
-      </div>
+  <div class="cat-item">
+    <a href="flowers.html?filter=Anniversary">Anniversary <span class="arrow">▾</span></a>
+    <div class="dropdown">
+      <a href="flowers.html?filter=Anniversary">Anniversary Flowers</a>
     </div>
-    <div class="cat-item">
-      <a href="#">Occasions <span class="arrow">▾</span></a>
-      <div class="dropdown">
-        <a href="#">Birthday</a>
-        <a href="#">Wedding</a>
-        <a href="#">Graduation</a>
-        <a href="#">Get Well Soon</a>
-      </div>
+  </div>
+
+  <div class="cat-item">
+    <a href="flowers.html?filter=Birthday">Occasions <span class="arrow">▾</span></a>
+    <div class="dropdown">
+      <a href="flowers.html?filter=Birthday">Birthday</a>
+      <a href="flowers.html?filter=Get Well">Get Well Soon</a>
+      <a href="flowers.html?filter=Thank You">Thank You</a>
+      <a href="flowers.html?filter=Love and Romance">Love and Romance</a>
     </div>
-    <div class="cat-item">
-      <a href="#">Sympathy <span class="arrow">▾</span></a>
-      <div class="dropdown">
-        <a href="#">Funeral Flowers</a>
-        <a href="#">Sympathy Wreaths</a>
-        <a href="#">Memorial Arrangements</a>
-        <a href="#">Casket Flowers</a>
-      </div>
+  </div>
+
+  <div class="cat-item">
+    <a href="flowers.html?filter=Sympathy">Sympathy <span class="arrow">▾</span></a>
+    <div class="dropdown">
+      <a href="flowers.html?filter=Sympathy">Sympathy Flowers</a>
+      <a href="flowers.html?filter=Funeral">Funeral Flowers</a>
     </div>
-    <div class="cat-item">
-      <a href="#">Flowers <span class="arrow">▾</span></a>
-      <div class="dropdown">
-        <a href="#">Roses</a>
-        <a href="#">Lilies</a>
-        <a href="#">Orchids</a>
-        <a href="#">Tulips</a>
-        <a href="#">Sunflowers</a>
-      </div>
+  </div>
+
+  <div class="cat-item">
+    <a href="flowers.html">Flowers <span class="arrow">▾</span></a>
+    <div class="dropdown">
+      <a href="flowers.html">All Flowers</a>
+      <a href="flowers.html?filter=Vase Arrangements">Vase Arrangements</a>
+      <a href="flowers.html?filter=Centerpieces">Centerpieces</a>
+      <a href="flowers.html?filter=Plants">Plants</a>
     </div>
-    <div class="cat-item">
-      <a href="#">Other Items <span class="arrow">▾</span></a>
-      <div class="dropdown">
-        <a href="#">Vases</a>
-        <a href="#">Gift Baskets</a>
-        <a href="#">Candles</a>
-        <a href="#">Cards</a>
-      </div>
-    </div>
-  </nav>
+  </div>
+</nav>
 
   <!-- ── Hero ── -->
   <div class="hero">
@@ -764,6 +753,9 @@ function parseCSV(text) {
 
 async function loadFloristProducts() {
   try {
+    const params = new URLSearchParams(window.location.search);
+    const filter = params.get('filter');
+
     const res = await fetch('FloristOneCatalog.csv');
     const csvText = await res.text();
     const rows = parseCSV(csvText);
@@ -773,16 +765,41 @@ async function loadFloristProducts() {
     const nameIndex = headers.indexOf('Name');
     const priceIndex = headers.indexOf('Price');
     const imageIndex = headers.indexOf('Detail Image');
+    const categoryIndex = headers.indexOf('Category');
+
+    const filterIndex = filter ? headers.indexOf(filter) : -1;
 
     const container = document.getElementById('flowerProducts');
+    const title = document.querySelector('.shop-section-title');
+
     container.innerHTML = '';
+
+    if (filter && title) {
+      title.textContent = filter + ' Flowers';
+    } else if (title) {
+      title.textContent = 'All Flower Bouquets';
+    }
 
     rows.slice(1).forEach(row => {
       const name = row[nameIndex];
-      const price = Number(row[priceIndex]).toFixed(2);
-      let image = row[imageIndex];
+      const priceValue = Number(row[priceIndex]);
+      const price = priceValue.toFixed(2);
+      const image = row[imageIndex];
+      const category = row[categoryIndex];
 
-        if (!name || !price || !image || !image.startsWith('http')) return;
+      if (!name || !price || !image || !image.startsWith('http')) return;
+
+      let matchesFilter = true;
+
+      if (filter) {
+        const isOccasionMatch = filterIndex !== -1 && row[filterIndex] === '1';
+        const isCategoryMatch = category && category.toLowerCase().includes(filter.toLowerCase());
+        const isNameMatch = name.toLowerCase().includes(filter.toLowerCase());
+
+        matchesFilter = isOccasionMatch || isCategoryMatch || isNameMatch;
+      }
+
+      if (!matchesFilter) return;
 
       const card = document.createElement('div');
       card.className = 'real-product-card';
@@ -798,6 +815,10 @@ async function loadFloristProducts() {
 
       container.appendChild(card);
     });
+
+    if (container.innerHTML === '') {
+      container.innerHTML = '<p>No products found for this category.</p>';
+    }
 
   } catch (err) {
     console.error('Error loading FloristOne CSV:', err);
