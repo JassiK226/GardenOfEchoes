@@ -899,6 +899,40 @@ app.get('/donations', async (req, res) => {
   }
 });
 
+app.post('/generate-preview', async (req, res) => {
+  try {
+    const { prompt } = req.body;
+
+    const response = await fetch(
+      'https://api-inference.huggingface.co/models/runwayml/stable-diffusion-v1-5',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ inputs: prompt })
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(errorText);
+      return res.status(500).json({ error: 'Error generating image' });
+    }
+
+    const imageBuffer = await response.arrayBuffer();
+    const base64Image = Buffer.from(imageBuffer).toString('base64');
+
+    res.json({
+      image: `data:image/png;base64,${base64Image}`
+    });
+  } catch (err) {
+    console.error(err);
+    res.status(500).json({ error: 'Something went wrong' });
+  }
+});
+
 // Set server port from environment, or use 3000 if none is provided
 const PORT = process.env.PORT || 3000;
 
