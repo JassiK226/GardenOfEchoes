@@ -904,38 +904,41 @@ app.post('/generate-preview', async (req, res) => {
     const { prompt } = req.body;
 
     const response = await fetch(
-    'https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-xl-base-1.0',
-    {
-      method: 'POST',
-      headers: {
-        Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        inputs: prompt
-      })
-    }
-  );
+      'https://router.huggingface.co/hf-inference/models/stabilityai/stable-diffusion-xl-base-1.0',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          inputs: prompt
+        })
+      }
+    );
 
     if (!response.ok) {
       const errorText = await response.text();
-      console.error(errorText);
-      return res.status(500).json({ error: 'Error generating image' });
+      console.error('HUGGING FACE ERROR:', errorText);
+      return res.status(500).json({
+        error: 'Hugging Face request failed',
+        details: errorText
+      });
     }
 
     const imageBuffer = await response.arrayBuffer();
     const base64Image = Buffer.from(imageBuffer).toString('base64');
 
     res.json({
-      image: `data:image/png;base64,${base64Image}`
+      imageUrl: `data:image/png;base64,${base64Image}`
     });
-  } catch (err) {
-  console.error("IMAGE GENERATION ERROR:", err.response?.data || err.message || err);
 
-  res.status(500).json({
-    error: "Error generating image",
-    details: err.response?.data || err.message
-  });
+  } catch (err) {
+    console.error('IMAGE GENERATION ERROR:', err);
+    res.status(500).json({
+      error: 'Error generating image',
+      details: err.message
+    });
   }
 });
 
