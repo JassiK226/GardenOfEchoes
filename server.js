@@ -930,8 +930,12 @@ app.post('/generate-preview', async (req, res) => {
       image: `data:image/png;base64,${base64Image}`
     });
   } catch (err) {
-    console.error(err);
-    res.status(500).json({ error: 'Something went wrong' });
+  console.error("IMAGE GENERATION ERROR:", err.response?.data || err.message || err);
+
+  res.status(500).json({
+    error: "Error generating image",
+    details: err.response?.data || err.message
+  });
   }
 });
 
