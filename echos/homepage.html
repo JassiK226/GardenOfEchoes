@@ -650,53 +650,6 @@
 
     <div class="section-divider-line"></div>
 
-    <!-- ── Best Sellers Section ── -->
-    <div class="shop-section">
-      <div class="shop-section-header">
-        <h2 class="shop-section-title">Best Sellers</h2>
-        <a href="#" class="shop-section-link">View All →</a>
-      </div>
-      <div class="real-product-grid">
-
-        <div class="real-product-card">
-          <img src="bestseller1.webp" alt="Sunflower Cemetery Bush">
-          <div class="real-card-info">
-            <div class="real-card-name">Yellow Sunflower Cemetery Bush</div>
-            <div class="real-card-price">$29.99</div>
-            <div class="real-card-btn">Add to Cart</div>
-          </div>
-        </div>
-
-        <div class="real-product-card">
-          <img src="bestseller2.webp" alt="Mixed Iris & Orchid Bush">
-          <div class="real-card-info">
-            <div class="real-card-name">Mixed Iris & Orchid Memorial Bush</div>
-            <div class="real-card-price">$32.99</div>
-            <div class="real-card-btn">Add to Cart</div>
-          </div>
-        </div>
-
-        <div class="real-product-card">
-          <img src="bestseller3.webp" alt="Purple & Yellow Iris Mix">
-          <div class="real-card-info">
-            <div class="real-card-name">Purple & Yellow Iris Cemetery Bush</div>
-            <div class="real-card-price">$32.99 <span class="orig">$39.99</span></div>
-            <div class="real-card-btn">Add to Cart</div>
-          </div>
-        </div>
-
-        <div class="real-product-card">
-          <img src="bestseller4.webp" alt="White & Blue Mixed Floral Bush">
-          <div class="real-card-info">
-            <div class="real-card-name">White & Blue Mixed Floral Bush</div>
-            <div class="real-card-price">$32.99</div>
-            <div class="real-card-btn">Add to Cart</div>
-          </div>
-        </div>
-
-      </div>
-    </div>
-
     <div class="section-divider-line" style="margin-bottom:32px;"></div>
 
 
@@ -824,7 +777,7 @@ async function loadFloristProducts() {
     const container = document.getElementById('flowerProducts');
     container.innerHTML = '';
 
-    rows.slice(1).forEach(row => {
+    rows.slice(1, 15).forEach(row => {
       const name = row[nameIndex];
       const price = Number(row[priceIndex]).toFixed(2);
       const image = row[imageIndex];
