@@ -644,45 +644,8 @@
         <h2 class="shop-section-title">Flower Bouquets</h2>
         <a href="#" class="shop-section-link">View All →</a>
       </div>
-      <div class="real-product-grid">
 
-        <div class="real-product-card">
-          <img src="bouquet2.jpg" alt="Red & White Rose Bud Bouquet">
-          <div class="real-card-info">
-            <div class="real-card-name">Red & White Rose Bud Cemetery Bouquet</div>
-            <div class="real-card-price">$34.99</div>
-            <div class="real-card-btn">Add to Cart</div>
-          </div>
-        </div>
-
-        <div class="real-product-card">
-          <img src="bouquet3.jpg" alt="Yellow Rose Bud Bouquet">
-          <div class="real-card-info">
-            <div class="real-card-name">Yellow Rose Bud Memorial Bouquet</div>
-            <div class="real-card-price">$34.99</div>
-            <div class="real-card-btn">Add to Cart</div>
-          </div>
-        </div>
-
-        <div class="real-product-card">
-          <img src="bouquet4.jpg" alt="Blue Rose Bud Bouquet">
-          <div class="real-card-info">
-            <div class="real-card-name">Blue Rose Bud Sympathy Bouquet</div>
-            <div class="real-card-price">$34.99</div>
-            <div class="real-card-btn">Add to Cart</div>
-          </div>
-        </div>
-
-        <div class="real-product-card">
-          <img src="bouquet5.jpg" alt="Orange & Yellow Rose Bud Bouquet">
-          <div class="real-card-info">
-            <div class="real-card-name">Orange & Yellow Rose Bud Bouquet</div>
-            <div class="real-card-price">$34.99</div>
-            <div class="real-card-btn">Add to Cart</div>
-          </div>
-        </div>
-
-      </div>
+      <div class="real-product-grid" id="flowerProducts"></div>
     </div>
 
     <div class="section-divider-line"></div>
@@ -806,6 +769,89 @@
       window.location.href = 'login.html';
     }
   }
+</script>
+<script>
+function parseCSV(text) {
+  const rows = [];
+  let row = [];
+  let value = '';
+  let insideQuotes = false;
+
+  for (let i = 0; i < text.length; i++) {
+    const char = text[i];
+    const next = text[i + 1];
+
+    if (char === '"' && insideQuotes && next === '"') {
+      value += '"';
+      i++;
+    } else if (char === '"') {
+      insideQuotes = !insideQuotes;
+    } else if (char === ',' && !insideQuotes) {
+      row.push(value);
+      value = '';
+    } else if ((char === '\n' || char === '\r') && !insideQuotes) {
+      if (value || row.length) {
+        row.push(value);
+        rows.push(row);
+        row = [];
+        value = '';
+      }
+    } else {
+      value += char;
+    }
+  }
+
+  if (value || row.length) {
+    row.push(value);
+    rows.push(row);
+  }
+
+  return rows;
+}
+
+async function loadFloristProducts() {
+  try {
+    const res = await fetch('FloristOneCatalog.csv');
+    const csvText = await res.text();
+    const rows = parseCSV(csvText);
+
+    const headers = rows[0].map(h => h.trim());
+
+    const nameIndex = headers.indexOf('Name');
+    const priceIndex = headers.indexOf('Price');
+    const imageIndex = headers.indexOf('Detail Image');
+
+    const container = document.getElementById('flowerProducts');
+    container.innerHTML = '';
+
+    rows.slice(1, 9).forEach(row => {
+      const name = row[nameIndex];
+      const price = Number(row[priceIndex]).toFixed(2);
+      const image = row[imageIndex];
+
+      if (!name || !price || !image) return;
+
+      const card = document.createElement('div');
+      card.className = 'real-product-card';
+
+      card.innerHTML = `
+        <img src="${image}" alt="${name}">
+        <div class="real-card-info">
+          <div class="real-card-name">${name}</div>
+          <div class="real-card-price">$${price}</div>
+          <div class="real-card-btn">Add to Cart</div>
+        </div>
+      `;
+
+      container.appendChild(card);
+    });
+
+  } catch (err) {
+    console.error('Error loading FloristOne CSV:', err);
+  }
+}
+
+window.addEventListener('DOMContentLoaded', loadFloristProducts);
 </script>
 
 </body>
