@@ -642,7 +642,7 @@
     <div class="shop-section">
       <div class="shop-section-header">
         <h2 class="shop-section-title">Flower Bouquets</h2>
-        <a href="#" class="shop-section-link">View All →</a>
+        <a href="#flowerProducts" class="shop-section-link">View All →</a>
       </div>
 
       <div class="real-product-grid" id="flowerProducts"></div>
@@ -824,7 +824,7 @@ async function loadFloristProducts() {
     const container = document.getElementById('flowerProducts');
     container.innerHTML = '';
 
-    rows.slice(1, 9).forEach(row => {
+    rows.slice(1).forEach(row => {
       const name = row[nameIndex];
       const price = Number(row[priceIndex]).toFixed(2);
       const image = row[imageIndex];
