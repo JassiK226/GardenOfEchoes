@@ -320,6 +320,14 @@
             Preview how your selected flowers and items may look near the gravestone before placing your order.
         </p>
 
+    <div class="form-group">
+    <label for="grave-type">Memorial Type</label>
+    <select id="grave-type">
+        <option value="upright tombstone">Upright tombstone</option>
+        <option value="flat grave marker">Flat grave marker</option>
+    </select>
+    </div>
+
         <div class="form-group">
             <label for="placement-notes">Placement Instructions</label>
             <textarea 
@@ -612,24 +620,51 @@ async function generatePreview() {
   const status = document.getElementById('previewStatus');
   const previewBox = document.getElementById('previewBox');
   const previewImage = document.getElementById('previewImage');
+  const graveType = document.getElementById('grave-type')?.value || 'upright tombstone';  
+  const productNames = cart.map(item => item.name).join(', ');
+  const productImages = cart.map(item => item.image).join(', ');
 
   if (cart.length === 0) {
     alert('Your cart is empty.');
     return;
   }
 
-  status.textContent = 'Generating preview... this may take a moment.';
+  const btn = event.target;
+btn.disabled = true;
+btn.innerText = 'Generating...';
+
+  status.textContent = 'Generating preview... this may take 10-20 seconds.';
   previewBox.style.display = 'none';
+  previewImage.src = '';
 
-  const productNames = cart.map(item => item.name).join(', ');
+const prompt = `
+Create a high-quality, realistic cemetery memorial scene.
 
-  const prompt = `
-    A respectful cemetery memorial scene with a clean gravestone.
-    Include these items: ${productNames}.
-    Placement instructions: ${placementNotes || 'Arrange the items neatly around the gravestone.'}
-    The scene should look peaceful, realistic, tasteful, and appropriate for a memorial.
-    No people. No text on the gravestone.
-  `;
+Scene:
+- A peaceful cemetery environment with soft lighting
+- Clean grass and natural surroundings
+- No people in the image
+
+Memorial:
+- Type: ${graveType}
+- The memorial stone must be completely blank
+- No names, no dates, no text, no engravings at all
+
+Products to include:
+${productNames}
+
+Reference images for style:
+${productImages}
+
+Placement instructions:
+${placementNotes || 'Arrange the flowers neatly and symmetrically around the memorial.'}
+
+Important:
+- Match the flowers to the reference images in color and style
+- Keep the arrangement elegant and respectful
+- Ensure the composition looks realistic and balanced
+- Do NOT include any text anywhere in the image
+`;
 
   try {
     const res = await fetch('/generate-preview', {
@@ -640,7 +675,7 @@ async function generatePreview() {
 
     const data = await res.json();
 
-    if (res.ok) {
+    if (res.ok && data.imageUrl) {
       previewImage.src = data.imageUrl;
       previewBox.style.display = 'block';
       status.textContent = 'Preview generated. You can adjust the instructions and generate again.';
@@ -652,6 +687,9 @@ async function generatePreview() {
     console.error(err);
     status.textContent = 'Something went wrong while generating the preview.';
   }
+  
+  btn.disabled = false;
+  btn.innerText = 'Generate Preview';
 }
 
 function finishOrder() {
