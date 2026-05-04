@@ -221,7 +221,7 @@
     </a>
 
     <!-- 5. Cart -->
-    <a href="#">
+    <a href="cart.html">
       <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
         <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
         <line x1="3" y1="6" x2="21" y2="6"/>
@@ -263,7 +263,7 @@
     <div class="product-right">
       <div class="product-price" id="price"></div>
       <p class="product-description" id="description"></p>
-      <button class="add-btn">Add to Cart</button>
+      <button class="add-btn" onclick="addToCart()">Add to Cart</button>
     </div>
   </div>
 
@@ -284,6 +284,46 @@
     function goBack() {
     window.history.back();
     }
+</script>
+<script>
+    async function addToCart() {
+  const userEmail = localStorage.getItem('email');
+
+  if (!userEmail) {
+    alert('Please log in before adding items to your cart.');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const product = JSON.parse(localStorage.getItem('selectedProduct'));
+
+  const data = {
+    userEmail: userEmail,
+    productName: product.name,
+    productPrice: product.price,
+    productImage: product.image
+  };
+
+  try {
+    const res = await fetch('/cart', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      alert('Added to cart!');
+    } else {
+      alert(result.error || 'Error adding to cart');
+    }
+
+  } catch (err) {
+    console.error(err);
+    alert('Something went wrong.');
+  }
+}
 </script>
 
 </body>

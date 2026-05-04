@@ -942,6 +942,87 @@ app.post('/generate-preview', async (req, res) => {
   }
 });
 
+// Add item to cart
+app.post('/cart', async (req, res) => {
+  try {
+    const { userEmail, productName, productPrice, productImage } = req.body;
+
+    if (!userEmail) {
+      return res.status(400).json({ error: 'User must be logged in' });
+    }
+
+    const existingItem = await pool.query(
+      `SELECT * FROM cart_items 
+       WHERE user_email = $1 AND product_name = $2`,
+      [userEmail, productName]
+    );
+
+    if (existingItem.rows.length > 0) {
+      const updatedItem = await pool.query(
+        `UPDATE cart_items
+         SET quantity = quantity + 1
+         WHERE user_email = $1 AND product_name = $2
+         RETURNING *`,
+        [userEmail, productName]
+      );
+
+      return res.json(updatedItem.rows[0]);
+    }
+
+    const newItem = await pool.query(
+      `INSERT INTO cart_items
+       (user_email, product_name, product_price, product_image, quantity)
+       VALUES ($1, $2, $3, $4, 1)
+       RETURNING *`,
+      [userEmail, productName, productPrice, productImage]
+    );
+
+    res.json(newItem.rows[0]);
+
+  } catch (err) {
+    console.error('CART ERROR:', err.message);
+    res.status(500).json({ error: 'Error adding item to cart' });
+  }
+});
+
+// Get cart items for one user
+app.get('/cart/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const result = await pool.query(
+      `SELECT * FROM cart_items 
+       WHERE user_email = $1 
+       ORDER BY id ASC`,
+      [email]
+    );
+
+    res.json(result.rows);
+
+  } catch (err) {
+    console.error('GET CART ERROR:', err.message);
+    res.status(500).json({ error: 'Error getting cart' });
+  }
+});
+
+// Remove item from cart
+app.delete('/cart/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    await pool.query(
+      `DELETE FROM cart_items WHERE id = $1`,
+      [id]
+    );
+
+    res.json({ message: 'Item removed from cart' });
+
+  } catch (err) {
+    console.error('DELETE CART ERROR:', err.message);
+    res.status(500).json({ error: 'Error removing item' });
+  }
+});
+
 // Set server port from environment, or use 3000 if none is provided
 const PORT = process.env.PORT || 3000;
 

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Your Cart</title>
+
+  <style>
+    body {
+      font-family: Arial;
+      padding: 40px;
+    }
+
+    .cart-item {
+      display: flex;
+      gap: 20px;
+      margin-bottom: 25px;
+      border-bottom: 1px solid #eee;
+      padding-bottom: 20px;
+    }
+
+    .cart-item img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+    }
+
+    .cart-info h3 {
+      margin-bottom: 5px;
+    }
+
+    .remove-btn {
+      background: #c0392b;
+      color: white;
+      border: none;
+      padding: 6px 12px;
+      cursor: pointer;
+    }
+
+    .total {
+      font-size: 22px;
+      font-weight: bold;
+      margin-top: 30px;
+    }
+  </style>
+</head>
+
+  <!-- ══ Main Nav ══ -->
+  <nav class="main-nav">
+  <a href="homepage.html" class="logo">
+    <img src="logo.png" alt="Garden of Echoes">
+  </a>
+
+  <div class="main-nav-links">
+
+    <!-- 1. Garden Program -->
+    <a href="subscriptions.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span>The Garden Program</span>
+    </a>
+
+    <!-- 2. About Us -->
+    <a href="about.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span>About Us</span>
+    </a>
+
+    <!-- 3. Contact -->
+    <a href="contact.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 
+        19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 
+        19.79 19.79 0 0 1 1.61 3.4 
+        2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 
+        c.127.96.361 1.903.7 2.81 
+        a2 2 0 0 1-.45 2.11L7.91 9 
+        a16 16 0 0 0 6 6l1.27-1.27 
+        a2 2 0 0 1 2.11-.45 
+        c.907.339 1.85.573 2.81.7 
+        A2 2 0 0 1 22 16.92z"/>
+      </svg>
+      <span>Contact Us</span>
+    </a>
+
+    <!-- 4. Donation -->
+    <a href="donation.html" class="nav-donation">
+    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+      <path d="M12 21s-6-4.35-9-8.5C1 9 3 5 6.5 5c2 0 3.5 1.5 3.5 1.5S11.5 5 13.5 5C17 5 19 9 21 12.5 18 16.65 12 21 12 21z"/>
+    </svg>
+    <span>Donation</span>
+  </a>
+
+    <!-- 5. Cart -->
+    <a href="cart.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      <span>Cart</span>
+    </a>
+
+    <!-- 6. My Account -->
+    <a href="#" onclick="goToAccount(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span>My Account</span>
+    </a>
+
+  </div>
+</nav>
+
+<body>
+
+<h1>Your Cart</h1>
+
+<div id="cartContainer"></div>
+
+<div class="total" id="cartTotal"></div>
+
+<script>
+async function loadCart() {
+  const userEmail = localStorage.getItem('email');
+
+  if (!userEmail) {
+    alert('Please log in');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const res = await fetch(`/cart/${userEmail}`);
+  const items = await res.json();
+
+  const container = document.getElementById('cartContainer');
+  const totalBox = document.getElementById('cartTotal');
+
+  container.innerHTML = '';
+  let total = 0;
+
+  items.forEach(item => {
+    total += Number(item.product_price) * item.quantity;
+
+    container.innerHTML += `
+      <div class="cart-item">
+        <img src="${item.product_image}">
+        <div class="cart-info">
+          <h3>${item.product_name}</h3>
+          <p>$${item.product_price}</p>
+          <p>Quantity: ${item.quantity}</p>
+          <button class="remove-btn" onclick="removeItem(${item.id})">Remove</button>
+        </div>
+      </div>
+    `;
+  });
+
+  totalBox.textContent = "Total: $" + total.toFixed(2);
+}
+
+async function removeItem(id) {
+  await fetch(`/cart/${id}`, {
+    method: 'DELETE'
+  });
+
+  loadCart();
+}
+
+loadCart();
+</script>
+
+</body>
+</html>
