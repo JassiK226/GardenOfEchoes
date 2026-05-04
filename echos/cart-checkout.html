@@ -344,7 +344,7 @@
   <p id="previewStatus" style="margin-top:12px; font-size:13px; color:#777;"></p>
 
   <div id="previewBox" style="display:none; margin-top:18px;">
-    <canvas id="previewCanvas" width="900" height="600" style="width:100%; border-radius:10px; border:1px solid #eee;"></canvas>
+    <canvas id="previewCanvas" width="1400" height="900" style="width:100%; border-radius:10px; border:1px solid #eee;"></canvas>
   </div>
 </div>
 
@@ -732,7 +732,6 @@ async function generatePreview() {
   baseImg.onload = async () => {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
-
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
 
@@ -746,32 +745,33 @@ async function generatePreview() {
         productImg.onload = () => {
           let x = 360;
           let y = 400;
-          let w = 160;
-          let h = 160;
+          let w = 130;
+          let h = 130;
 
           const name = productName.toLowerCase();
+          const shortName = name.split(' ').slice(0, 2).join(' ');
+            const positions = [
+            { x: 170, y: 390 }, // left side
+            { x: 560, y: 390 }, // right side
+            { x: 365, y: 430 }, // front center
+            { x: 250, y: 470 }, // front left
+            { x: 480, y: 470 }  // front right
+            ];
 
-          if (notes.includes('right') && notes.includes(name.split(' ')[0])) {
+            if (notes.includes('right') && notes.includes(shortName)) {
             x = 560;
             y = 390;
-          } else if (notes.includes('left') && notes.includes(name.split(' ')[0])) {
-            x = 180;
+            } else if (notes.includes('left') && notes.includes(shortName)) {
+            x = 170;
             y = 390;
-          } else if (notes.includes('front') && notes.includes(name.split(' ')[0])) {
-            x = 370;
+            } else if (notes.includes('front') && notes.includes(shortName)) {
+            x = 365;
             y = 430;
-          } else {
-            if (i === 0) {
-              x = 220;
-              y = 395;
-            } else if (i === 1) {
-              x = 540;
-              y = 395;
             } else {
-              x = 330 + i * 45;
-              y = 430;
+            const pos = positions[i % positions.length];
+            x = pos.x;
+            y = pos.y;
             }
-          }
 
           ctx.drawImage(productImg, x, y, w, h);
           resolve();
