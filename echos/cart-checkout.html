@@ -314,6 +314,32 @@
       </div>
     </div>
 
+    <div class="section-card">
+        <h2>AI Memorial Preview</h2>
+        <p style="font-size:14px; color:#666; line-height:1.6; margin-bottom:16px;">
+            Preview how your selected flowers and items may look near the gravestone before placing your order.
+        </p>
+
+        <div class="form-group">
+            <label for="placement-notes">Placement Instructions</label>
+            <textarea 
+            id="placement-notes"
+            placeholder="Example: Place the roses on the left side of the gravestone and the candle in front."
+            style="width:100%; min-height:90px; padding:12px; border:1px solid #ccc; border-radius:5px; font-family:inherit;"
+            ></textarea>
+        </div>
+
+        <button type="button" class="place-btn" onclick="generatePreview()">
+            Generate Preview
+        </button>
+
+        <p id="previewStatus" style="margin-top:12px; font-size:13px; color:#777;"></p>
+
+        <div id="previewBox" style="display:none; margin-top:18px;">
+            <img id="previewImage" alt="AI memorial preview" style="width:100%; border-radius:10px; border:1px solid #eee;">
+        </div>
+    </div>
+
     <aside class="summary-card">
       <h2>Order Summary</h2>
       <div id="summaryItems"></div>
@@ -554,6 +580,7 @@ async function placeOrder() {
     zipCode: document.getElementById('zip').value,
     cardNumber: document.getElementById('card-number').value,
     total,
+    placementNotes: document.getElementById('placement-notes').value,
     items: cart
   };
 
@@ -575,6 +602,55 @@ async function placeOrder() {
   } catch (err) {
     console.error(err);
     alert('Something went wrong.');
+  }
+  
+}
+
+async function generatePreview() {
+  const cart = getCart();
+  const placementNotes = document.getElementById('placement-notes').value.trim();
+  const status = document.getElementById('previewStatus');
+  const previewBox = document.getElementById('previewBox');
+  const previewImage = document.getElementById('previewImage');
+
+  if (cart.length === 0) {
+    alert('Your cart is empty.');
+    return;
+  }
+
+  status.textContent = 'Generating preview... this may take a moment.';
+  previewBox.style.display = 'none';
+
+  const productNames = cart.map(item => item.name).join(', ');
+
+  const prompt = `
+    A respectful cemetery memorial scene with a clean gravestone.
+    Include these items: ${productNames}.
+    Placement instructions: ${placementNotes || 'Arrange the items neatly around the gravestone.'}
+    The scene should look peaceful, realistic, tasteful, and appropriate for a memorial.
+    No people. No text on the gravestone.
+  `;
+
+  try {
+    const res = await fetch('/generate-preview', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ prompt })
+    });
+
+    const data = await res.json();
+
+    if (res.ok) {
+      previewImage.src = data.imageUrl;
+      previewBox.style.display = 'block';
+      status.textContent = 'Preview generated. You can adjust the instructions and generate again.';
+    } else {
+      status.textContent = 'Error generating preview.';
+      console.error(data);
+    }
+  } catch (err) {
+    console.error(err);
+    status.textContent = 'Something went wrong while generating the preview.';
   }
 }
 
