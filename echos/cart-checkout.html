@@ -668,7 +668,25 @@ async function generatePreview() {
       const pos = positions[placement];
 
       const productImg = new Image();
-      productImg.src = productImage;
+
+        try {
+        const bgRes = await fetch('/remove-bg', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ imageUrl: productImage })
+        });
+
+        const bgData = await bgRes.json();
+
+        if (bgRes.ok && bgData.image) {
+            productImg.src = bgData.image; // transparent version only for preview
+        } else {
+            productImg.src = productImage; // fallback to original
+        }
+        } catch (err) {
+        console.error('Background removal failed:', err);
+        productImg.src = productImage; // fallback
+        }
 
       await new Promise(resolve => {
         productImg.onload = () => {
