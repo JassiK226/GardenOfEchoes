@@ -761,6 +761,9 @@ async function loadFloristProducts() {
     const nameIndex = headers.indexOf('Name');
     const priceIndex = headers.indexOf('Price');
     const imageIndex = headers.indexOf('Detail Image');
+    const descIndex = headers.indexOf('Description');
+    const codeIndex = headers.indexOf('Code');
+    const categoryIndex = headers.indexOf('Category');
 
     const container = document.getElementById('flowerProducts');
     container.innerHTML = '';
@@ -768,6 +771,9 @@ async function loadFloristProducts() {
     rows.slice(1, 17).forEach(row => {
       const name = row[nameIndex];
       const price = Number(row[priceIndex]).toFixed(2);
+      const description = row[descIndex];
+      const code = row[codeIndex];
+      const category = row[categoryIndex];
       let image = row[imageIndex];
 
       if (!name || !price || !image || !image.startsWith('http')) return;
@@ -779,7 +785,10 @@ async function loadFloristProducts() {
         const productData = {
           name,
           price,
-          image
+          image,
+          description,
+          code,
+          category
         };
 
         localStorage.setItem('selectedProduct', JSON.stringify(productData));

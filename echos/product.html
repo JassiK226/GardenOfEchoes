@@ -35,6 +35,9 @@
   <h1 id="name"></h1>
   <img id="image">
   <p class="price" id="price"></p>
+  <p id="description"></p>
+  <p id="code"></p>
+  <p id="category"></p>
 
   <button>Add to Cart</button>
 
@@ -42,9 +45,13 @@
     const product = JSON.parse(localStorage.getItem('selectedProduct'));
 
     if (product) {
-      document.getElementById('name').innerText = product.name;
-      document.getElementById('price').innerText = "$" + product.price;
-      document.getElementById('image').src = product.image;
+    document.getElementById('name').innerText = product.name;
+    document.getElementById('price').innerText = "$" + product.price;
+    document.getElementById('image').src = product.image;
+
+    document.getElementById('description').innerText = product.description || '';
+    document.getElementById('code').innerText = product.code ? "Product Code: " + product.code : '';
+    document.getElementById('category').innerText = product.category ? "Category: " + product.category : '';
     }
   </script>
 

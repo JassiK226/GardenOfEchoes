@@ -764,6 +764,8 @@ async function loadFloristProducts() {
     const nameIndex = headers.indexOf('Name');
     const priceIndex = headers.indexOf('Price');
     const imageIndex = headers.indexOf('Detail Image');
+    const descIndex = headers.indexOf('Description');
+    const codeIndex = headers.indexOf('Code');
     const categoryIndex = headers.indexOf('Category');
 
     const filterIndex = filter ? headers.indexOf(filter) : -1;
@@ -784,6 +786,8 @@ async function loadFloristProducts() {
       const priceValue = Number(row[priceIndex]);
       const price = priceValue.toFixed(2);
       const image = row[imageIndex];
+      const description = row[descIndex];
+      const code = row[codeIndex];
       const category = row[categoryIndex];
 
       if (!name || !price || !image || !image.startsWith('http')) return;
@@ -805,10 +809,13 @@ async function loadFloristProducts() {
 
       card.onclick = () => {
         const productData = {
-          name,
-          price,
-          image
-        };
+            name,
+            price,
+            image,
+            description,
+            code,
+            category
+            };
 
         localStorage.setItem('selectedProduct', JSON.stringify(productData));
         window.location.href = 'product.html';
