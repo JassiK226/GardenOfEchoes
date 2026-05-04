@@ -85,25 +85,23 @@
 
     /* ── Category Nav ── */
     .cat-nav {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 0;
-      padding: 0 28px;
-      height: 44px;
-      background: #fafafa;
-      border-bottom: 1px solid #e8e8e8;
-    }
-    .cat-nav a {
-      padding: 8px 18px;
-      font-size: 13.5px;
-      color: #444;
-      display: flex;
-      align-items: center;
-      gap: 3px;
-      position: relative;
-    }
-    .cat-nav a:hover { color: #c0392b; }
+  display: flex;
+  justify-content: center;
+  height: 44px;
+  align-items: center;
+  background: #d85b6a; /* pink */
+  border-bottom: none;
+  gap: 28px;
+}
+
+.cat-nav a {
+  font-size: 13.5px;
+  color: white;
+}
+
+.cat-nav a:hover {
+  opacity: 0.8;
+}
     .cat-nav a .arrow { font-size: 10px; margin-top: 1px; }
 
     /* ── Dropdown (hover) ── */
@@ -374,31 +372,73 @@
 
   <!-- ── Main Navigation ── -->
   <nav class="main-nav">
-    <a href="homepage.html" class="logo"><img src="logo.png" alt="Garden of Echoes"></a>
-    <div class="main-nav-links">
-      <a href="subscriptions.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
-        <span>The Garden Program</span>
-      </a>
-      <a href="#" onclick="goToAccount(event)">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
-        <span>My Account</span>
-      </a>
-      <a href="#">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
-        <span>Cart</span>
-      </a>
-      <a href="about.html">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
-        <span>About Us</span>
-      </a>
-      <a href="contact.html" style="background:#f5f5f5;">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.4 2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 9a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
-        <span>Contact Us</span>
-      </a>
-      <a href="donation.html" class="nav-donation"><span>Donation</span></a>
-    </div>
-  </nav>
+  <a href="homepage.html" class="logo">
+    <img src="logo.png" alt="Garden of Echoes">
+  </a>
+
+  <div class="main-nav-links">
+
+    <!-- 1. Garden Program -->
+    <a href="subscriptions.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+      </svg>
+      <span>The Garden Program</span>
+    </a>
+
+    <!-- 2. About Us -->
+    <a href="about.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <circle cx="12" cy="12" r="10"/>
+        <line x1="12" y1="8" x2="12" y2="12"/>
+        <line x1="12" y1="16" x2="12.01" y2="16"/>
+      </svg>
+      <span>About Us</span>
+    </a>
+
+    <!-- 3. Contact -->
+    <a href="contact.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 
+        19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 
+        19.79 19.79 0 0 1 1.61 3.4 
+        2 2 0 0 1 3.6 1.22h3a2 2 0 0 1 2 1.72 
+        c.127.96.361 1.903.7 2.81 
+        a2 2 0 0 1-.45 2.11L7.91 9 
+        a16 16 0 0 0 6 6l1.27-1.27 
+        a2 2 0 0 1 2.11-.45 
+        c.907.339 1.85.573 2.81.7 
+        A2 2 0 0 1 22 16.92z"/>
+      </svg>
+      <span>Contact Us</span>
+    </a>
+
+    <!-- 4. Donation -->
+    <a href="donation.html" class="nav-donation">
+      <span>Donation</span>
+    </a>
+
+    <!-- 5. Cart -->
+    <a href="#">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/>
+        <line x1="3" y1="6" x2="21" y2="6"/>
+        <path d="M16 10a4 4 0 0 1-8 0"/>
+      </svg>
+      <span>Cart</span>
+    </a>
+
+    <!-- 6. My Account -->
+    <a href="#" onclick="goToAccount(event)">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+        <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/>
+        <circle cx="12" cy="7" r="4"/>
+      </svg>
+      <span>My Account</span>
+    </a>
+
+  </div>
+</nav>
 
   <!-- ── Category Navigation ── -->
   <nav class="cat-nav">
