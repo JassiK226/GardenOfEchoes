@@ -373,6 +373,8 @@
   </aside>
 
 </div>
+</div>
+</main>
 
 <div class="success-overlay" id="successOverlay">
   <div class="success-box">
@@ -557,6 +559,16 @@ document.getElementById('card-exp').addEventListener('input', function () {
   this.value = value;
 });
 
+function getPlacementNotes() {
+  const cart = getCart();
+
+  return cart.map((item, index) => {
+    const name = item.name || item.product_name || item.productName;
+    const placement = document.getElementById(`place-${index}`)?.value || 'front';
+    return `${name}: ${placement}`;
+  }).join('; ');
+}
+
 async function placeOrder() {
   const userEmail = localStorage.getItem('email');
 
@@ -599,7 +611,7 @@ async function placeOrder() {
     zipCode: document.getElementById('zip').value,
     cardNumber: document.getElementById('card-number').value,
     total,
-    placementNotes: document.getElementById('placement-notes').value,
+    placementNotes: getPlacementNotes(),    
     items: cart
   };
 
