@@ -429,8 +429,7 @@
           <span id="cartTotal">$0.00</span>
         </div>
 
-        <a href="cart-checkout.html" class="checkout-btn">Proceed to Checkout</a>
-        <a href="#" onclick="goBackToProducts(event)" class="continue-btn">Continue Shopping</a>      </aside>
+    <a href="#" onclick="goToCheckout(event)" class="checkout-btn">Proceed to Checkout</a>        <a href="#" onclick="goBackToProducts(event)" class="continue-btn">Continue Shopping</a>      </aside>
     </div>
   </main>
 
@@ -511,6 +510,20 @@
 window.addEventListener('DOMContentLoaded', () => {
   loadCart();
 });
+
+function goToCheckout(e) {
+  e.preventDefault();
+
+  const email = localStorage.getItem('email');
+
+  if (!email) {
+    alert('Please log in or sign up before proceeding to checkout.');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  window.location.href = 'cart-checkout.html';
+}
   </script>
 
 </body>
