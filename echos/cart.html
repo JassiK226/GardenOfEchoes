@@ -430,8 +430,7 @@
         </div>
 
         <a href="cart-checkout.html" class="checkout-btn">Proceed to Checkout</a>
-        <a href="flowers.html" class="continue-btn">Continue Shopping</a>
-      </aside>
+        <a href="#" onclick="goBackToProducts()" class="continue-btn">Continue Shopping</a>      </aside>
     </div>
   </main>
 
@@ -508,9 +507,8 @@
     }
 
 window.addEventListener('DOMContentLoaded', () => {
-  localStorage.setItem('lastProductPage', window.location.href);
+  loadCart();
 });
-
   </script>
 
 </body>
