@@ -409,7 +409,7 @@
 </nav>
 
   <main class="cart-page">
-    <button class="back-products-btn" onclick="goBackToProducts()">← Back to Products</button>
+    <button class="back-products-btn" onclick="goBackToProducts()">← Back</button>
 
     <h1 class="cart-title">Your Cart</h1>
 
@@ -422,11 +422,6 @@
         <div class="summary-row">
           <span>Subtotal</span>
           <span id="subtotal">$0.00</span>
-        </div>
-
-        <div class="summary-row">
-          <span>Delivery</span>
-          <span>Calculated at checkout</span>
         </div>
 
         <div class="summary-row total">
@@ -491,11 +486,13 @@
     }
 
     function goBackToProducts() {
-      if (document.referrer && document.referrer.includes(window.location.host)) {
-        window.history.back();
-      } else {
-        window.location.href = 'flowers.html';
-      }
+    const lastPage = localStorage.getItem('lastProductPage');
+
+    if (lastPage) {
+        window.location.href = lastPage;
+    } else {
+        window.location.href = 'flowers.html'; // fallback
+    }
     }
 
     function goToAccount(e) {
@@ -510,7 +507,10 @@
       }
     }
 
-    window.addEventListener('DOMContentLoaded', loadCart);
+window.addEventListener('DOMContentLoaded', () => {
+  localStorage.setItem('lastProductPage', window.location.href);
+});
+
   </script>
 
 </body>
