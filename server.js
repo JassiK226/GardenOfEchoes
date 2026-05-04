@@ -11,7 +11,7 @@ console.log('Server file started');
 
 // Middleware
 app.use(cors()); // allows cross-origin requests
-app.use(express.json()); // lets server read JSON data sent from frontend
+app.use(express.json({ limit: '25mb' })); // lets server read JSON data sent from frontend
 app.use(express.static(path.join(__dirname, 'echos'))); // serves frontend files from echos folder
 
 // Home route - serves homepage.html when user goes to main URL
@@ -1093,22 +1093,31 @@ app.post('/remove-bg', async (req, res) => {
   try {
     const { imageUrl } = req.body;
 
+    if (!imageUrl) {
+      return res.status(400).json({ error: 'No image URL provided' });
+    }
+
+    console.log('Removing background for:', imageUrl);
+
     const response = await fetch('https://api.remove.bg/v1.0/removebg', {
       method: 'POST',
       headers: {
-        'X-Api-Key': process.env.REMOVE_BG_API_KEY,
-        'Content-Type': 'application/json'
+        'X-Api-Key': process.env.REMOVE_BG_API_KEY
       },
-      body: JSON.stringify({
+      body: new URLSearchParams({
         image_url: imageUrl,
-        size: 'auto'
+        size: 'auto',
+        format: 'png'
       })
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('REMOVE BG ERROR:', errorText);
-      return res.status(500).json({ error: 'Background removal failed' });
+      return res.status(500).json({
+        error: 'Background removal failed',
+        details: errorText
+      });
     }
 
     const buffer = await response.arrayBuffer();
