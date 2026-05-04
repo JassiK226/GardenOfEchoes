@@ -409,7 +409,8 @@
 </nav>
 
   <main class="cart-page">
-    <button onclick="goBackToProducts()">← Back to Products</button>
+    <button class="back-products-btn" onclick="goBackToProducts()">← Back</button>
+
     <h1 class="cart-title">Your Cart</h1>
 
     <div class="cart-layout">
@@ -486,11 +487,12 @@
 
     function goBackToProducts() {
     const lastPage = localStorage.getItem('lastProductPage');
-        if (lastPage) {
-            window.location.href = lastPage;
-        } else {
-            window.location.href = 'flowers.html'; // fallback
-        }
+
+    if (lastPage) {
+        window.location.href = lastPage;
+    } else {
+        window.location.href = 'flowers.html'; // fallback
+    }
     }
 
     function goToAccount(e) {
