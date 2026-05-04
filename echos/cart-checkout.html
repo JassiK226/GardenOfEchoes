@@ -43,7 +43,7 @@
 
     .checkout-layout {
       display: grid;
-      grid-template-columns: 1fr 340px;
+      grid-template-columns: 1fr;
       gap: 35px;
       align-items: start;
     }
@@ -336,9 +336,13 @@
 
     <p id="previewStatus" style="margin-top:12px; font-size:13px; color:#777;"></p>
 
-    <div id="previewBox" style="display:none; margin-top:18px;">
-        <canvas id="previewCanvas" width="1400" height="900" style="width:100%; border-radius:10px; border:1px solid #eee;"></canvas>
-    </div>
+    <div id="previewBox" style="
+        display:none; 
+        margin-top:18px;
+        width:100%;
+        ">        
+        <canvas id="previewCanvas" width="1600" height="1000" 
+        style="width:100%; height:320px; object-fit:cover;">
     </div>
 
     <aside class="summary-card">
@@ -690,7 +694,7 @@ async function generatePreview() {
 
       await new Promise(resolve => {
         productImg.onload = () => {
-          ctx.drawImage(productImg, pos.x, pos.y, 190, 190);
+          ctx.drawImage(productImg, pos.x, pos.y, 240, 240);
           resolve();
         };
 
