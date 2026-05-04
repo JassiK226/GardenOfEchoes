@@ -409,7 +409,7 @@
 </nav>
 
   <main class="cart-page">
-    <button class="back-products-btn" onclick="goBackToProducts()">← Back</button>
+    <button class="back-products-btn" onclick="goBackToProducts(event)">← Back</button>
 
     <h1 class="cart-title">Your Cart</h1>
 
@@ -430,7 +430,7 @@
         </div>
 
         <a href="cart-checkout.html" class="checkout-btn">Proceed to Checkout</a>
-        <a href="#" onclick="goBackToProducts()" class="continue-btn">Continue Shopping</a>      </aside>
+        <a href="#" onclick="goBackToProducts(event)" class="continue-btn">Continue Shopping</a>      </aside>
     </div>
   </main>
 
@@ -484,15 +484,17 @@
       loadCart();
     }
 
-    function goBackToProducts() {
-    const lastPage = localStorage.getItem('lastProductPage');
+   function goBackToProducts(e) {
+  if (e) e.preventDefault();
 
-    if (lastPage) {
-        window.location.href = lastPage;
-    } else {
-        window.location.href = 'flowers.html'; // fallback
-    }
-    }
+  const lastPage = localStorage.getItem('lastProductPage');
+
+  if (lastPage && !lastPage.includes('cart.html') && !lastPage.includes('cart-checkout.html')) {
+    window.location.href = lastPage;
+  } else {
+    window.location.href = 'flowers.html';
+  }
+}
 
     function goToAccount(e) {
       e.preventDefault();

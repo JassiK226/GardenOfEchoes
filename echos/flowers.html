@@ -881,9 +881,12 @@ async function loadFloristProducts() {
     console.error('Error loading FloristOne CSV:', err);
   }
 }
-
-window.addEventListener('DOMContentLoaded', loadFloristProducts);
 </script>
-
+<script>
+window.addEventListener('DOMContentLoaded', () => {
+  localStorage.setItem('lastProductPage', window.location.href);
+  loadFloristProducts();
+});
+</script>
 </body>
 </html>
