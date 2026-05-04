@@ -1185,6 +1185,41 @@ app.get('/orders/:email', async (req, res) => {
   }
 });
 
+app.post('/remove-bg', async (req, res) => {
+  try {
+    const { imageUrl } = req.body;
+
+    const response = await fetch('https://api.remove.bg/v1.0/removebg', {
+      method: 'POST',
+      headers: {
+        'X-Api-Key': process.env.REMOVE_BG_API_KEY,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({
+        image_url: imageUrl,
+        size: 'auto'
+      })
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('REMOVE BG ERROR:', errorText);
+      return res.status(500).json({ error: 'Background removal failed' });
+    }
+
+    const buffer = await response.arrayBuffer();
+    const base64Image = Buffer.from(buffer).toString('base64');
+
+    res.json({
+      image: `data:image/png;base64,${base64Image}`
+    });
+
+  } catch (err) {
+    console.error('REMOVE BG SERVER ERROR:', err);
+    res.status(500).json({ error: 'Error removing background' });
+  }
+});
+
 // Set server port from environment, or use 3000 if none is provided
 const PORT = process.env.PORT || 3000;
 
