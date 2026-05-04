@@ -267,6 +267,41 @@
         display: none;
       }
     }
+
+    .cat-item {
+    position: relative;
+    }
+
+    .cat-item:hover .dropdown {
+    display: block;
+    }
+
+    .dropdown {
+    display: none;
+    position: absolute;
+    top: 100%;
+    left: 0;
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    min-width: 180px;
+    z-index: 1000;
+    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+    }
+
+    .dropdown a {
+    display: block;
+    padding: 9px 16px;
+    font-size: 13px;
+    color: #333;
+    border-bottom: 1px solid #f0f0f0;
+    font-weight: 400;
+    white-space: nowrap;
+    }
+
+    .dropdown a:hover {
+    background: #f9f9f9;
+    color: #c0392b;
+    }
   </style>
 </head>
 
@@ -328,11 +363,41 @@
   </nav>
 
   <nav class="cat-nav">
+  <div class="cat-item">
     <a href="flowers.html?filter=Anniversary">Anniversary</a>
+    <div class="dropdown">
+      <a href="flowers.html?filter=Anniversary">Anniversary Flowers</a>
+    </div>
+  </div>
+
+  <div class="cat-item">
     <a href="flowers.html?filter=Birthday">Occasions</a>
+    <div class="dropdown">
+      <a href="flowers.html?filter=Birthday">Birthday</a>
+      <a href="flowers.html?filter=Get Well">Get Well Soon</a>
+      <a href="flowers.html?filter=Thank You">Thank You</a>
+      <a href="flowers.html?filter=Love and Romance">Love and Romance</a>
+    </div>
+  </div>
+
+  <div class="cat-item">
     <a href="flowers.html?filter=Sympathy">Sympathy</a>
+    <div class="dropdown">
+      <a href="flowers.html?filter=Sympathy">Sympathy Flowers</a>
+      <a href="flowers.html?filter=Funeral">Funeral Flowers</a>
+    </div>
+  </div>
+
+  <div class="cat-item">
     <a href="flowers.html">Flowers</a>
-  </nav>
+    <div class="dropdown">
+      <a href="flowers.html">All Flowers</a>
+      <a href="flowers.html?filter=Vase Arrangements">Vase Arrangements</a>
+      <a href="flowers.html?filter=Centerpieces">Centerpieces</a>
+      <a href="flowers.html?filter=Plants">Plants</a>
+    </div>
+  </div>
+</nav>
 
   <main class="cart-page">
     <button class="back-products-btn" onclick="goBackToProducts()">← Back to Products</button>
