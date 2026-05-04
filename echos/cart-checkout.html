@@ -314,38 +314,32 @@
       </div>
     </div>
 
-<div class="section-card">
-  <h2>Memorial Preview</h2>
-  <p style="font-size:14px; color:#666; line-height:1.6; margin-bottom:16px;">
-    Preview how your selected products may look near the memorial before placing your order.
-  </p>
+    <div class="section-card">
+    <h2>Memorial Preview</h2>
+    <p style="font-size:14px; color:#666; line-height:1.6; margin-bottom:16px;">
+        Choose where each product should appear near the memorial.
+    </p>
 
-  <div class="form-group">
-    <label for="grave-type">Memorial Type</label>
-    <select id="grave-type">
-      <option value="single-upright-tombstone.png">Upright Tombstone</option>
-      <option value="flat-grave-marker.png">Flat Grave Marker</option>
-    </select>
-  </div>
+    <div class="form-group">
+        <label for="grave-type">Memorial Type</label>
+        <select id="grave-type">
+        <option value="single-upright-tombstone.png">Upright Tombstone</option>
+        <option value="flat-grave-marker.png">Flat Grave Marker</option>
+        </select>
+    </div>
 
-  <div class="form-group">
-    <label for="placement-notes">Placement Instructions</label>
-    <textarea
-      id="placement-notes"
-      placeholder="Example: Put the pink bouquet on the left and the roses on the right."
-      style="width:100%; min-height:90px; padding:12px; border:1px solid #ccc; border-radius:5px; font-family:inherit;"
-    ></textarea>
-  </div>
+    <div id="placementControls"></div>
 
-  <button type="button" class="place-btn" onclick="generatePreview()">
-    Generate Preview
-  </button>
+    <button type="button" class="place-btn" onclick="generatePreview()">
+        Generate Preview
+    </button>
 
-  <p id="previewStatus" style="margin-top:12px; font-size:13px; color:#777;"></p>
+    <p id="previewStatus" style="margin-top:12px; font-size:13px; color:#777;"></p>
 
-  <div id="previewBox" style="display:none; margin-top:18px;">
-    <canvas id="previewCanvas" width="1400" height="900" style="width:100%; max-height:520px; object-fit:contain; border-radius:10px; border:1px solid #eee;"></canvas>  </div>
-</div>
+    <div id="previewBox" style="display:none; margin-top:18px;">
+        <canvas id="previewCanvas" width="1400" height="900" style="width:100%; border-radius:10px; border:1px solid #eee;"></canvas>
+    </div>
+    </div>
 
     <aside class="summary-card">
       <h2>Order Summary</h2>
@@ -612,106 +606,33 @@ async function placeOrder() {
   }
   
 }
-/*
-async function generatePreview() {
+
+function loadPlacementControls() {
   const cart = getCart();
-  const placementNotes = document.getElementById('placement-notes').value.trim();
-  const status = document.getElementById('previewStatus');
-  const previewBox = document.getElementById('previewBox');
-  const previewImage = document.getElementById('previewImage');
-  const graveType = document.getElementById('grave-type')?.value || 'upright tombstone';
+  const box = document.getElementById('placementControls');
+  box.innerHTML = '';
 
-  if (cart.length === 0) {
-    alert('Your cart is empty.');
-    return;
-  }
+  cart.forEach((item, index) => {
+    const name = item.name || item.product_name || item.productName;
 
-  const btn = event.target;
-  btn.disabled = true;
-  btn.innerText = 'Generating...';
-
-  status.textContent = 'Generating preview... this may take a moment.';
-  previewBox.style.display = 'none';
-  previewImage.src = '';
-
-  const itemsText = cart.map((item, index) => {
-    return `
-Item ${index + 1}:
-- Product name: ${item.name}
-- Quantity: ${item.quantity || 1}
-- Product image reference URL: ${item.image}
-- Price: $${item.price}
-`;
-  }).join('\n');
-
-  const prompt = `
-Create a realistic cemetery memorial preview using the user's selected cart products.
-
-Scene:
-- Peaceful cemetery setting
-- Clean grass
-- Soft natural lighting
-- No people
-- Respectful, calm, realistic style
-
-Memorial type:
-${graveType}
-
-Memorial rules:
-- If the memorial type is "flat grave marker", create a flat horizontal grave marker in the grass.
-- If the memorial type is "upright tombstone", create an upright standing tombstone.
-- The memorial stone must be completely blank.
-- No names, dates, symbols, religious text, engravings, or readable writing.
-- Do not add any text anywhere in the image.
-
-Selected products:
-${itemsText}
-
-Placement instructions from user:
-${placementNotes || 'Arrange each selected product neatly around the memorial in a balanced and respectful way.'}
-
-Important placement rules:
-- Include every selected cart product.
-- If the user mentions a specific product by name, place that exact product in the requested location.
-- If the user says left side, place that product on the left side.
-- If the user says right side, place that product on the right side.
-- If the user says front, place that product in front of the memorial.
-- Do not combine all products into one bouquet unless the user asks for that.
-- Keep flowers visually similar to the selected product names and reference image URLs.
-- Use matching colors, flower types, and arrangement shapes as much as possible.
-`;
-
-  try {
-    const res = await fetch('/generate-preview', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt , images: cart.map(item => item.image)
-})
-    });
-
-    const data = await res.json();
-
-    if (res.ok && data.imageUrl) {
-      previewImage.src = data.imageUrl;
-      previewBox.style.display = 'block';
-      status.textContent = 'Preview generated. You can adjust the instructions and generate again.';
-    } else {
-      status.textContent = 'Error generating preview.';
-      console.error(data);
-    }
-  } catch (err) {
-    console.error(err);
-    status.textContent = 'Something went wrong while generating the preview.';
-  }
-
-  btn.disabled = false;
-  btn.innerText = 'Generate Preview';
-}*/
+    box.innerHTML += `
+      <div class="form-group">
+        <label>${name}</label>
+        <select id="place-${index}">
+          <option value="left">Left side</option>
+          <option value="right">Right side</option>
+          <option value="front">Front center</option>
+          <option value="front-left">Front left</option>
+          <option value="front-right">Front right</option>
+        </select>
+      </div>
+    `;
+  });
+}
 
 async function generatePreview() {
   const cart = getCart();
   const graveType = document.getElementById('grave-type').value;
-  const notes = document.getElementById('placement-notes').value.toLowerCase();
   const status = document.getElementById('previewStatus');
   const previewBox = document.getElementById('previewBox');
   const canvas = document.getElementById('previewCanvas');
@@ -732,60 +653,26 @@ async function generatePreview() {
     ctx.clearRect(0, 0, canvas.width, canvas.height);
     ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
 
-    const positions = [
-      { x: 190, y: 585 }, // left
-      { x: 920, y: 585 }, // right
-      { x: 555, y: 640 }, // front center
-      { x: 365, y: 690 }, // front left
-      { x: 735, y: 690 }  // front right
-    ];
+    const positions = {
+      left: { x: 180, y: 610 },
+      right: { x: 1010, y: 610 },
+      front: { x: 600, y: 665 },
+      'front-left': { x: 390, y: 700 },
+      'front-right': { x: 810, y: 700 }
+    };
 
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
-
-      const productName = item.name || item.product_name || item.productName;
       const productImage = item.image || item.product_image || item.productImage;
+      const placement = document.getElementById(`place-${i}`).value;
+      const pos = positions[placement];
 
       const productImg = new Image();
       productImg.src = productImage;
 
       await new Promise(resolve => {
         productImg.onload = () => {
-          let w = 190;
-          let h = 190;
-
-          const name = productName.toLowerCase();
-
-          let x = positions[i % positions.length].x;
-          let y = positions[i % positions.length].y;
-
-          const nameWords = name
-            .replace('the ', '')
-            .replace('bouquet', '')
-            .replace('arrangement', '')
-            .trim()
-            .split(' ');
-
-          const productMentioned = nameWords.some(word =>
-            word.length > 3 && notes.includes(word)
-          );
-
-          if (productMentioned && notes.includes('left')) {
-            x = 190;
-            y = 585;
-          }
-
-          if (productMentioned && notes.includes('right')) {
-            x = 920;
-            y = 585;
-          }
-
-          if (productMentioned && notes.includes('front')) {
-            x = 555;
-            y = 640;
-          }
-
-          ctx.drawImage(productImg, x, y, w, h);
+          ctx.drawImage(productImg, pos.x, pos.y, 190, 190);
           resolve();
         };
 
@@ -796,7 +683,7 @@ async function generatePreview() {
       });
     }
 
-    status.textContent = 'Preview created. You can change the instructions and generate again.';
+    status.textContent = 'Preview created. You can change the placements and generate again.';
   };
 
   baseImg.onerror = () => {
@@ -810,6 +697,7 @@ function finishOrder() {
 
 window.addEventListener('DOMContentLoaded', async () => {
   loadSummary();
+  loadPlacementControls();
   await loadProfileInfo();
   await loadLovedOnes();
   await loadSavedAddresses();
