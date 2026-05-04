@@ -1097,24 +1097,27 @@ app.post('/remove-bg', async (req, res) => {
       return res.status(400).json({ error: 'No image URL provided' });
     }
 
-    console.log('Removing background for:', imageUrl);
+    if (!process.env.REMOVE_BG_API_KEY) {
+      return res.status(500).json({ error: 'Missing REMOVE_BG_API_KEY in .env' });
+    }
+
+    const formData = new URLSearchParams();
+    formData.append('image_url', imageUrl);
+    formData.append('size', 'auto');
 
     const response = await fetch('https://api.remove.bg/v1.0/removebg', {
       method: 'POST',
       headers: {
-        'X-Api-Key': process.env.REMOVE_BG_API_KEY
+        'X-Api-Key': process.env.REMOVE_BG_API_KEY,
+        'Content-Type': 'application/x-www-form-urlencoded'
       },
-      body: new URLSearchParams({
-        image_url: imageUrl,
-        size: 'auto',
-        format: 'png'
-      })
+      body: formData
     });
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error('REMOVE BG ERROR:', errorText);
-      return res.status(500).json({
+      return res.status(response.status).json({
         error: 'Background removal failed',
         details: errorText
       });
@@ -1128,8 +1131,11 @@ app.post('/remove-bg', async (req, res) => {
     });
 
   } catch (err) {
-    console.error('REMOVE BG SERVER ERROR:', err);
-    res.status(500).json({ error: 'Error removing background' });
+    console.error('REMOVE BG SERVER ERROR:', err.message);
+    res.status(500).json({
+      error: 'Error removing background',
+      details: err.message
+    });
   }
 });
 
