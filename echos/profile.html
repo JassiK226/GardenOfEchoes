@@ -762,16 +762,26 @@
 
     /* ── Avatar preview ── */
     function previewAvatar(input) {
-      if (input.files && input.files[0]) {
-        const reader = new FileReader();
-        reader.onload = e => {
-          const preview = document.getElementById('avatarPreview');
-          preview.style.background = `url(${e.target.result}) center/cover`;
-          preview.textContent = '';
-        };
-        reader.readAsDataURL(input.files[0]);
-      }
-    }
+  if (input.files && input.files[0]) {
+    const reader = new FileReader();
+
+    reader.onload = e => {
+      const imageData = e.target.result;
+
+      localStorage.setItem('profilePhoto', imageData);
+
+      const preview = document.getElementById('avatarPreview');
+      preview.style.background = `url(${imageData}) center/cover`;
+      preview.textContent = '';
+
+      const sidebar = document.getElementById('sidebarInitial');
+      sidebar.style.background = `url(${imageData}) center/cover`;
+      sidebar.textContent = '';
+    };
+
+    reader.readAsDataURL(input.files[0]);
+  }
+}
 
     /* ── Save Profile ── */
     /*function saveProfile(e) {
@@ -1442,6 +1452,18 @@
       document.getElementById('p-last').value = lastName;
       document.getElementById('p-email').value = email || '';
     }
+
+    const savedPhoto = localStorage.getItem('profilePhoto');
+
+    if (savedPhoto) {
+      const preview = document.getElementById('avatarPreview');
+      preview.style.background = `url(${savedPhoto}) center/cover`;
+      preview.textContent = '';
+
+      const sidebar = document.getElementById('sidebarInitial');
+      sidebar.style.background = `url(${savedPhoto}) center/cover`;
+      sidebar.textContent = '';
+}
 
     await loadLovedOnes();
 
