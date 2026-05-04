@@ -672,11 +672,11 @@ async function generatePreview() {
     ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
 
     const positions = {
-        left: { x: 210, y: 570 },
-        right: { x: 1000, y: 570 },
-        front: { x: 605, y: 655 },
-        'front-left': { x: 390, y: 675 },
-        'front-right': { x: 820, y: 675 }
+    left: { x: 260, y: 650 },
+    right: { x: 1090, y: 650 },
+    front: { x: 675, y: 705 },
+    'front-left': { x: 470, y: 720 },
+    'front-right': { x: 880, y: 720 }
     };
 
     for (let i = 0; i < cart.length; i++) {
@@ -708,7 +708,8 @@ async function generatePreview() {
 
       await new Promise(resolve => {
         productImg.onload = () => {
-          ctx.drawImage(productImg, pos.x, pos.y, 250, 250);
+          const productSize = 220;
+            ctx.drawImage(productImg, pos.x, pos.y, productSize, productSize);
           resolve();
         };
 

@@ -1220,6 +1220,104 @@ app.post('/remove-bg', async (req, res) => {
   }
 });
 
+// Place an order
+app.post('/orders', async (req, res) => {
+  try {
+    const {
+      userEmail,
+      lovedOneId,
+      customerName,
+      customerEmail,
+      phone,
+      addressLine1,
+      addressLine2,
+      city,
+      state,
+      zipCode,
+      cardNumber,
+      total,
+      placementNotes,
+      items
+    } = req.body;
+
+    const cardLast4 = cardNumber ? cardNumber.replace(/\D/g, '').slice(-4) : null;
+
+    const orderResult = await pool.query(
+      `INSERT INTO orders
+       (user_email, loved_one_id, customer_name, customer_email, phone,
+        address_line1, address_line2, city, state, zip_code,
+        card_last4, total, placement_notes)
+       VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11,$12,$13)
+       RETURNING *`,
+      [
+        userEmail,
+        lovedOneId || null,
+        customerName,
+        customerEmail,
+        phone,
+        addressLine1,
+        addressLine2,
+        city,
+        state,
+        zipCode,
+        cardLast4,
+        total,
+        placementNotes
+      ]
+    );
+
+    const order = orderResult.rows[0];
+
+    for (const item of items) {
+      await pool.query(
+        `INSERT INTO order_items
+         (order_id, product_name, product_image, price, quantity)
+         VALUES ($1,$2,$3,$4,$5)`,
+        [
+          order.id,
+          item.name || item.product_name || item.productName,
+          item.image || item.product_image || item.productImage,
+          item.price || item.product_price || item.productPrice,
+          item.quantity || 1
+        ]
+      );
+    }
+
+    res.json(order);
+  } catch (err) {
+    console.error('ORDER ERROR:', err.message);
+    res.status(500).json({ error: 'Error placing order' });
+  }
+});
+
+// Get order history for profile page
+app.get('/orders/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const orders = await pool.query(
+      `SELECT * FROM orders
+       WHERE user_email = $1
+       ORDER BY created_at DESC`,
+      [email]
+    );
+
+    for (let order of orders.rows) {
+      const items = await pool.query(
+        `SELECT * FROM order_items WHERE order_id = $1`,
+        [order.id]
+      );
+
+      order.items = items.rows;
+    }
+
+    res.json(orders.rows);
+  } catch (err) {
+    console.error('ORDER HISTORY ERROR:', err.message);
+    res.status(500).json({ error: 'Error getting order history' });
+  }
+});
+
 // Set server port from environment, or use 3000 if none is provided
 const PORT = process.env.PORT || 3000;
 
