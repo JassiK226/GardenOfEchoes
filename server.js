@@ -1094,7 +1094,7 @@ app.post('/remove-bg', async (req, res) => {
     const { imageUrl } = req.body;
 
     if (!imageUrl) {
-      return res.status(400).json({ error: 'No image URL provided' });
+      return res.status(400).json({ error: 'No image URL provided in Data' });
     }
 
     if (!process.env.REMOVE_BG_API_KEY) {
