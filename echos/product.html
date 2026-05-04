@@ -1,57 +1,185 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>Product</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details</title>
+
   <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
     body {
-      font-family: Arial;
-      padding: 40px;
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #333;
+      background: #fff;
+    }
+
+    a { text-decoration: none; color: inherit; }
+
+    .main-nav {
+      display: flex;
+      align-items: center;
+      padding: 0 28px;
+      height: 96px;
+      background: #fff;
+      border-bottom: 1px solid #e8e8e8;
+    }
+
+    .logo img {
+      height: 90px;
+      width: auto;
+      display: block;
+    }
+
+    .main-nav-links {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex: 1;
+      justify-content: flex-end;
+    }
+
+    .main-nav-links a {
+      padding: 6px 12px;
+      font-size: 13.5px;
+      color: #333;
+    }
+
+    .nav-donation {
+      background: #7c3aed;
+      color: white !important;
+      border-radius: 5px;
+      font-weight: 600;
+    }
+
+    .cat-nav {
+      display: flex;
+      justify-content: center;
+      height: 44px;
+      align-items: center;
+      background: #fafafa;
+      border-bottom: 1px solid #e8e8e8;
+      gap: 28px;
+    }
+
+    .cat-nav a {
+      font-size: 13.5px;
+      color: #444;
+    }
+
+    .product-page {
+      max-width: 1050px;
+      margin: 55px auto;
+      padding: 0 25px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 55px;
+      align-items: center;
+    }
+
+    .product-left {
       text-align: center;
     }
 
-    img {
-      width: 300px;
-      border-radius: 10px;
+    .product-left h1 {
+      font-size: 30px;
+      margin-bottom: 25px;
+      color: #111;
     }
 
-    .price {
+    .product-left img {
+      width: 100%;
+      max-width: 430px;
+      object-fit: contain;
+    }
+
+    .product-right {
+      text-align: left;
+    }
+
+    .product-price {
       color: #c0392b;
-      font-size: 20px;
-      font-weight: bold;
+      font-size: 24px;
+      font-weight: 800;
+      margin-bottom: 22px;
     }
 
-    button {
+    .product-description {
+      font-size: 15px;
+      line-height: 1.7;
+      color: #444;
+      margin-bottom: 28px;
+    }
+
+    .add-btn {
       background: #c0392b;
       color: white;
-      padding: 10px 20px;
       border: none;
-      margin-top: 10px;
+      padding: 12px 34px;
+      font-weight: 700;
       cursor: pointer;
+      border-radius: 4px;
+    }
+
+    @media (max-width: 750px) {
+      .product-page {
+        grid-template-columns: 1fr;
+        text-align: center;
+      }
+
+      .product-right {
+        text-align: center;
+      }
     }
   </style>
 </head>
+
 <body>
 
-  <h1 id="name"></h1>
-  <img id="image">
-  <p class="price" id="price"></p>
-  <p id="description"></p>
-  <p id="code"></p>
-  <p id="category"></p>
+  <nav class="main-nav">
+    <a href="homepage.html" class="logo">
+      <img src="logo.png" alt="Garden of Echoes">
+    </a>
 
-  <button>Add to Cart</button>
+    <div class="main-nav-links">
+      <a href="subscriptions.html">The Garden Program</a>
+      <a href="login.html">My Account</a>
+      <a href="#">Cart</a>
+      <a href="about.html">About Us</a>
+      <a href="contact.html">Contact Us</a>
+      <a href="donation.html" class="nav-donation">Donation</a>
+    </div>
+  </nav>
+
+  <nav class="cat-nav">
+    <a href="flowers.html?filter=Anniversary">Anniversary</a>
+    <a href="flowers.html?filter=Birthday">Occasions</a>
+    <a href="flowers.html?filter=Sympathy">Sympathy</a>
+    <a href="flowers.html">Flowers</a>
+  </nav>
+
+  <main class="product-page">
+    <div class="product-left">
+      <h1 id="name"></h1>
+      <img id="image" alt="">
+    </div>
+
+    <div class="product-right">
+      <div class="product-price" id="price"></div>
+      <p class="product-description" id="description"></p>
+      <button class="add-btn">Add to Cart</button>
+    </div>
+  </main>
 
   <script>
     const product = JSON.parse(localStorage.getItem('selectedProduct'));
 
     if (product) {
-    document.getElementById('name').innerText = product.name;
-    document.getElementById('price').innerText = "$" + product.price;
-    document.getElementById('image').src = product.image;
-
-    document.getElementById('description').innerText = product.description || '';
-    document.getElementById('code').innerText = product.code ? "Product Code: " + product.code : '';
-    document.getElementById('category').innerText = product.category ? "Category: " + product.category : '';
+      document.getElementById('name').innerText = product.name;
+      document.getElementById('image').src = product.image;
+      document.getElementById('image').alt = product.name;
+      document.getElementById('price').innerText = "$" + product.price;
+      document.getElementById('description').innerText = product.description || '';
     }
   </script>
 
