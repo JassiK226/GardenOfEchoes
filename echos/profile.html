@@ -732,11 +732,7 @@
       <div class="tab-pane" id="pane-orders">
         <h2 class="pane-title">Order History</h2>
         <p class="pane-subtitle">View all your past orders and their status.</p>
-        <div class="blank-state">
-          <div class="blank-icon">📦</div>
-          <h3>No orders yet</h3>
-          <p>When you place an order it will appear here.</p>
-        </div>
+        <div id="orderHistoryList"></div>
       </div>
 
       <!-- ─ Subscriptions ─ -->
@@ -1407,6 +1403,55 @@
     t._timer = setTimeout(() => t.style.opacity = '0', 2800);
   }
 
+  async function loadOrderHistory() {
+  try {
+    const email = localStorage.getItem('email');
+    const list = document.getElementById('orderHistoryList');
+
+    if (!email || !list) return;
+
+    const res = await fetch(`/orders/${encodeURIComponent(email)}`);
+
+    if (res.ok) {
+      const orders = await res.json();
+      list.innerHTML = '';
+
+      if (orders.length === 0) {
+        list.innerHTML = `
+          <div class="blank-state">
+            <div class="blank-icon">📦</div>
+            <h3>No orders yet</h3>
+            <p>When you place an order it will appear here.</p>
+          </div>
+        `;
+        return;
+      }
+
+      orders.forEach(order => {
+        const card = document.createElement('div');
+        card.className = 'loved-one-card';
+
+        const itemsHTML = order.items.map(item => `
+          <p>${item.product_name} x${item.quantity} — $${Number(item.price).toFixed(2)}</p>
+        `).join('');
+
+        card.innerHTML = `
+          <h4>Order #${order.id}</h4>
+          <p>Status: ${order.status}</p>
+          <p>Total: $${Number(order.total).toFixed(2)}</p>
+          <p>For: ${order.loved_first_name || ''} ${order.loved_last_name || ''}</p>
+          <p>Delivery: ${order.address_line1 || ''}, ${order.city || ''}, ${order.state || ''} ${order.zip_code || ''}</p>
+          <div style="margin-top:10px;">${itemsHTML}</div>
+        `;
+
+        list.appendChild(card);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading order history:', err);
+  }
+}
+
   // Run this when the page first loads
   window.addEventListener('DOMContentLoaded', async () => {
     const fullName = localStorage.getItem('fullName');
@@ -1474,6 +1519,8 @@
     await loadShippingAddresses();
 
     await loadSubscriptions();
+
+    await loadOrderHistory();
   });
 
   function signOut(e) {

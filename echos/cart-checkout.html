@@ -1,154 +1,594 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<title>Checkout</title>
+  <meta charset="UTF-8">
+  <title>Cart Checkout</title>
 
-<style>
-body {
-  font-family: 'Helvetica Neue', Arial;
-  background: #fff;
-  color: #333;
-}
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
 
-.checkout-page {
-  max-width: 1100px;
-  margin: 40px auto;
-  padding: 0 20px;
-}
+    body {
+      font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+      color: #333;
+      background: #fff;
+    }
 
-.checkout-title {
-  font-size: 28px;
-  font-weight: 800;
-  margin-bottom: 30px;
-}
+    a { text-decoration: none; color: inherit; }
 
-.checkout-layout {
-  display: grid;
-  grid-template-columns: 1fr 350px;
-  gap: 40px;
-}
+    .checkout-page {
+      max-width: 1100px;
+      margin: 45px auto 80px;
+      padding: 0 20px;
+    }
 
-/* FORM */
-.checkout-form input {
-  width: 100%;
-  padding: 10px;
-  margin-bottom: 15px;
-  border: 1px solid #ccc;
-  border-radius: 4px;
-}
+    .back-btn {
+      display: inline-block;
+      margin-bottom: 24px;
+      padding: 9px 18px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      background: #fff;
+    }
 
-/* SUMMARY */
-.summary-box {
-  border: 1px solid #eee;
-  padding: 20px;
-  border-radius: 10px;
-}
+    .back-btn:hover { background: #f5f5f5; }
 
-.summary-row {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 10px;
-}
+    .checkout-title {
+      font-size: 30px;
+      font-weight: 800;
+      margin-bottom: 30px;
+    }
 
-.total {
-  font-weight: 800;
-  font-size: 18px;
-  margin-top: 10px;
-}
+    .checkout-layout {
+      display: grid;
+      grid-template-columns: 1fr 340px;
+      gap: 35px;
+      align-items: start;
+    }
 
-.place-order-btn {
-  width: 100%;
-  margin-top: 20px;
-  padding: 12px;
-  background: #c0392b;
-  color: white;
-  border: none;
-  font-weight: 700;
-  border-radius: 5px;
-  cursor: pointer;
-}
-</style>
+    .section-card {
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 24px;
+      margin-bottom: 22px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.04);
+    }
+
+    .section-card h2 {
+      font-size: 20px;
+      margin-bottom: 16px;
+    }
+
+    .form-group {
+      margin-bottom: 14px;
+    }
+
+    .form-group label {
+      display: block;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .form-group input,
+    .form-group select {
+      width: 100%;
+      padding: 11px 12px;
+      border: 1px solid #ccc;
+      border-radius: 5px;
+      font-size: 14px;
+      font-family: inherit;
+    }
+
+    .form-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .summary-card {
+      border: 1px solid #eee;
+      border-radius: 10px;
+      padding: 24px;
+      box-shadow: 0 4px 18px rgba(0,0,0,.06);
+      position: sticky;
+      top: 20px;
+    }
+
+    .summary-card h2 {
+      font-size: 20px;
+      margin-bottom: 18px;
+    }
+
+    .summary-item,
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+
+    .summary-row.total {
+      border-top: 1px solid #eee;
+      padding-top: 14px;
+      margin-top: 14px;
+      font-size: 18px;
+      font-weight: 800;
+    }
+
+    .place-btn {
+      display: block;
+      width: 100%;
+      margin-top: 18px;
+      padding: 13px;
+      border: none;
+      border-radius: 5px;
+      background: #c0392b;
+      color: white;
+      font-size: 15px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    .place-btn:hover { background: #a93226; }
+
+    .success-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.45);
+      z-index: 999;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .success-overlay.show { display: flex; }
+
+    .success-box {
+      background: white;
+      width: 380px;
+      max-width: 90%;
+      padding: 38px;
+      border-radius: 14px;
+      text-align: center;
+      box-shadow: 0 12px 45px rgba(0,0,0,.22);
+    }
+
+    .success-icon {
+      font-size: 48px;
+      margin-bottom: 14px;
+    }
+
+    .success-box h2 {
+      font-size: 24px;
+      margin-bottom: 10px;
+    }
+
+    .success-box p {
+      color: #666;
+      line-height: 1.6;
+      margin-bottom: 24px;
+    }
+
+    .success-box button {
+      background: #c0392b;
+      color: white;
+      border: none;
+      padding: 11px 26px;
+      border-radius: 5px;
+      font-weight: 800;
+      cursor: pointer;
+    }
+
+    @media (max-width: 800px) {
+      .checkout-layout {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-card {
+        position: static;
+      }
+
+      .form-row {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<div class="checkout-page">
+<main class="checkout-page">
+  <button class="back-btn" onclick="window.location.href='cart.html'">← Back to Cart</button>
 
-<h1 class="checkout-title">Checkout</h1>
+  <h1 class="checkout-title">Checkout</h1>
 
-<div class="checkout-layout">
+  <div class="checkout-layout">
 
-<!-- LEFT: FORM -->
-<div class="checkout-form">
-  <h3>Shipping Information</h3>
+    <div>
+      <div class="section-card">
+        <h2>Loved One Information</h2>
 
-  <input id="name" placeholder="Full Name">
-  <input id="email" placeholder="Email">
-  <input id="address" placeholder="Address">
-  <input id="city" placeholder="City">
-  <input id="zip" placeholder="Zip Code">
-</div>
+        <div class="form-group">
+          <label for="loved-one-select">Choose saved loved one</label>
+          <select id="loved-one-select">
+            <option value="">Select loved one</option>
+          </select>
+        </div>
+      </div>
 
-<!-- RIGHT: SUMMARY -->
-<div class="summary-box">
-  <h3>Order Summary</h3>
+      <div class="section-card">
+        <h2>Delivery Information</h2>
 
-  <div id="summaryItems"></div>
+        <div class="form-group">
+          <label for="saved-address-select">Use saved shipping address</label>
+          <select id="saved-address-select" onchange="fillSavedAddress()">
+            <option value="">Enter new address</option>
+          </select>
+        </div>
 
-  <div class="summary-row total">
-    <span>Total</span>
-    <span id="total">$0.00</span>
+        <div class="form-row">
+          <div class="form-group">
+            <label for="first-name">First Name</label>
+            <input type="text" id="first-name">
+          </div>
+
+          <div class="form-group">
+            <label for="last-name">Last Name</label>
+            <input type="text" id="last-name">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="email">Email Address</label>
+          <input type="email" id="email">
+        </div>
+
+        <div class="form-group">
+          <label for="phone">Phone Number</label>
+          <input type="tel" id="phone">
+        </div>
+
+        <div class="form-group">
+          <label for="address">Address Line 1</label>
+          <input type="text" id="address">
+        </div>
+
+        <div class="form-group">
+          <label for="address2">Address Line 2</label>
+          <input type="text" id="address2">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="city">City</label>
+            <input type="text" id="city">
+          </div>
+
+          <div class="form-group">
+            <label for="state">State</label>
+            <input type="text" id="state">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="zip">ZIP Code</label>
+          <input type="text" id="zip">
+        </div>
+      </div>
+
+      <div class="section-card">
+        <h2>Card Information</h2>
+
+        <div class="form-group">
+          <label for="saved-card-select">Use saved payment method</label>
+          <select id="saved-card-select" onchange="fillSavedCard()">
+            <option value="">Enter new card</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="card-name">Name on Card</label>
+          <input type="text" id="card-name">
+        </div>
+
+        <div class="form-group">
+          <label for="card-number">Card Number</label>
+          <input type="text" id="card-number" maxlength="19">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="card-exp">Expiration Date</label>
+            <input type="text" id="card-exp" placeholder="MM / YY" maxlength="7">
+          </div>
+
+          <div class="form-group">
+            <label for="card-cvv">CVV</label>
+            <input type="text" id="card-cvv" maxlength="4">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <aside class="summary-card">
+      <h2>Order Summary</h2>
+      <div id="summaryItems"></div>
+
+      <div class="summary-row total">
+        <span>Total</span>
+        <span id="summaryTotal">$0.00</span>
+      </div>
+
+      <button class="place-btn" onclick="placeOrder()">Place Order</button>
+    </aside>
+
   </div>
+</main>
 
-  <button class="place-order-btn" onclick="placeOrder()">Place Order</button>
-</div>
-
-</div>
+<div class="success-overlay" id="successOverlay">
+  <div class="success-box">
+    <div class="success-icon">🌸</div>
+    <h2>Order Placed!</h2>
+    <p>Your order has been saved. You can view it anytime in your profile under Order History.</p>
+    <button onclick="finishOrder()">Go to Order History</button>
+  </div>
 </div>
 
 <script>
-function loadCheckout() {
-  const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  const container = document.getElementById('summaryItems');
-  const totalEl = document.getElementById('total');
+let savedAddresses = [];
+let savedCards = [];
 
+function getCart() {
+  return JSON.parse(localStorage.getItem('cart')) || [];
+}
+
+function loadSummary() {
+  const cart = getCart();
+  const summaryItems = document.getElementById('summaryItems');
+  const summaryTotal = document.getElementById('summaryTotal');
+
+  summaryItems.innerHTML = '';
   let total = 0;
-  container.innerHTML = '';
+
+  if (cart.length === 0) {
+    summaryItems.innerHTML = '<p>Your cart is empty.</p>';
+    summaryTotal.textContent = '$0.00';
+    return;
+  }
 
   cart.forEach(item => {
     const price = Number(item.price);
     const quantity = item.quantity || 1;
     total += price * quantity;
 
-    const div = document.createElement('div');
-    div.className = 'summary-row';
-    div.innerHTML = `
+    const row = document.createElement('div');
+    row.className = 'summary-item';
+    row.innerHTML = `
       <span>${item.name} x${quantity}</span>
       <span>$${(price * quantity).toFixed(2)}</span>
     `;
-    container.appendChild(div);
+
+    summaryItems.appendChild(row);
   });
 
-  totalEl.textContent = '$' + total.toFixed(2);
+  summaryTotal.textContent = '$' + total.toFixed(2);
+}
 
-  // Autofill from profile
-  const user = JSON.parse(localStorage.getItem('user')) || {};
-  if (user.firstName) {
-    document.getElementById('name').value = user.firstName + " " + user.lastName;
-    document.getElementById('email').value = user.email;
+async function loadProfileInfo() {
+  const email = localStorage.getItem('email');
+  const fullName = localStorage.getItem('fullName') || '';
+
+  if (!email) return;
+
+  const nameParts = fullName.trim().split(' ');
+  document.getElementById('first-name').value = nameParts[0] || '';
+  document.getElementById('last-name').value = nameParts.slice(1).join(' ') || '';
+  document.getElementById('email').value = email;
+
+  try {
+    const res = await fetch(`/users/${encodeURIComponent(email)}`);
+
+    if (res.ok) {
+      const user = await res.json();
+
+      document.getElementById('first-name').value = user.first_name || '';
+      document.getElementById('last-name').value = user.last_name || '';
+      document.getElementById('email').value = user.email || email;
+      document.getElementById('phone').value = user.phone || '';
+    }
+  } catch (err) {
+    console.error('Error loading user profile:', err);
   }
 }
 
-function placeOrder() {
-  alert("Order placed successfully!");
+async function loadLovedOnes() {
+  const email = localStorage.getItem('email');
+  if (!email) return;
 
-  localStorage.removeItem('cart'); // clear cart
+  try {
+    const res = await fetch(`/loved-ones/${encodeURIComponent(email)}`);
 
-  window.location.href = "homepage.html";
+    if (res.ok) {
+      const lovedOnes = await res.json();
+      const select = document.getElementById('loved-one-select');
+
+      lovedOnes.forEach(person => {
+        const option = document.createElement('option');
+        option.value = person.id;
+        option.textContent = `${person.icon || '🌸'} ${person.first_name} ${person.last_name}`;
+        select.appendChild(option);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading loved ones:', err);
+  }
 }
 
-window.addEventListener('DOMContentLoaded', loadCheckout);
+async function loadSavedAddresses() {
+  const email = localStorage.getItem('email');
+  if (!email) return;
+
+  try {
+    const res = await fetch(`/shipping-addresses/${encodeURIComponent(email)}`);
+
+    if (res.ok) {
+      savedAddresses = await res.json();
+      const select = document.getElementById('saved-address-select');
+
+      savedAddresses.forEach(address => {
+        const option = document.createElement('option');
+        option.value = address.id;
+        option.textContent = `${address.address_line1}, ${address.city}, ${address.state}`;
+        select.appendChild(option);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading addresses:', err);
+  }
+}
+
+function fillSavedAddress() {
+  const id = document.getElementById('saved-address-select').value;
+  const address = savedAddresses.find(a => String(a.id) === String(id));
+
+  if (!address) return;
+
+  document.getElementById('first-name').value = address.first_name || '';
+  document.getElementById('last-name').value = address.last_name || '';
+  document.getElementById('phone').value = address.phone || '';
+  document.getElementById('address').value = address.address_line1 || '';
+  document.getElementById('address2').value = address.address_line2 || '';
+  document.getElementById('city').value = address.city || '';
+  document.getElementById('state').value = address.state || '';
+  document.getElementById('zip').value = address.zip_code || '';
+}
+
+async function loadSavedCards() {
+  const email = localStorage.getItem('email');
+  if (!email) return;
+
+  try {
+    const res = await fetch(`/payment-methods/${encodeURIComponent(email)}`);
+
+    if (res.ok) {
+      savedCards = await res.json();
+      const select = document.getElementById('saved-card-select');
+
+      savedCards.forEach(card => {
+        const option = document.createElement('option');
+        option.value = card.id;
+        option.textContent = `${card.card_type} ending in ${card.card_last4}`;
+        select.appendChild(option);
+      });
+    }
+  } catch (err) {
+    console.error('Error loading cards:', err);
+  }
+}
+
+function fillSavedCard() {
+  const id = document.getElementById('saved-card-select').value;
+  const card = savedCards.find(c => String(c.id) === String(id));
+
+  if (!card) return;
+
+  document.getElementById('card-name').value = card.card_name || '';
+  document.getElementById('card-number').value = `•••• •••• •••• ${card.card_last4}`;
+  document.getElementById('card-exp').value = card.expiry || '';
+}
+
+document.getElementById('card-number').addEventListener('input', function () {
+  let value = this.value.replace(/\D/g, '').substring(0, 16);
+  this.value = value.replace(/(.{4})/g, '$1 ').trim();
+});
+
+document.getElementById('card-exp').addEventListener('input', function () {
+  let value = this.value.replace(/\D/g, '').substring(0, 4);
+  if (value.length >= 3) value = value.substring(0, 2) + ' / ' + value.substring(2);
+  this.value = value;
+});
+
+async function placeOrder() {
+  const userEmail = localStorage.getItem('email');
+
+  if (!userEmail) {
+    alert('Please log in before placing your order.');
+    window.location.href = 'login.html';
+    return;
+  }
+
+  const cart = getCart();
+
+  if (cart.length === 0) {
+    alert('Your cart is empty.');
+    return;
+  }
+
+  const total = cart.reduce((sum, item) => {
+    return sum + Number(item.price) * (item.quantity || 1);
+  }, 0);
+
+  const firstName = document.getElementById('first-name').value.trim();
+  const lastName = document.getElementById('last-name').value.trim();
+  const customerEmail = document.getElementById('email').value.trim();
+
+  if (!firstName || !lastName || !customerEmail) {
+    alert('Please fill in your name and email.');
+    return;
+  }
+
+  const data = {
+    userEmail,
+    lovedOneId: document.getElementById('loved-one-select').value,
+    customerName: `${firstName} ${lastName}`,
+    customerEmail,
+    phone: document.getElementById('phone').value,
+    addressLine1: document.getElementById('address').value,
+    addressLine2: document.getElementById('address2').value,
+    city: document.getElementById('city').value,
+    state: document.getElementById('state').value,
+    zipCode: document.getElementById('zip').value,
+    cardNumber: document.getElementById('card-number').value,
+    total,
+    items: cart
+  };
+
+  try {
+    const res = await fetch('/orders', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(data)
+    });
+
+    const result = await res.json();
+
+    if (res.ok) {
+      localStorage.removeItem('cart');
+      document.getElementById('successOverlay').classList.add('show');
+    } else {
+      alert(result.error || 'Error placing order.');
+    }
+  } catch (err) {
+    console.error(err);
+    alert('Something went wrong.');
+  }
+}
+
+function finishOrder() {
+  window.location.href = 'profile.html';
+}
+
+window.addEventListener('DOMContentLoaded', async () => {
+  loadSummary();
+  await loadProfileInfo();
+  await loadLovedOnes();
+  await loadSavedAddresses();
+  await loadSavedCards();
+});
 </script>
 
 </body>
