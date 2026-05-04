@@ -314,39 +314,39 @@
       </div>
     </div>
 
-    <div class="section-card">
-        <h2>AI Memorial Preview</h2>
-        <p style="font-size:14px; color:#666; line-height:1.6; margin-bottom:16px;">
-            Preview how your selected flowers and items may look near the gravestone before placing your order.
-        </p>
+<div class="section-card">
+  <h2>Memorial Preview</h2>
+  <p style="font-size:14px; color:#666; line-height:1.6; margin-bottom:16px;">
+    Preview how your selected products may look near the memorial before placing your order.
+  </p>
 
-    <div class="form-group">
+  <div class="form-group">
     <label for="grave-type">Memorial Type</label>
     <select id="grave-type">
-        <option value="upright tombstone">Upright tombstone</option>
-        <option value="flat grave marker">Flat grave marker</option>
+      <option value="single-upright-tombstone.png">Upright Tombstone</option>
+      <option value="flat-grave-marker.png">Flat Grave Marker</option>
     </select>
-    </div>
+  </div>
 
-        <div class="form-group">
-            <label for="placement-notes">Placement Instructions</label>
-            <textarea 
-            id="placement-notes"
-            placeholder="Example: Place the roses on the left side of the gravestone and the candle in front."
-            style="width:100%; min-height:90px; padding:12px; border:1px solid #ccc; border-radius:5px; font-family:inherit;"
-            ></textarea>
-        </div>
+  <div class="form-group">
+    <label for="placement-notes">Placement Instructions</label>
+    <textarea
+      id="placement-notes"
+      placeholder="Example: Put the pink bouquet on the left and the roses on the right."
+      style="width:100%; min-height:90px; padding:12px; border:1px solid #ccc; border-radius:5px; font-family:inherit;"
+    ></textarea>
+  </div>
 
-        <button type="button" class="place-btn" onclick="generatePreview()">
-            Generate Preview
-        </button>
+  <button type="button" class="place-btn" onclick="generatePreview()">
+    Generate Preview
+  </button>
 
-        <p id="previewStatus" style="margin-top:12px; font-size:13px; color:#777;"></p>
+  <p id="previewStatus" style="margin-top:12px; font-size:13px; color:#777;"></p>
 
-        <div id="previewBox" style="display:none; margin-top:18px;">
-            <img id="previewImage" alt="AI memorial preview" style="width:100%; border-radius:10px; border:1px solid #eee;">
-        </div>
-    </div>
+  <div id="previewBox" style="display:none; margin-top:18px;">
+    <canvas id="previewCanvas" width="900" height="600" style="width:100%; border-radius:10px; border:1px solid #eee;"></canvas>
+  </div>
+</div>
 
     <aside class="summary-card">
       <h2>Order Summary</h2>
@@ -613,7 +613,7 @@ async function placeOrder() {
   }
   
 }
-
+/*
 async function generatePreview() {
   const cart = getCart();
   const placementNotes = document.getElementById('placement-notes').value.trim();
@@ -707,6 +707,76 @@ Important placement rules:
 
   btn.disabled = false;
   btn.innerText = 'Generate Preview';
+}*/
+
+async function generatePreview() {
+  const cart = getCart();
+  const graveType = document.getElementById('grave-type').value;
+  const notes = document.getElementById('placement-notes').value.toLowerCase();
+  const status = document.getElementById('previewStatus');
+  const previewBox = document.getElementById('previewBox');
+  const canvas = document.getElementById('previewCanvas');
+  const ctx = canvas.getContext('2d');
+
+  if (cart.length === 0) {
+    alert('Your cart is empty.');
+    return;
+  }
+
+  status.textContent = 'Creating preview...';
+  previewBox.style.display = 'block';
+
+  const baseImg = new Image();
+  baseImg.crossOrigin = 'anonymous';
+  baseImg.src = graveType;
+
+  baseImg.onload = async () => {
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < cart.length; i++) {
+      const item = cart[i];
+      const productImg = new Image();
+      productImg.crossOrigin = 'anonymous';
+      productImg.src = item.image;
+
+      await new Promise(resolve => {
+        productImg.onload = () => {
+          let x = 380;
+          let y = 390;
+          let w = 150;
+          let h = 150;
+
+          const name = item.name.toLowerCase();
+
+          if (notes.includes('left') && notes.includes(name.split(' ')[0])) {
+            x = 210;
+            y = 395;
+          } else if (notes.includes('right') && notes.includes(name.split(' ')[0])) {
+            x = 540;
+            y = 395;
+          } else if (notes.includes('front') && notes.includes(name.split(' ')[0])) {
+            x = 375;
+            y = 430;
+          } else {
+            if (i === 0) x = 250;
+            if (i === 1) x = 500;
+            if (i >= 2) {
+              x = 330 + (i * 35);
+              y = 430;
+            }
+          }
+
+          ctx.drawImage(productImg, x, y, w, h);
+          resolve();
+        };
+
+        productImg.onerror = resolve;
+      });
+    }
+
+    status.textContent = 'Preview created. You can change the instructions and generate again.';
+  };
 }
 
 window.addEventListener('DOMContentLoaded', async () => {
