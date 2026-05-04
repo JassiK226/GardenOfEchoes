@@ -42,10 +42,10 @@
     }
 
     .checkout-layout {
-      display: grid;
-      grid-template-columns: 1fr 420px;
-      gap: 35px;
-      align-items: start;
+    display: grid;
+    grid-template-columns: 1fr 420px;
+    gap: 35px;
+    align-items: start;
     }
 
     .section-card {
@@ -344,8 +344,10 @@
         <canvas id="previewCanvas" width="1600" height="1000" 
         style="width:100%; height:320px; object-fit:cover;">
     </div>
+  </div>
+</main>
 
-    <aside class="summary-card">
+ <aside class="summary-card">
       <h2>Order Summary</h2>
       <div id="summaryItems"></div>
 
@@ -356,9 +358,6 @@
 
       <button class="place-btn" onclick="placeOrder()">Place Order</button>
     </aside>
-
-  </div>
-</main>
 
 <div class="success-overlay" id="successOverlay">
   <div class="success-box">
@@ -658,11 +657,11 @@ async function generatePreview() {
     ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
 
     const positions = {
-      left: { x: 180, y: 610 },
-      right: { x: 1010, y: 610 },
-      front: { x: 600, y: 665 },
-      'front-left': { x: 390, y: 700 },
-      'front-right': { x: 810, y: 700 }
+        left: { x: 210, y: 570 },
+        right: { x: 1000, y: 570 },
+        front: { x: 605, y: 655 },
+        'front-left': { x: 390, y: 675 },
+        'front-right': { x: 820, y: 675 }
     };
 
     for (let i = 0; i < cart.length; i++) {
@@ -694,7 +693,7 @@ async function generatePreview() {
 
       await new Promise(resolve => {
         productImg.onload = () => {
-          ctx.drawImage(productImg, pos.x, pos.y, 240, 240);
+          ctx.drawImage(productImg, pos.x, pos.y, 250, 250);
           resolve();
         };
 
