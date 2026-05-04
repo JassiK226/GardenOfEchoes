@@ -16,41 +16,73 @@
 
     a { text-decoration: none; color: inherit; }
 
-    .main-nav {
-      display: flex;
-      align-items: center;
-      padding: 0 28px;
-      height: 96px;
-      background: #fff;
-      border-bottom: 1px solid #e8e8e8;
-    }
+    /* ── Main Nav ── */
+.main-nav {
+  display: flex;
+  align-items: center;
+  padding: 0 28px;
+  height: 96px;
+  background: #fff;
+  border-bottom: 1px solid #e8e8e8;
+  gap: 0;
+}
 
-    .logo img {
-      height: 90px;
-      width: auto;
-      display: block;
-    }
+.logo {
+  display: flex;
+  align-items: center;
+  margin-right: 36px;
+  white-space: nowrap;
+}
 
-    .main-nav-links {
-      display: flex;
-      align-items: center;
-      gap: 4px;
-      flex: 1;
-      justify-content: flex-end;
-    }
+.logo img {
+  height: 90px;
+  width: auto;
+  display: block;
+}
 
-    .main-nav-links a {
-      padding: 6px 12px;
-      font-size: 13.5px;
-      color: #333;
-    }
+.main-nav-links {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: 1;
+  justify-content: flex-end;
+}
 
-    .nav-donation {
-      background: transparent;
-      color: #333 !important;
-      border-radius: 4px;
-      padding: 6px 12px;
-    }
+.main-nav-links a {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 13.5px;
+  color: #333;
+  white-space: nowrap;
+  border-radius: 4px;
+  transition: background 0.15s;
+}
+
+.main-nav-links a:hover {
+  background: #f5f5f5;
+}
+
+/* FIXES BIG ICON BUG */
+.main-nav-links a svg {
+  width: 15px;
+  height: 15px;
+  flex-shrink: 0;
+}
+
+/* Donation should behave like others */
+.nav-donation {
+  background: transparent !important;
+  color: #333 !important;
+  border-radius: 4px !important;
+  padding: 6px 12px !important;
+  font-weight: normal !important;
+}
+
+.nav-donation:hover {
+  background: #f5f5f5 !important;
+}
 
     .cat-nav {
   display: flex;
@@ -168,6 +200,7 @@
         text-align: center;
       }
     }
+
   </style>
 </head>
 
