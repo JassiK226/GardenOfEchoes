@@ -803,6 +803,17 @@ async function loadFloristProducts() {
       const card = document.createElement('div');
       card.className = 'real-product-card';
 
+      card.onclick = () => {
+        const productData = {
+          name,
+          price,
+          image
+        };
+
+        localStorage.setItem('selectedProduct', JSON.stringify(productData));
+        window.location.href = 'product.html';
+      };
+
       card.innerHTML = `
         <img src="${image}" alt="${name}">
         <div class="real-card-info">

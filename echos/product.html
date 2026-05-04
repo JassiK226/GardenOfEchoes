@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Product</title>
+  <style>
+    body {
+      font-family: Arial;
+      padding: 40px;
+      text-align: center;
+    }
+
+    img {
+      width: 300px;
+      border-radius: 10px;
+    }
+
+    .price {
+      color: #c0392b;
+      font-size: 20px;
+      font-weight: bold;
+    }
+
+    button {
+      background: #c0392b;
+      color: white;
+      padding: 10px 20px;
+      border: none;
+      margin-top: 10px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <h1 id="name"></h1>
+  <img id="image">
+  <p class="price" id="price"></p>
+
+  <button>Add to Cart</button>
+
+  <script>
+    const product = JSON.parse(localStorage.getItem('selectedProduct'));
+
+    if (product) {
+      document.getElementById('name').innerText = product.name;
+      document.getElementById('price').innerText = "$" + product.price;
+      document.getElementById('image').src = product.image;
+    }
+  </script>
+
+</body>
+</html>
