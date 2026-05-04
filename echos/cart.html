@@ -268,40 +268,49 @@
       }
     }
 
-    .cat-item {
-    position: relative;
+    .cat-nav {
+    display: flex;
+    justify-content: center;
+    height: 44px;
+    align-items: center;
+    background: #d85b6a; /* pink */
+    border-bottom: none;
+    gap: 28px;
     }
 
-    .cat-item:hover .dropdown {
-    display: block;
+    .cat-nav a {
+    font-size: 13.5px;
+    color: white;
     }
 
+    .cat-nav a:hover {
+    opacity: 0.8;
+    }
+    .cat-nav a .arrow { font-size: 10px; margin-top: 1px; }
+
+    /* ── Dropdown (hover) ── */
+    .cat-item { position: relative; }
+    .cat-item:hover .dropdown { display: block; }
     .dropdown {
-    display: none;
-    position: absolute;
-    top: 100%;
-    left: 0;
-    background: #fff;
-    border: 1px solid #e0e0e0;
-    min-width: 180px;
-    z-index: 1000;
-    box-shadow: 0 4px 16px rgba(0,0,0,.1);
+      display: none;
+      position: absolute;
+      top: 100%;
+      left: 0;
+      background: #fff;
+      border: 1px solid #e0e0e0;
+      min-width: 180px;
+      z-index: 100;
+      box-shadow: 0 4px 16px rgba(0,0,0,.1);
     }
-
     .dropdown a {
-    display: block;
-    padding: 9px 16px;
-    font-size: 13px;
-    color: #333;
-    border-bottom: 1px solid #f0f0f0;
-    font-weight: 400;
-    white-space: nowrap;
+      display: block;
+      padding: 9px 16px;
+      font-size: 13px;
+      color: #333;
+      border-bottom: 1px solid #f0f0f0;
     }
+    .dropdown a:hover { background: #f9f9f9; color: #c0392b; }
 
-    .dropdown a:hover {
-    background: #f9f9f9;
-    color: #c0392b;
-    }
   </style>
 </head>
 
