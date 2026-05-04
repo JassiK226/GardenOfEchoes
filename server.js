@@ -1200,9 +1200,14 @@ app.get('/orders/:email', async (req, res) => {
     const email = req.params.email;
 
     const orders = await pool.query(
-      `SELECT * FROM orders
-       WHERE user_email = $1
-       ORDER BY created_at DESC`,
+      `SELECT 
+          o.*,
+          l.first_name AS loved_first_name,
+          l.last_name AS loved_last_name
+       FROM orders o
+       LEFT JOIN loved_ones l ON o.loved_one_id = l.id
+       WHERE o.user_email = $1
+       ORDER BY o.created_at DESC`,
       [email]
     );
 

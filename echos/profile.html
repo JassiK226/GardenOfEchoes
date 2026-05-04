@@ -1439,7 +1439,7 @@
           <h4>Order #${order.id}</h4>
           <p>Status: ${order.status}</p>
           <p>Total: $${Number(order.total).toFixed(2)}</p>
-          <p>For: ${order.loved_first_name || ''} ${order.loved_last_name || ''}</p>
+          <p>For: ${order.loved_first_name ? `${order.loved_first_name} ${order.loved_last_name || ''}` : 'Not selected'}</p>
           <p>Delivery: ${order.address_line1 || ''}, ${order.city || ''}, ${order.state || ''} ${order.zip_code || ''}</p>
           <div style="margin-top:10px;">${itemsHTML}</div>
         `;
