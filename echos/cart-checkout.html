@@ -620,9 +620,7 @@ async function generatePreview() {
   const status = document.getElementById('previewStatus');
   const previewBox = document.getElementById('previewBox');
   const previewImage = document.getElementById('previewImage');
-  const graveType = document.getElementById('grave-type')?.value || 'upright tombstone';  
-  const productNames = cart.map(item => item.name).join(', ');
-  const productImages = cart.map(item => item.image).join(', ');
+  const graveType = document.getElementById('grave-type')?.value || 'upright tombstone';
 
   if (cart.length === 0) {
     alert('Your cart is empty.');
@@ -630,47 +628,66 @@ async function generatePreview() {
   }
 
   const btn = event.target;
-btn.disabled = true;
-btn.innerText = 'Generating...';
+  btn.disabled = true;
+  btn.innerText = 'Generating...';
 
-  status.textContent = 'Generating preview... this may take 10-20 seconds.';
+  status.textContent = 'Generating preview... this may take a moment.';
   previewBox.style.display = 'none';
   previewImage.src = '';
 
-const prompt = `
-Create a high-quality, realistic cemetery memorial scene.
+  const itemsText = cart.map((item, index) => {
+    return `
+Item ${index + 1}:
+- Product name: ${item.name}
+- Quantity: ${item.quantity || 1}
+- Product image reference URL: ${item.image}
+- Price: $${item.price}
+`;
+  }).join('\n');
+
+  const prompt = `
+Create a realistic cemetery memorial preview using the user's selected cart products.
 
 Scene:
-- A peaceful cemetery environment with soft lighting
-- Clean grass and natural surroundings
-- No people in the image
+- Peaceful cemetery setting
+- Clean grass
+- Soft natural lighting
+- No people
+- Respectful, calm, realistic style
 
-Memorial:
-- Type: ${graveType}
-- The memorial stone must be completely blank
-- No names, no dates, no text, no engravings at all
+Memorial type:
+${graveType}
 
-Products to include:
-${productNames}
+Memorial rules:
+- If the memorial type is "flat grave marker", create a flat horizontal grave marker in the grass.
+- If the memorial type is "upright tombstone", create an upright standing tombstone.
+- The memorial stone must be completely blank.
+- No names, dates, symbols, religious text, engravings, or readable writing.
+- Do not add any text anywhere in the image.
 
-Reference images for style:
-${productImages}
+Selected products:
+${itemsText}
 
-Placement instructions:
-${placementNotes || 'Arrange the flowers neatly and symmetrically around the memorial.'}
+Placement instructions from user:
+${placementNotes || 'Arrange each selected product neatly around the memorial in a balanced and respectful way.'}
 
-Important:
-- Match the flowers to the reference images in color and style
-- Keep the arrangement elegant and respectful
-- Ensure the composition looks realistic and balanced
-- Do NOT include any text anywhere in the image
+Important placement rules:
+- Include every selected cart product.
+- If the user mentions a specific product by name, place that exact product in the requested location.
+- If the user says left side, place that product on the left side.
+- If the user says right side, place that product on the right side.
+- If the user says front, place that product in front of the memorial.
+- Do not combine all products into one bouquet unless the user asks for that.
+- Keep flowers visually similar to the selected product names and reference image URLs.
+- Use matching colors, flower types, and arrangement shapes as much as possible.
 `;
 
   try {
     const res = await fetch('/generate-preview', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt })
+      body: JSON.stringify({ prompt , images: cart.map(item => item.image)
+})
     });
 
     const data = await res.json();
@@ -687,13 +704,9 @@ Important:
     console.error(err);
     status.textContent = 'Something went wrong while generating the preview.';
   }
-  
+
   btn.disabled = false;
   btn.innerText = 'Generate Preview';
-}
-
-function finishOrder() {
-  window.location.href = 'profile.html';
 }
 
 window.addEventListener('DOMContentLoaded', async () => {

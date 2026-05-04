@@ -899,9 +899,10 @@ app.get('/donations', async (req, res) => {
   }
 });
 
+/*
 app.post('/generate-preview', async (req, res) => {
   try {
-    const { prompt } = req.body;
+    const { prompt, images } = req.body;
 
     const response = await fetch(
       'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell',
@@ -913,6 +914,70 @@ app.post('/generate-preview', async (req, res) => {
         },
         body: JSON.stringify({
           inputs: prompt
+        })
+      }
+    );
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('HUGGING FACE ERROR:', errorText);
+      return res.status(500).json({
+        error: 'Hugging Face request failed',
+        details: errorText
+      });
+    }
+
+    const imageBuffer = await response.arrayBuffer();
+    const base64Image = Buffer.from(imageBuffer).toString('base64');
+
+    res.json({
+      imageUrl: `data:image/png;base64,${base64Image}`
+    });
+
+  } catch (err) {
+    console.error('IMAGE GENERATION ERROR:', err);
+    res.status(500).json({
+      error: 'Error generating image',
+      details: err.message
+    });
+  }
+}); */
+
+app.post('/generate-preview', async (req, res) => {
+  try {
+    const { prompt, images } = req.body;
+
+    const imageReferenceText = images && images.length > 0
+      ? `
+Use these product image URLs as visual references for the exact flowers/items:
+${images.map((img, index) => `Product ${index + 1}: ${img}`).join('\n')}
+`
+      : '';
+
+    const finalPrompt = `
+${prompt}
+
+${imageReferenceText}
+
+Very important:
+- Include every selected product.
+- Do not ignore any selected bouquet.
+- If there are two bouquets, show two different bouquets.
+- Follow the placement instructions exactly.
+- If the memorial type is flat grave marker, make it a flat grave marker on the ground, not an upright tombstone.
+- The stone must be blank with no readable text.
+`;
+
+    const response = await fetch(
+      'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell',
+      {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          inputs: finalPrompt
         })
       }
     );
