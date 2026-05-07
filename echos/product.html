@@ -103,6 +103,44 @@
   opacity: 0.8;
 }
 
+.cat-nav a .arrow {
+  font-size: 10px;
+  margin-top: 1px;
+}
+
+.cat-item {
+  position: relative;
+}
+
+.cat-item:hover .dropdown {
+  display: block;
+}
+
+.dropdown {
+  display: none;
+  position: absolute;
+  top: 100%;
+  left: 0;
+  background: #fff;
+  border: 1px solid #e0e0e0;
+  min-width: 180px;
+  z-index: 100;
+  box-shadow: 0 4px 16px rgba(0,0,0,.1);
+}
+
+.dropdown a {
+  display: block;
+  padding: 9px 16px;
+  font-size: 13px;
+  color: #333;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.dropdown a:hover {
+  background: #f9f9f9;
+  color: #c0392b;
+}
+
     .product-page {
       max-width: 1050px;
       margin: 55px auto;
