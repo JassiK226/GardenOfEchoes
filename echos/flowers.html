@@ -803,181 +803,186 @@ function parseCSV(text) {
 
 const customProducts = [
   {
-    name: "Always In My Heart Teddy",
-    price: 24.95,
-    image: "Always-In-My-Heart-Teddy.png",
-    description: "A soft teddy bear holding a heart pillow with a loving memorial message.",
-    code: "TEDDY-001",
-    category: "Teddy Bears"
-  },
-  {
-    name: "Angel Memorial Figurine",
-    price: 29.95,
-    image: "Angel-Memorial-Figurine.png",
-    description: "A peaceful angel figurine with an always in our hearts message.",
-    code: "MEMGIFT-001",
-    category: "Memorial Gifts"
-  },
-  {
-    name: "Comfort Teddy Bear",
-    price: 24.95,
-    image: "Comfort-Teddy-Bear.png",
-    description: "A comforting teddy bear gift for someone who needs support.",
-    code: "TEDDY-002",
-    category: "Teddy Bears"
-  },
-  {
-    name: "Engraved Memorial Plaque",
-    price: 34.95,
-    image: "Engraved-Memorial-Plaque.png",
-    description: "A gray engraved plaque with a simple remembrance message.",
-    code: "PERSONAL-001",
-    category: "Personalized Items"
-  },
-  {
-    name: "Forever In Our Hearts Balloon Set",
-    price: 16.95,
-    image: "Forever-In-Our-Hearts-Balloon-Set.png",
-    description: "A purple, white, and silver balloon set for remembrance.",
-    code: "BALLOON-001",
-    category: "Balloons"
-  },
-  {
-    name: "Happy Birthday Balloons",
-    price: 14.95,
-    image: "Happy-Birthday-Balloons.png",
-    description: "A bright birthday balloon set for celebrating special days.",
-    code: "BALLOON-002",
-    category: "Balloons"
-  },
-  {
-    name: "Heart Memorial Plaque",
-    price: 34.95,
-    image: "Heart-Memorial-Plaque.png",
-    description: "A clear heart-shaped memorial plaque with a heartfelt message.",
-    code: "PERSONAL-002",
-    category: "Personalized Items"
-  },
-  {
-    name: "I Love You Balloons",
-    price: 14.95,
-    image: "I-Love-You-Balloons.png",
-    description: "A red heart balloon set for love and remembrance.",
-    code: "BALLOON-003",
-    category: "Balloons"
-  },
-  {
-    name: "I Love You Teddy",
-    price: 24.95,
-    image: "I-Love-You-Teddy.png",
-    description: "A teddy bear holding a red heart pillow with an I love you message.",
-    code: "TEDDY-003",
-    category: "Teddy Bears"
-  },
-  {
-    name: "In Loving Memory Candle",
-    price: 19.95,
-    image: "In-Loving-Memory-Candle-Fire.png",
-    description: "A glass candle with an in loving memory design.",
-    code: "CANDLE-001",
-    category: "Candles"
-  },
-  {
-    name: "LED Memorial Candle",
-    price: 19.95,
-    image: "LED-Memorial-Candle.png",
-    description: "A soft LED memorial candle with a warm glow.",
-    code: "CANDLE-002",
-    category: "Candles"
-  },
-  {
-    name: "Memorial Lantern",
-    price: 34.95,
-    image: "Memorial-Lantern.png",
-    description: "A black memorial lantern with a meaningful remembrance message.",
-    code: "CANDLE-003",
-    category: "Candles"
-  },
-  {
-    name: "Memorial Wind Chime",
-    price: 34.95,
-    image: "Memorial-Wind-Chime.png",
-    description: "A memorial wind chime for outdoor remembrance.",
-    code: "MEMGIFT-002",
-    category: "Memorial Gifts"
-  },
-  {
-    name: "Personalized Garden Stake",
-    price: 29.95,
-    image: "Personalized-Garden-Stake.png",
-    description: "A heart-shaped garden stake with an always remembered message.",
-    code: "PERSONAL-003",
-    category: "Personalized Items"
-  },
-  {
-    name: "Personalized Memorial Stone",
-    price: 39.95,
-    image: "Personalized-Memorial-Stone.png",
-    description: "A personalized memorial stone for a gravesite or garden.",
-    code: "PERSONAL-004",
-    category: "Personalized Items"
-  },
-  {
-    name: "Personalized Memory Box",
-    price: 39.95,
-    image: "Personalized-Memory-Box.png",
-    description: "A wooden memory box for keeping meaningful items safe.",
-    code: "PERSONAL-005",
-    category: "Personalized Items"
-  },
-  {
-    name: "Solar Memorial Candle",
-    price: 24.95,
-    image: "Solar-Memorial-Candle.png",
-    description: "A solar-powered memorial candle for outdoor use.",
-    code: "CANDLE-004",
-    category: "Candles"
-  },
-  {
-    name: "Solar Memorial Candle Garden",
-    price: 24.95,
-    image: "Solar-Mmmorial-Candle.png",
-    description: "A glowing solar memorial candle shown in a garden setting.",
-    code: "CANDLE-005",
-    category: "Candles"
-  },
-  {
-    name: "Thinking Of You Balloon",
-    price: 16.95,
-    image: "Thinking-Of-You-Balloon.png",
-    description: "A purple thinking of you balloon gift.",
-    code: "BALLOON-004",
-    category: "Balloons"
-  },
-  {
-    name: "Thinking Of You Teddy",
-    price: 24.95,
-    image: "Thinking-Of-You-Teddy.png",
-    description: "A teddy bear holding a thinking of you heart pillow.",
-    code: "TEDDY-004",
-    category: "Teddy Bears"
-  },
-  {
-    name: "With Deepest Sympathy Balloons",
-    price: 16.95,
-    image: "With-Deepest-Sympathy-Balloons.png",
-    description: "A blue sympathy balloon set for expressing condolences.",
-    code: "BALLOON-005",
-    category: "Balloons"
-  },
-  {
-    name: "With Deepest Sympathy Teddy",
-    price: 24.95,
-    image: "With-Deepest-Sympathy-Teddy.png",
-    description: "A gray teddy bear holding a deepest sympathy heart pillow.",
-    code: "TEDDY-005",
-    category: "Teddy Bears"
-  }
+  name: "Always In My Heart Teddy",
+  price: 24.95,
+  image: "Always-In-My-Heart-Teddy.png",
+  description: "A soft plush teddy bear holding a heart-shaped pillow with a loving remembrance message. This comforting keepsake is designed to bring warmth and support during difficult times and makes a thoughtful addition to memorial arrangements or gravesite visits.",
+  code: "TEDDY-001",
+  category: "Teddy Bears"
+},
+{
+  name: "Angel Memorial Figurine",
+  price: 29.95,
+  image: "Angel-Memorial-Figurine.png",
+  description: "A peaceful angel figurine created to honor the memory of a loved one. Featuring delicate detailing and a comforting memorial design, this decorative keepsake can be displayed at a gravesite, in a memorial garden, or inside the home.",
+  code: "MEMGIFT-001",
+  category: "Memorial Gifts"
+},
+{
+  name: "Comfort Teddy Bear",
+  price: 24.95,
+  image: "Comfort-Teddy-Bear.png",
+  description: "A soft and comforting teddy bear gift created to provide support, warmth, and reassurance during times of grief or remembrance. Its gentle design makes it a meaningful keepsake for memorial visits and sympathy arrangements.",
+  code: "TEDDY-002",
+  category: "Teddy Bears"
+},
+{
+  name: "Engraved Memorial Plaque",
+  price: 34.95,
+  image: "Engraved-Memorial-Plaque.png",
+  description: "A beautifully engraved memorial plaque designed for gravesites, gardens, or remembrance displays. Personalize this keepsake with a custom message to create a lasting tribute that honors the memory of someone special.",
+  code: "PERSONAL-001",
+  category: "Personalized Items",
+  requiresEngraving: true
+},
+{
+  name: "Forever In Our Hearts Balloon Set",
+  price: 16.95,
+  image: "Forever-In-Our-Hearts-Balloon-Set.png",
+  description: "A purple, silver, and white memorial balloon arrangement designed to celebrate and remember loved ones. These decorative balloons add a heartfelt touch to gravesites, remembrance ceremonies, and anniversary visits.",
+  code: "BALLOON-001",
+  category: "Balloons"
+},
+{
+  name: "Happy Birthday Balloons",
+  price: 14.95,
+  image: "Happy-Birthday-Balloons.png",
+  description: "A bright and cheerful birthday balloon set created to celebrate a loved one’s special day. Perfect for memorial birthdays, family gatherings, or adding a colorful tribute during gravesite visits.",
+  code: "BALLOON-002",
+  category: "Balloons"
+},
+{
+  name: "Heart Memorial Plaque",
+  price: 34.95,
+  image: "Heart-Memorial-Plaque.png",
+  description: "A heart-shaped memorial plaque crafted to hold a personalized remembrance message. Its elegant design makes it a meaningful keepsake for gardens, memorial tables, or gravesites.",
+  code: "PERSONAL-002",
+  category: "Personalized Items",
+  requiresEngraving: true
+},
+{
+  name: "I Love You Balloons",
+  price: 14.95,
+  image: "I-Love-You-Balloons.png",
+  description: "A romantic red and pink balloon arrangement featuring heartfelt love-themed designs. These balloons are perfect for anniversaries, Valentine’s Day memorials, or expressing ongoing love and remembrance.",
+  code: "BALLOON-003",
+  category: "Balloons"
+},
+{
+  name: "I Love You Teddy",
+  price: 24.95,
+  image: "I-Love-You-Teddy.png",
+  description: "A soft teddy bear holding a red heart pillow with an affectionate message. This comforting keepsake is designed to express love, remembrance, and emotional support during meaningful moments.",
+  code: "TEDDY-003",
+  category: "Teddy Bears"
+},
+{
+  name: "In Loving Memory Candle",
+  price: 19.95,
+  image: "In-Loving-Memory-Candle-Fire.png",
+  description: "A memorial glass candle featuring an elegant remembrance design and a warm glow. Ideal for gravesite visits, prayer spaces, memorial ceremonies, or quiet moments of reflection.",
+  code: "CANDLE-001",
+  category: "Candles"
+},
+{
+  name: "LED Memorial Candle",
+  price: 19.95,
+  image: "LED-Memorial-Candle.png",
+  description: "A soft glowing LED memorial candle designed to safely provide light and remembrance indoors or outdoors. Its gentle illumination creates a peaceful atmosphere for honoring loved ones.",
+  code: "CANDLE-002",
+  category: "Candles"
+},
+{
+  name: "Memorial Lantern",
+  price: 34.95,
+  image: "Memorial-Lantern.png",
+  description: "A decorative black memorial lantern featuring a meaningful remembrance quote and warm lighting. This lantern creates a calming tribute display for gravesites, gardens, or home memorial spaces.",
+  code: "CANDLE-003",
+  category: "Candles"
+},
+{
+  name: "Memorial Wind Chime",
+  price: 34.95,
+  image: "Memorial-Wind-Chime.png",
+  description: "A beautifully designed memorial wind chime created to bring comfort through soft and peaceful sounds. Perfect for remembrance gardens, outdoor memorials, or honoring the memory of a loved one.",
+  code: "MEMGIFT-002",
+  category: "Memorial Gifts"
+},
+{
+  name: "Personalized Garden Stake",
+  price: 29.95,
+  image: "Personalized-Garden-Stake.png",
+  description: "A heart-shaped memorial garden stake that can be personalized with a custom engraved message. Designed to create a meaningful tribute in remembrance gardens, flower arrangements, or gravesites.",
+  code: "PERSONAL-003",
+  category: "Personalized Items",
+  requiresEngraving: true
+},
+{
+  name: "Personalized Memorial Stone",
+  price: 39.95,
+  image: "Personalized-Memorial-Stone.png",
+  description: "A personalized memorial stone created for gravesites, gardens, or remembrance displays. Add a custom engraved message to create a timeless tribute honoring someone special.",
+  code: "PERSONAL-004",
+  category: "Personalized Items",
+  requiresEngraving: true
+},
+{
+  name: "Personalized Memory Box",
+  price: 39.95,
+  image: "Personalized-Memory-Box.png",
+  description: "A handcrafted wooden memory box designed for storing photographs, letters, jewelry, and meaningful keepsakes. Personalize the engraving to create a one-of-a-kind remembrance piece.",
+  code: "PERSONAL-005",
+  category: "Personalized Items",
+  requiresEngraving: true
+},
+{
+  name: "Solar Memorial Candle",
+  price: 24.95,
+  image: "Solar-Memorial-Candle.png",
+  description: "A solar-powered memorial candle designed for outdoor remembrance spaces. This eco-friendly keepsake automatically glows at night, creating a peaceful tribute for gardens and gravesites.",
+  code: "CANDLE-004",
+  category: "Candles"
+},
+{
+  name: "Solar Memorial Candle Garden",
+  price: 24.95,
+  image: "Solar-Mmmorial-Candle.png",
+  description: "A glowing solar memorial candle displayed in a peaceful garden setting. Designed for outdoor remembrance, this decorative candle creates a calming atmosphere while honoring loved ones.",
+  code: "CANDLE-005",
+  category: "Candles"
+},
+{
+  name: "Thinking Of You Balloon",
+  price: 16.95,
+  image: "Thinking-Of-You-Balloon.png",
+  description: "A thoughtful purple balloon arrangement created to send love, comfort, and support. Ideal for sympathy visits, memorial occasions, or letting someone know they are in your thoughts.",
+  code: "BALLOON-004",
+  category: "Balloons"
+},
+{
+  name: "Thinking Of You Teddy",
+  price: 24.95,
+  image: "Thinking-Of-You-Teddy.png",
+  description: "A soft teddy bear holding a heart-shaped thinking of you message. This keepsake offers comfort and emotional support while serving as a meaningful remembrance gift.",
+  code: "TEDDY-004",
+  category: "Teddy Bears"
+},
+{
+  name: "With Deepest Sympathy Balloons",
+  price: 16.95,
+  image: "With-Deepest-Sympathy-Balloons.png",
+  description: "A sympathy-themed balloon arrangement in calming blue tones designed to express condolences and support. Perfect for memorial services, sympathy gifts, or gravesite visits.",
+  code: "BALLOON-005",
+  category: "Balloons"
+},
+{
+  name: "With Deepest Sympathy Teddy",
+  price: 24.95,
+  image: "With-Deepest-Sympathy-Teddy.png",
+  description: "A comforting gray teddy bear holding a deepest sympathy message pillow. Designed to provide warmth, support, and remembrance during difficult moments.",
+  code: "TEDDY-005",
+  category: "Teddy Bears"
+}
 ];
 
 async function loadFloristProducts() {
@@ -1055,7 +1060,8 @@ async function loadFloristProducts() {
       image: product.image,
       description: product.description,
       code: product.code,
-      category: product.category
+      category: product.category,
+      requiresEngraving: product.requiresEngraving || false
     };
 
     localStorage.setItem('selectedProduct', JSON.stringify(productData));

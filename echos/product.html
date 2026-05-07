@@ -352,9 +352,29 @@
     <div class="product-right">
       <div class="product-price" id="price"></div>
       <p class="product-description" id="description"></p>
-<button class="add-btn" onclick="addToCart()">Add to Cart</button>    </div>
-  </div>
 
+<div id="engravingBox" style="display:none; margin-bottom:22px;">
+  <label for="engravingMessage" style="display:block; font-weight:700; margin-bottom:8px;">
+    Engraving Message
+  </label>
+
+  <input
+    type="text"
+    id="engravingMessage"
+    maxlength="50"
+    placeholder="Write your message here"
+    style="width:100%; padding:10px; border:1px solid #ccc; border-radius:5px;"
+  >
+
+  <p style="font-size:12px; color:#777; margin-top:6px;">
+    Maximum 50 characters.
+  </p>
+</div>
+
+<button class="add-btn" onclick="addToCart()">Add to Cart</button>
+
+  </div>
+</div>
 </main>
 
   <script>
@@ -366,6 +386,9 @@
       document.getElementById('image').alt = product.name;
       document.getElementById('price').innerText = "$" + product.price;
       document.getElementById('description').innerText = product.description || '';
+      if (product.requiresEngraving) {
+  document.getElementById('engravingBox').style.display = 'block';
+}
     }
   </script>
   <script>
@@ -373,47 +396,6 @@
     window.history.back();
     }
 </script>
-<script>
-    async function addToCart() {
-  const userEmail = localStorage.getItem('email');
-
-  if (!userEmail) {
-    alert('Please log in before adding items to your cart.');
-    window.location.href = 'login.html';
-    return;
-  }
-
-  const product = JSON.parse(localStorage.getItem('selectedProduct'));
-
-  const data = {
-    userEmail: userEmail,
-    productName: product.name,
-    productPrice: product.price,
-    productImage: product.image
-  };
-
-  try {
-    const res = await fetch('/cart', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(data)
-    });
-
-    const result = await res.json();
-
-    if (res.ok) {
-      alert('Added to cart!');
-    } else {
-      alert(result.error || 'Error adding to cart');
-    }
-
-  } catch (err) {
-    console.error(err);
-    alert('Something went wrong.');
-  }
-}
-</script>
-
 <script>
 function addToCart() {
   const product = JSON.parse(localStorage.getItem('selectedProduct'));
@@ -423,9 +405,29 @@ function addToCart() {
     return;
   }
 
+  let engravingMessage = '';
+
+  if (product.requiresEngraving) {
+    const engravingInput = document.getElementById('engravingMessage');
+    engravingMessage = engravingInput.value.trim();
+
+    if (engravingMessage.length === 0) {
+      alert('Please enter an engraving message.');
+      return;
+    }
+
+    if (engravingMessage.length > 50) {
+      alert('Engraving message must be 50 characters or less.');
+      return;
+    }
+  }
+
   let cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-  const existingItem = cart.find(item => item.name === product.name);
+  const existingItem = cart.find(item =>
+    item.name === product.name &&
+    item.engravingMessage === engravingMessage
+  );
 
   if (existingItem) {
     existingItem.quantity += 1;
@@ -434,12 +436,14 @@ function addToCart() {
       name: product.name,
       price: product.price,
       image: product.image,
+      code: product.code,
+      category: product.category,
+      engravingMessage: engravingMessage,
       quantity: 1
     });
   }
 
   localStorage.setItem('cart', JSON.stringify(cart));
-
   window.location.href = 'cart.html';
 }
 </script>
