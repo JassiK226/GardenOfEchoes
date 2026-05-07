@@ -650,6 +650,17 @@
       <a href="flowers.html?filter=Plants">Plants</a>
     </div>
   </div>
+
+  <div class="cat-item">
+  <a href="flowers.html?filter=Memorial Gifts">Memorial Gifts <span class="arrow">▾</span></a>
+  <div class="dropdown">
+    <a href="flowers.html?filter=Memorial Gifts">All Memorial Gifts</a>
+    <a href="flowers.html?filter=Balloons">Balloons</a>
+    <a href="flowers.html?filter=Teddy Bears">Teddy Bears</a>
+    <a href="flowers.html?filter=Personalized Items">Personalized Items</a>
+    <a href="flowers.html?filter=Candles">Candles</a>
+  </div>
+</div>
 </nav>
 
   <!-- ── Hero ── -->
@@ -790,6 +801,185 @@ function parseCSV(text) {
   return rows;
 }
 
+const customProducts = [
+  {
+    name: "Always In My Heart Teddy",
+    price: 24.95,
+    image: "Always-In-My-Heart-Teddy.png",
+    description: "A soft teddy bear holding a heart pillow with a loving memorial message.",
+    code: "TEDDY-001",
+    category: "Teddy Bears"
+  },
+  {
+    name: "Angel Memorial Figurine",
+    price: 29.95,
+    image: "Angel-Memorial-Figurine.png",
+    description: "A peaceful angel figurine with an always in our hearts message.",
+    code: "MEMGIFT-001",
+    category: "Memorial Gifts"
+  },
+  {
+    name: "Comfort Teddy Bear",
+    price: 24.95,
+    image: "Comfort-Teddy-Bear.png",
+    description: "A comforting teddy bear gift for someone who needs support.",
+    code: "TEDDY-002",
+    category: "Teddy Bears"
+  },
+  {
+    name: "Engraved Memorial Plaque",
+    price: 34.95,
+    image: "Engraved-Memorial-Plaque.png",
+    description: "A gray engraved plaque with a simple remembrance message.",
+    code: "PERSONAL-001",
+    category: "Personalized Items"
+  },
+  {
+    name: "Forever In Our Hearts Balloon Set",
+    price: 16.95,
+    image: "Forever-In-Our-Hearts-Balloon-Set.png",
+    description: "A purple, white, and silver balloon set for remembrance.",
+    code: "BALLOON-001",
+    category: "Balloons"
+  },
+  {
+    name: "Happy Birthday Balloons",
+    price: 14.95,
+    image: "Happy-Birthday-Balloons.png",
+    description: "A bright birthday balloon set for celebrating special days.",
+    code: "BALLOON-002",
+    category: "Balloons"
+  },
+  {
+    name: "Heart Memorial Plaque",
+    price: 34.95,
+    image: "Heart-Memorial-Plaque.png",
+    description: "A clear heart-shaped memorial plaque with a heartfelt message.",
+    code: "PERSONAL-002",
+    category: "Personalized Items"
+  },
+  {
+    name: "I Love You Balloons",
+    price: 14.95,
+    image: "I-Love-You-Balloons.png",
+    description: "A red heart balloon set for love and remembrance.",
+    code: "BALLOON-003",
+    category: "Balloons"
+  },
+  {
+    name: "I Love You Teddy",
+    price: 24.95,
+    image: "I-Love-You-Teddy.png",
+    description: "A teddy bear holding a red heart pillow with an I love you message.",
+    code: "TEDDY-003",
+    category: "Teddy Bears"
+  },
+  {
+    name: "In Loving Memory Candle",
+    price: 19.95,
+    image: "In-Loving-Memory-Candle-Fire.png",
+    description: "A glass candle with an in loving memory design.",
+    code: "CANDLE-001",
+    category: "Candles"
+  },
+  {
+    name: "LED Memorial Candle",
+    price: 19.95,
+    image: "LED-Memorial-Candle.png",
+    description: "A soft LED memorial candle with a warm glow.",
+    code: "CANDLE-002",
+    category: "Candles"
+  },
+  {
+    name: "Memorial Lantern",
+    price: 34.95,
+    image: "Memorial-Lantern.png",
+    description: "A black memorial lantern with a meaningful remembrance message.",
+    code: "CANDLE-003",
+    category: "Candles"
+  },
+  {
+    name: "Memorial Wind Chime",
+    price: 34.95,
+    image: "Memorial-Wind-Chime.png",
+    description: "A memorial wind chime for outdoor remembrance.",
+    code: "MEMGIFT-002",
+    category: "Memorial Gifts"
+  },
+  {
+    name: "Personalized Garden Stake",
+    price: 29.95,
+    image: "Personalized-Garden-Stake.png",
+    description: "A heart-shaped garden stake with an always remembered message.",
+    code: "PERSONAL-003",
+    category: "Personalized Items"
+  },
+  {
+    name: "Personalized Memorial Stone",
+    price: 39.95,
+    image: "Personalized-Memorial-Stone.png",
+    description: "A personalized memorial stone for a gravesite or garden.",
+    code: "PERSONAL-004",
+    category: "Personalized Items"
+  },
+  {
+    name: "Personalized Memory Box",
+    price: 39.95,
+    image: "Personalized-Memory-Box.png",
+    description: "A wooden memory box for keeping meaningful items safe.",
+    code: "PERSONAL-005",
+    category: "Personalized Items"
+  },
+  {
+    name: "Solar Memorial Candle",
+    price: 24.95,
+    image: "Solar-Memorial-Candle.png",
+    description: "A solar-powered memorial candle for outdoor use.",
+    code: "CANDLE-004",
+    category: "Candles"
+  },
+  {
+    name: "Solar Memorial Candle Garden",
+    price: 24.95,
+    image: "Solar-Mmmorial-Candle.png",
+    description: "A glowing solar memorial candle shown in a garden setting.",
+    code: "CANDLE-005",
+    category: "Candles"
+  },
+  {
+    name: "Thinking Of You Balloon",
+    price: 16.95,
+    image: "Thinking-Of-You-Balloon.png",
+    description: "A purple thinking of you balloon gift.",
+    code: "BALLOON-004",
+    category: "Balloons"
+  },
+  {
+    name: "Thinking Of You Teddy",
+    price: 24.95,
+    image: "Thinking-Of-You-Teddy.png",
+    description: "A teddy bear holding a thinking of you heart pillow.",
+    code: "TEDDY-004",
+    category: "Teddy Bears"
+  },
+  {
+    name: "With Deepest Sympathy Balloons",
+    price: 16.95,
+    image: "With-Deepest-Sympathy-Balloons.png",
+    description: "A blue sympathy balloon set for expressing condolences.",
+    code: "BALLOON-005",
+    category: "Balloons"
+  },
+  {
+    name: "With Deepest Sympathy Teddy",
+    price: 24.95,
+    image: "With-Deepest-Sympathy-Teddy.png",
+    description: "A gray teddy bear holding a deepest sympathy heart pillow.",
+    code: "TEDDY-005",
+    category: "Teddy Bears"
+  }
+];
+
 async function loadFloristProducts() {
   try {
     const params = new URLSearchParams(window.location.search);
@@ -816,14 +1006,78 @@ async function loadFloristProducts() {
     container.innerHTML = '';
 
     if (filter && title) {
+    if (
+      filter === 'Memorial Gifts' ||
+      filter === 'Balloons' ||
+      filter === 'Teddy Bears' ||
+      filter === 'Personalized Items' ||
+      filter === 'Candles'
+    ) {
+      title.textContent = filter;
+    } else {
       title.textContent = filter + ' Flowers';
-    } else if (title) {
-      title.textContent = 'All Flower Bouquets';
     }
+  } else if (title) {
+    title.textContent = 'All Products';  
+  }
+
+  customProducts.forEach(product => {
+  let matchesCustomFilter = true;
+
+  if (filter) {
+    const filterLower = filter.toLowerCase();
+    const categoryLower = product.category.toLowerCase();
+    const nameLower = product.name.toLowerCase();
+
+    if (filter === 'Memorial Gifts') {
+      matchesCustomFilter =
+        categoryLower === 'memorial gifts' ||
+        categoryLower === 'balloons' ||
+        categoryLower === 'teddy bears' ||
+        categoryLower === 'personalized items' ||
+        categoryLower === 'candles';
+    } else {
+      matchesCustomFilter =
+        categoryLower.includes(filterLower) ||
+        nameLower.includes(filterLower);
+    }
+  }
+
+  if (!matchesCustomFilter) return;
+
+  const card = document.createElement('div');
+  card.className = 'real-product-card';
+
+  card.onclick = () => {
+    const productData = {
+      name: product.name,
+      price: product.price,
+      image: product.image,
+      description: product.description,
+      code: product.code,
+      category: product.category
+    };
+
+    localStorage.setItem('selectedProduct', JSON.stringify(productData));
+    window.location.href = 'product.html';
+  };
+
+  card.innerHTML = `
+    <img src="${product.image}" alt="${product.name}">
+    <div class="real-card-info">
+      <div class="real-card-name">${product.name}</div>
+      <div class="real-card-price">$${Number(product.price).toFixed(2)}</div>
+      <div class="real-card-btn">Product Info</div>
+    </div>
+  `;
+
+  container.appendChild(card);
+});
 
     rows.slice(1).forEach(row => {
       const name = row[nameIndex];
       const priceValue = Number(row[priceIndex]);
+      if (!priceValue) return;
       const price = priceValue.toFixed(2);
       const image = row[imageIndex];
       const description = row[descIndex];
