@@ -1207,14 +1207,15 @@ app.post('/orders', async (req, res) => {
     for (const item of items) {
       await pool.query(
         `INSERT INTO order_items
-         (order_id, product_name, product_image, price, quantity)
-         VALUES ($1,$2,$3,$4,$5)`,
+        (order_id, product_name, product_image, price, quantity, personalization_message)
+        VALUES ($1,$2,$3,$4,$5,$6)`,
         [
           order.id,
           item.name || item.product_name || item.productName,
           item.image || item.product_image || item.productImage,
           item.price || item.product_price || item.productPrice,
-          item.quantity || 1
+          item.quantity || 1,
+          item.engravingMessage || item.personalizationMessage || null
         ]
       );
     }

@@ -1481,8 +1481,13 @@
         card.className = 'loved-one-card';
 
         const itemsHTML = order.items.map(item => `
-          <p>${item.product_name} x${item.quantity} — $${Number(item.price).toFixed(2)}</p>
-        `).join('');
+        <p>
+          ${item.product_name} x${item.quantity} — $${Number(item.price).toFixed(2)}
+          ${item.personalization_message 
+            ? `<br><strong>Personalization:</strong> ${item.personalization_message}` 
+            : ''}
+        </p>
+      `).join('');
 
         card.innerHTML = `
           <h4>Order #${index + 1}</h4>          
