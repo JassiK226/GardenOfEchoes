@@ -517,6 +517,17 @@ async function loadLovedOnes() {
   }
 }
 
+function toggleNewLovedOneFields() {
+  const lovedOneSelect = document.getElementById('loved-one-select');
+  const newLovedOneFields = document.getElementById('new-loved-one-fields');
+
+  if (lovedOneSelect.value === 'new') {
+    newLovedOneFields.style.display = 'block';
+  } else {
+    newLovedOneFields.style.display = 'none';
+  }
+}
+
 async function loadSavedAddresses() {
   const email = localStorage.getItem('email');
   if (!email) return;
