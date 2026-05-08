@@ -613,12 +613,23 @@ document.getElementById('card-exp').addEventListener('input', function () {
 
 function getPlacementNotes() {
   const cart = getCart();
+  let notes = [];
+  let placementIndex = 0;
 
-  return cart.map((item, index) => {
+  cart.forEach(item => {
     const name = item.name || item.product_name || item.productName;
-    const placement = document.getElementById(`place-${index}`)?.value || 'front';
-    return `${name}: ${placement}`;
-  }).join('; ');
+    const quantity = item.quantity || 1;
+
+    for (let q = 1; q <= quantity; q++) {
+      const placement = document.getElementById(`place-${placementIndex}`)?.value || 'front';
+      const labelName = quantity > 1 ? `${name} #${q}` : name;
+
+      notes.push(`${labelName}: ${placement}`);
+      placementIndex++;
+    }
+  });
+
+  return notes.join('; ');
 }
 
 async function placeOrder() {
@@ -725,44 +736,46 @@ function loadPlacementControls() {
   const box = document.getElementById('placementControls');
   box.innerHTML = '';
 
-  cart.forEach((item, index) => {
+  let placementIndex = 0;
+
+  cart.forEach((item) => {
     const name = item.name || item.product_name || item.productName;
+    const quantity = item.quantity || 1;
 
-    box.innerHTML += `
-      <div class="form-group">
-        <label>${name}</label>
-        <select id="place-${index}">
-          <option value="front">Front center</option>
+    for (let q = 1; q <= quantity; q++) {
+      const labelName = quantity > 1 ? `${name} #${q}` : name;
 
-          <option value="front-left">Front left</option>
-          <option value="front-right">Front right</option>
+      box.innerHTML += `
+        <div class="form-group">
+          <label>${labelName}</label>
+          <select id="place-${placementIndex}">
+            <option value="front">Front center</option>
+            <option value="front-left">Front left</option>
+            <option value="front-right">Front right</option>
+            <option value="front-far-left">Front far left</option>
+            <option value="front-far-right">Front far right</option>
+            <option value="left">Left side</option>
+            <option value="right">Right side</option>
+            <option value="base-left">At base left</option>
+            <option value="base-center">At base center</option>
+            <option value="base-right">At base right</option>
+            <option value="behind-left">Behind left</option>
+            <option value="behind-center">Behind center</option>
+            <option value="behind-right">Behind right</option>
+            <option value="far-left">Far left</option>
+            <option value="far-right">Far right</option>
+          </select>
+        </div>
+      `;
 
-          <option value="front-far-left">Front far left</option>
-          <option value="front-far-right">Front far right</option>
-
-          <option value="left">Left side</option>
-          <option value="right">Right side</option>
-
-          <option value="base-left">At base left</option>
-          <option value="base-center">At base center</option>
-          <option value="base-right">At base right</option>
-
-          <option value="behind-left">Behind left</option>
-          <option value="behind-center">Behind center</option>
-          <option value="behind-right">Behind right</option>
-
-          <option value="far-left">Far left</option>
-          <option value="far-right">Far right</option>
-        </select>
-      </div>
-    `;
+      placementIndex++;
+    }
   });
 }
 
 async function generatePreview() {
   const cart = getCart();
   const graveType = document.getElementById('grave-type').value;
-  const isFlatMarker = graveType === 'flat-grave-marker.png';
   const status = document.getElementById('previewStatus');
   const previewBox = document.getElementById('previewBox');
   const canvas = document.getElementById('previewCanvas');
@@ -812,51 +825,54 @@ async function generatePreview() {
       'far-right': { x: 1260, y: 680 }
     };
 
-    for (let i = 0; i < cart.length; i++) {
-      const item = cart[i];
-      const productImage = item.image || item.product_image || item.productImage;
+    let placementIndex = 0;
 
-      const placement = document.getElementById(`place-${i}`).value;
+for (let i = 0; i < cart.length; i++) {
+  const item = cart[i];
+  const productImage = item.image || item.product_image || item.productImage;
+  const quantity = item.quantity || 1;
 
-      let adjustedPlacement = placement;
+  for (let q = 1; q <= quantity; q++) {
+    const placement = document.getElementById(`place-${placementIndex}`).value;
+    const pos = positions[placement];
 
-      const pos = positions[adjustedPlacement];
+    const productImg = new Image();
 
-      const productImg = new Image();
-
-        try {
-        const bgRes = await fetch('/remove-bg', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ imageUrl: productImage })
-        });
-
-        const bgData = await bgRes.json();
-
-        if (bgRes.ok && bgData.image) {
-            productImg.src = bgData.image; // transparent version only for preview
-        } else {
-            productImg.src = productImage; // fallback to original
-        }
-        } catch (err) {
-        console.error('Background removal failed:', err);
-        productImg.src = productImage; // fallback
-        }
-
-      await new Promise(resolve => {
-        productImg.onload = () => {
-          const productSize = 220;
-            ctx.drawImage(productImg, pos.x, pos.y, productSize, productSize);
-          resolve();
-        };
-
-        productImg.onerror = () => {
-          console.error('Could not load product image:', productImage);
-          resolve();
-        };
+    try {
+      const bgRes = await fetch('/remove-bg', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ imageUrl: productImage })
       });
+
+      const bgData = await bgRes.json();
+
+      if (bgRes.ok && bgData.image) {
+        productImg.src = bgData.image;
+      } else {
+        productImg.src = productImage;
+      }
+    } catch (err) {
+      console.error('Background removal failed:', err);
+      productImg.src = productImage;
     }
 
+    await new Promise(resolve => {
+      productImg.onload = () => {
+        const productSize = 220;
+        ctx.drawImage(productImg, pos.x, pos.y, productSize, productSize);
+        resolve();
+      };
+
+      productImg.onerror = () => {
+        console.error('Could not load product image:', productImage);
+        resolve();
+      };
+    });
+
+    placementIndex++;
+  }
+}
     status.textContent = 'Preview created. You can change the placements and generate again.';
   };
 

@@ -959,49 +959,6 @@ app.get('/donations', async (req, res) => {
   }
 });
 
-/*
-app.post('/generate-preview', async (req, res) => {
-  try {
-    const { prompt, images } = req.body;
-
-    const response = await fetch(
-      'https://router.huggingface.co/hf-inference/models/black-forest-labs/FLUX.1-schnell',
-      {
-        method: 'POST',
-        headers: {
-          Authorization: `Bearer ${process.env.HUGGINGFACE_API_KEY}`,
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify({
-          inputs: prompt
-        })
-      }
-    );
-
-    if (!response.ok) {
-      const errorText = await response.text();
-      console.error('HUGGING FACE ERROR:', errorText);
-      return res.status(500).json({
-        error: 'Hugging Face request failed',
-        details: errorText
-      });
-    }
-
-    const imageBuffer = await response.arrayBuffer();
-    const base64Image = Buffer.from(imageBuffer).toString('base64');
-
-    res.json({
-      imageUrl: `data:image/png;base64,${base64Image}`
-    });
-
-  } catch (err) {
-    console.error('IMAGE GENERATION ERROR:', err);
-    res.status(500).json({
-      error: 'Error generating image',
-      details: err.message
-    });
-  }
-}); */
 
 app.post('/generate-preview', async (req, res) => {
   try {
