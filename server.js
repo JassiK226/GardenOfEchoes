@@ -38,7 +38,6 @@ app.get('/test-db', async (req, res) => {
 // Save or update user profile data
 app.post('/users', async (req, res) => {
   try {
-    // Get profile form data from frontend
     const {
       firstName,
       lastName,
@@ -46,13 +45,44 @@ app.post('/users', async (req, res) => {
       phone,
       dob,
       gender,
-      bio
+      bio,
+      address,
+      city,
+      state,
+      zipCode,
+      currentPassword,
+      newPassword,
+      confirmPassword
     } = req.body;
 
-    // Insert new profile row, or update it if the email already exists
+    if (newPassword || confirmPassword || currentPassword) {
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        return res.status(400).json({ error: 'Fill out all password fields.' });
+      }
+
+      if (newPassword !== confirmPassword) {
+        return res.status(400).json({ error: 'New passwords do not match.' });
+      }
+
+      const accountCheck = await pool.query(
+        'SELECT * FROM accounts WHERE email = $1 AND password = $2',
+        [email, currentPassword]
+      );
+
+      if (accountCheck.rows.length === 0) {
+        return res.status(401).json({ error: 'Current password is incorrect.' });
+      }
+
+      await pool.query(
+        'UPDATE accounts SET password = $1 WHERE email = $2',
+        [newPassword, email]
+      );
+    }
+
     const savedUser = await pool.query(
-      `INSERT INTO users (first_name, last_name, email, phone, dob, gender, bio)
-       VALUES ($1, $2, $3, $4, $5, $6, $7)
+      `INSERT INTO users
+       (first_name, last_name, email, phone, dob, gender, bio, address, city, state, zip_code)
+       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
        ON CONFLICT (email)
        DO UPDATE SET
          first_name = EXCLUDED.first_name,
@@ -60,15 +90,18 @@ app.post('/users', async (req, res) => {
          phone = EXCLUDED.phone,
          dob = EXCLUDED.dob,
          gender = EXCLUDED.gender,
-         bio = EXCLUDED.bio
+         bio = EXCLUDED.bio,
+         address = EXCLUDED.address,
+         city = EXCLUDED.city,
+         state = EXCLUDED.state,
+         zip_code = EXCLUDED.zip_code
        RETURNING *`,
-      [firstName, lastName, email, phone, dob, gender, bio]
+      [firstName, lastName, email, phone, dob || null, gender, bio, address, city, state, zipCode]
     );
 
-    // Send saved profile back to frontend
     res.json(savedUser.rows[0]);
   } catch (err) {
-    console.error(err.message);
+    console.error('SAVE USER ERROR:', err.message);
     res.status(500).json({ error: 'Error saving profile' });
   }
 });
