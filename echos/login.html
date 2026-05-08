@@ -361,7 +361,35 @@
             </div>
             <button type="submit" class="btn-login">Log In</button>
             <p id="loginMessage" style="margin-top:10px; font-size:13px; color:#c94060;"></p>
-            <a href="#" class="forgot-link">Forgot Password?</a>
+            <a href="#" class="forgot-link" onclick="showResetPassword(event)">Forgot Password?</a>          </form>
+        </div>
+
+        <!-- Reset Password Form -->
+        <div id="resetPasswordSection" style="display:none;">
+          <h1>Reset Password</h1>
+          <p class="subtitle">Enter your email and create a new password.</p>
+
+          <form class="form-wrap" onsubmit="resetPassword(event)">
+            <div class="form-group">
+              <label for="reset-email">Email</label>
+              <input type="email" id="reset-email" placeholder="jane@email.com">
+            </div>
+
+            <div class="form-group">
+              <label for="reset-new-pass">New Password</label>
+              <input type="password" id="reset-new-pass" placeholder="••••••••">
+            </div>
+
+            <div class="form-group">
+              <label for="reset-confirm-pass">Confirm New Password</label>
+              <input type="password" id="reset-confirm-pass" placeholder="••••••••">
+            </div>
+
+            <button type="submit" class="btn-login">Reset Password</button>
+
+            <p id="resetMessage" style="margin-top:10px; font-size:13px; color:#c94060;"></p>
+
+            <p class="back-link">Remembered your password? <span onclick="showLogin()">Log In</span></p>
           </form>
         </div>
 
@@ -425,22 +453,95 @@
   }
 
   function showSignup() {
-    document.getElementById('loginSection').style.display = 'none';
-    document.getElementById('signupSection').style.display = 'block';
-    document.getElementById('leftContent').innerHTML = `
-      <h2>Already Have an Account?</h2>
-      <a class="btn-signup" onclick="showLogin()">Log In</a>
-    `;
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('resetPasswordSection').style.display = 'none';
+  document.getElementById('signupSection').style.display = 'block';
+
+  document.getElementById('leftContent').innerHTML = `
+    <h2>Already Have an Account?</h2>
+    <a class="btn-signup" onclick="showLogin()">Log In</a>
+  `;
   }
 
-  function showLogin() {
+    function showLogin() {
     document.getElementById('signupSection').style.display = 'none';
+    document.getElementById('resetPasswordSection').style.display = 'none';
     document.getElementById('loginSection').style.display = 'block';
+
     document.getElementById('leftContent').innerHTML = `
       <h2>Create New Account</h2>
       <a class="btn-signup" onclick="showSignup()">Sign up</a>
     `;
   }
+
+function showResetPassword(e) {
+  e.preventDefault();
+
+  document.getElementById('loginSection').style.display = 'none';
+  document.getElementById('signupSection').style.display = 'none';
+  document.getElementById('resetPasswordSection').style.display = 'block';
+
+  const loginEmail = document.getElementById('login-email').value;
+  document.getElementById('reset-email').value = loginEmail;
+
+  document.getElementById('leftContent').innerHTML = `
+    <h2>Need an Account?</h2>
+    <a class="btn-signup" onclick="showSignup()">Sign up</a>
+  `;
+}
+
+async function resetPassword(e) {
+  e.preventDefault();
+
+  const email = document.getElementById('reset-email').value.trim();
+  const newPassword = document.getElementById('reset-new-pass').value;
+  const confirmPassword = document.getElementById('reset-confirm-pass').value;
+  const resetMessage = document.getElementById('resetMessage');
+
+  if (!email || !newPassword || !confirmPassword) {
+    resetMessage.style.color = '#c94060';
+    resetMessage.textContent = 'Please fill out all fields.';
+    return;
+  }
+
+  if (newPassword !== confirmPassword) {
+    resetMessage.style.color = '#c94060';
+    resetMessage.textContent = 'Passwords do not match.';
+    return;
+  }
+
+  try {
+    const response = await fetch('/reset-password', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, newPassword })
+    });
+
+    const data = await response.json();
+
+    if (response.ok) {
+      resetMessage.style.color = 'green';
+      resetMessage.textContent = 'Password reset successfully. You can log in now.';
+
+      document.getElementById('reset-new-pass').value = '';
+      document.getElementById('reset-confirm-pass').value = '';
+      document.getElementById('login-email').value = email;
+      document.getElementById('login-pass').value = '';
+
+      setTimeout(() => {
+        showLogin();
+      }, 1200);
+    } else {
+      resetMessage.style.color = '#c94060';
+      resetMessage.textContent = data.error || 'Error resetting password.';
+    }
+
+  } catch (error) {
+    console.error(error);
+    resetMessage.style.color = '#c94060';
+    resetMessage.textContent = 'Something went wrong.';
+  }
+}
 
  // Function to handle signup form submission
 async function handleSignup(e) {

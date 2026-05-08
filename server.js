@@ -229,6 +229,33 @@ app.post('/loved-ones', async (req, res) => {
   }
 });
 
+app.post('/reset-password', async (req, res) => {
+  try {
+    const { email, newPassword } = req.body;
+
+    if (!email || !newPassword) {
+      return res.status(400).json({ error: 'Email and new password are required.' });
+    }
+
+    const result = await pool.query(
+      `UPDATE accounts
+       SET password = $1
+       WHERE email = $2
+       RETURNING *`,
+      [newPassword, email]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'No account found with that email.' });
+    }
+
+    res.json({ message: 'Password reset successfully.' });
+  } catch (err) {
+    console.error('RESET PASSWORD ERROR:', err.message);
+    res.status(500).json({ error: 'Error resetting password.' });
+  }
+});
+
 // Get one loved one by ID
 app.get('/loved-one/:id', async (req, res) => {
   try {
