@@ -732,11 +732,27 @@ function loadPlacementControls() {
       <div class="form-group">
         <label>${name}</label>
         <select id="place-${index}">
-          <option value="left">Left side</option>
-          <option value="right">Right side</option>
           <option value="front">Front center</option>
+
           <option value="front-left">Front left</option>
           <option value="front-right">Front right</option>
+
+          <option value="front-far-left">Front far left</option>
+          <option value="front-far-right">Front far right</option>
+
+          <option value="left">Left side</option>
+          <option value="right">Right side</option>
+
+          <option value="base-left">At base left</option>
+          <option value="base-center">At base center</option>
+          <option value="base-right">At base right</option>
+
+          <option value="behind-left">Behind left</option>
+          <option value="behind-center">Behind center</option>
+          <option value="behind-right">Behind right</option>
+
+          <option value="far-left">Far left</option>
+          <option value="far-right">Far right</option>
         </select>
       </div>
     `;
@@ -746,6 +762,7 @@ function loadPlacementControls() {
 async function generatePreview() {
   const cart = getCart();
   const graveType = document.getElementById('grave-type').value;
+  const isFlatMarker = graveType === 'flat-grave-marker.png';
   const status = document.getElementById('previewStatus');
   const previewBox = document.getElementById('previewBox');
   const canvas = document.getElementById('previewCanvas');
@@ -767,18 +784,51 @@ async function generatePreview() {
     ctx.drawImage(baseImg, 0, 0, canvas.width, canvas.height);
 
     const positions = {
-    left: { x: 260, y: 650 },
-    right: { x: 1090, y: 650 },
-    front: { x: 675, y: 705 },
-    'front-left': { x: 470, y: 720 },
-    'front-right': { x: 880, y: 720 }
+      /* FRONT AREA */
+      front: { x: 675, y: 705 },
+      'front-left': { x: 470, y: 720 },
+      'front-right': { x: 880, y: 720 },
+
+      /* SIDES */
+      left: { x: 260, y: 650 },
+      right: { x: 1090, y: 650 },
+
+      /* CLOSE CORNERS */
+      'front-far-left': { x: 320, y: 760 },
+      'front-far-right': { x: 1030, y: 760 },
+
+      /* DIRECTLY AGAINST STONE */
+      'base-left': { x: 520, y: 610 },
+      'base-center': { x: 690, y: 610 },
+      'base-right': { x: 860, y: 610 },
+
+      /* BEHIND UPRIGHT STONE */
+      'behind-left': { x: 500, y: 350 },
+      'behind-center': { x: 690, y: 320 },
+      'behind-right': { x: 880, y: 350 },
+
+      /* FAR OUTSIDE */
+      'far-left': { x: 90, y: 680 },
+      'far-right': { x: 1260, y: 680 }
     };
 
     for (let i = 0; i < cart.length; i++) {
       const item = cart[i];
       const productImage = item.image || item.product_image || item.productImage;
+
       const placement = document.getElementById(`place-${i}`).value;
-      const pos = positions[placement];
+
+      let adjustedPlacement = placement;
+
+      /* prevent impossible placements on flat markers */
+      if (
+        isFlatMarker &&
+        placement.startsWith('behind')
+      ) {
+        adjustedPlacement = 'base-center';
+      }
+
+      const pos = positions[adjustedPlacement];
 
       const productImg = new Image();
 
