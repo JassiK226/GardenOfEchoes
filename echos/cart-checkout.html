@@ -803,9 +803,9 @@ async function generatePreview() {
       'base-right': { x: 860, y: 610 },
 
       /* BEHIND UPRIGHT STONE */
-      'behind-left': { x: 500, y: 350 },
-      'behind-center': { x: 690, y: 320 },
-      'behind-right': { x: 880, y: 350 },
+      'behind-left': { x: 430, y: 420 },
+      'behind-center': { x: 675, y: 390 },
+      'behind-right': { x: 920, y: 420 },
 
       /* FAR OUTSIDE */
       'far-left': { x: 90, y: 680 },
@@ -819,14 +819,6 @@ async function generatePreview() {
       const placement = document.getElementById(`place-${i}`).value;
 
       let adjustedPlacement = placement;
-
-      /* prevent impossible placements on flat markers */
-      if (
-        isFlatMarker &&
-        placement.startsWith('behind')
-      ) {
-        adjustedPlacement = 'base-center';
-      }
 
       const pos = positions[adjustedPlacement];
 
