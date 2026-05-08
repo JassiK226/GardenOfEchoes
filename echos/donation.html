@@ -290,7 +290,8 @@
     }
     .form-group label span.req { color: #e0546a; }
     .form-group input,
-    .form-group textarea {
+    .form-group textarea,
+    .form-group select {
       width: 100%;
       padding: 10px 12px;
       border: 1px solid #ddd;
@@ -569,6 +570,35 @@
           <textarea id="donor-message" rows="3" placeholder="Share why you're donating or dedicate this donation in memory of someone special..."></textarea>
         </div>
 
+        <div class="form-group">
+          <label for="saved-card-select">Use Saved Payment Method</label>
+          <select id="saved-card-select" onchange="fillSavedCard()">
+            <option value="">Enter new card</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label for="card-name">Name on Card <span class="req">*</span></label>
+          <input type="text" id="card-name" placeholder="Jane Smith">
+        </div>
+
+        <div class="form-group">
+          <label for="card-number">Card Number <span class="req">*</span></label>
+          <input type="text" id="card-number" maxlength="19" placeholder="1234 5678 9012 3456">
+        </div>
+
+        <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+          <div class="form-group">
+            <label for="card-exp">Expiration Date <span class="req">*</span></label>
+            <input type="text" id="card-exp" maxlength="7" placeholder="MM / YY">
+          </div>
+
+          <div class="form-group">
+            <label for="card-cvv">CVV <span class="req">*</span></label>
+            <input type="text" id="card-cvv" maxlength="4" placeholder="123">
+          </div>
+        </div>
+
         <button type="button" class="btn-donate" id="donateBtn" onclick="goToCheckout()">Donate $100</button>
       </div>
 
@@ -578,6 +608,7 @@
 
   <script>
     let selectedAmount = 100;
+    let savedCards = [];
 
     function selectPill(el, amount) {
       document.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
@@ -599,10 +630,66 @@
       }
     }
 
+    async function loadSavedCards() {
+    const email = localStorage.getItem('email');
+    if (!email) return;
+
+    try {
+      const res = await fetch(`/payment-methods/${encodeURIComponent(email)}`);
+
+      if (res.ok) {
+        savedCards = await res.json();
+        const select = document.getElementById('saved-card-select');
+
+        savedCards.forEach(card => {
+          const option = document.createElement('option');
+          option.value = card.id;
+          option.textContent = `${card.card_type} ending in ${card.card_last4}`;
+          select.appendChild(option);
+        });
+      }
+    } catch (err) {
+      console.error('Error loading saved cards:', err);
+    }
+  }
+
+  function fillSavedCard() {
+    const id = document.getElementById('saved-card-select').value;
+    const card = savedCards.find(c => String(c.id) === String(id));
+
+    if (!card) return;
+
+    document.getElementById('card-name').value = card.card_name || '';
+    document.getElementById('card-number').value = `•••• •••• •••• ${card.card_last4}`;
+    document.getElementById('card-exp').value = card.expiry || '';
+  }
+
+  document.getElementById('card-number').addEventListener('input', function () {
+    let value = this.value.replace(/\D/g, '').substring(0, 16);
+    this.value = value.replace(/(.{4})/g, '$1 ').trim();
+  });
+
+  document.getElementById('card-exp').addEventListener('input', function () {
+    let value = this.value.replace(/\D/g, '').substring(0, 4);
+    if (value.length >= 3) value = value.substring(0, 2) + ' / ' + value.substring(2);
+    this.value = value;
+  });
+
+  window.addEventListener('DOMContentLoaded', loadSavedCards);
+
     async function goToCheckout() {
   const name = document.getElementById('donor-name').value.trim();
   const email = document.getElementById('donor-email').value.trim();
   const message = document.getElementById('donor-message').value.trim();
+  const cardName = document.getElementById('card-name').value.trim();
+  const cardNumber = document.getElementById('card-number').value.trim();
+  const cardExp = document.getElementById('card-exp').value.trim();
+  const cardCvv = document.getElementById('card-cvv').value.trim();
+
+  if (!cardName || !cardNumber || !cardExp || !cardCvv) {
+    alert('Please fill in your payment information.');
+    return;
+  }
 
   if (!name) {
     alert('Please enter your full name.');
