@@ -1476,7 +1476,7 @@
         return;
       }
 
-      orders.forEach(order => {
+      orders.forEach((order, index) => {        
         const card = document.createElement('div');
         card.className = 'loved-one-card';
 
@@ -1485,7 +1485,7 @@
         `).join('');
 
         card.innerHTML = `
-          <h4>Order #${order.id}</h4>
+          <h4>Order #${index + 1}</h4>          
           <p>Status: ${order.status}</p>
           <p>Total: $${Number(order.total).toFixed(2)}</p>
           <p>For: ${order.loved_first_name ? `${order.loved_first_name} ${order.loved_last_name || ''}` : 'Not selected'}</p>
