@@ -227,7 +227,6 @@
       <div class="form-group">
         <label for="loved-one-select">Choose saved loved one</label>
         <select id="loved-one-select" onchange="toggleNewLovedOneFields()">
-          <option value="">Select loved one</option>
           <option value="new">Enter a new loved one</option>
         </select>
       </div>
@@ -833,6 +832,8 @@ window.addEventListener('DOMContentLoaded', async () => {
   loadPlacementControls();
   await loadProfileInfo();
   await loadLovedOnes();
+  document.getElementById('loved-one-select').value = 'new';
+  toggleNewLovedOneFields();
   await loadSavedAddresses();
   await loadSavedCards();
 });
