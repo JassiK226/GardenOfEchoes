@@ -189,6 +189,32 @@
       background: #a93226;
     }
 
+    .quantity-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 8px 0;
+    }
+
+    .quantity-controls button {
+      width: 28px;
+      height: 28px;
+      border: 1px solid #ccc;
+      background: #fff;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: 800;
+    }
+
+    .quantity-controls span {
+      font-weight: 700;
+    }
+
+    .engraving-text {
+      color: #555;
+      font-size: 13.5px;
+    }
+
     .cart-summary {
       border: 1px solid #eee;
       border-radius: 10px;
@@ -490,8 +516,15 @@
           <div class="cart-item-info">
             <h3>${item.name}</h3>
             <p>$${price.toFixed(2)}</p>
-            <p>Quantity: ${quantity}</p>
-            <button class="remove-btn" onclick="removeItem(${index})">Remove</button>
+            ${item.engravingMessage ? `<p class="engraving-text"><strong>Engraving:</strong> ${item.engravingMessage}</p>` : ''}
+
+            <div class="quantity-controls">
+              <button onclick="decreaseQuantity(${index})">−</button>
+              <span>${quantity}</span>
+              <button onclick="increaseQuantity(${index})">+</button>
+            </div>
+
+            <button class="remove-btn" onclick="removeItem(${index})">Remove All</button>
           </div>
         `;
 
@@ -502,55 +535,79 @@
       totalEl.textContent = '$' + total.toFixed(2);
     }
 
-    function removeItem(index) {
+    function increaseQuantity(index) {
       const cart = JSON.parse(localStorage.getItem('cart')) || [];
-      cart.splice(index, 1);
+
+      cart[index].quantity = (cart[index].quantity || 1) + 1;
+
       localStorage.setItem('cart', JSON.stringify(cart));
       loadCart();
     }
 
-   function goBackToProducts(e) {
-  if (e) e.preventDefault();
+    function decreaseQuantity(index) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
 
-  const lastPage = localStorage.getItem('lastProductPage');
+      if ((cart[index].quantity || 1) > 1) {
+        cart[index].quantity -= 1;
+      } else {
+        cart.splice(index, 1);
+      }
 
-  if (lastPage && !lastPage.includes('cart.html') && !lastPage.includes('cart-checkout.html')) {
-    window.location.href = lastPage;
-  } else {
-    window.location.href = 'flowers.html';
-  }
-}
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+    }
 
-    function goToAccount(e) {
+    function removeItem(index) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+      cart.splice(index, 1);
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+    }
+
+      function goBackToProducts(e) {
+      if (e) e.preventDefault();
+
+      const lastPage = localStorage.getItem('lastProductPage');
+
+      if (lastPage && !lastPage.includes('cart.html') && !lastPage.includes('cart-checkout.html')) {
+        window.location.href = lastPage;
+      } else {
+        window.location.href = 'flowers.html';
+      }
+    }
+
+        function goToAccount(e) {
+          e.preventDefault();
+
+          const email = localStorage.getItem('email');
+
+          if (email) {
+            window.location.href = 'profile.html';
+          } else {
+            window.location.href = 'login.html';
+          }
+        }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      loadCart();
+    });
+
+    function goToCheckout(e) {
       e.preventDefault();
 
       const email = localStorage.getItem('email');
 
-      if (email) {
-        window.location.href = 'profile.html';
-      } else {
+      if (!email) {
+        alert('Please log in or sign up before proceeding to checkout.');
         window.location.href = 'login.html';
+        return;
       }
+
+      window.location.href = 'cart-checkout.html';
     }
+      </script>
 
-window.addEventListener('DOMContentLoaded', () => {
-  loadCart();
-});
-
-function goToCheckout(e) {
-  e.preventDefault();
-
-  const email = localStorage.getItem('email');
-
-  if (!email) {
-    alert('Please log in or sign up before proceeding to checkout.');
-    window.location.href = 'login.html';
-    return;
-  }
-
-  window.location.href = 'cart-checkout.html';
-}
-  </script>
-
-</body>
-</html>
+    </body>
+    </html>
