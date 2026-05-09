@@ -340,6 +340,31 @@
     }
     .dropdown a:hover { background: #f9f9f9; color: #c0392b; }
 
+    .saved-later-section {
+      margin-top: 50px;
+    }
+
+    .saved-later-title {
+      font-size: 28px;
+      font-weight: 800;
+      margin-bottom: 22px;
+    }
+
+    .save-later-btn {
+      background: #fff;
+      border: 1px solid #c0392b;
+      color: #c0392b;
+      padding: 8px 14px;
+      border-radius: 4px;
+      font-weight: 700;
+      cursor: pointer;
+      margin-left: 8px;
+    }
+
+    .save-later-btn:hover {
+      background: #fdf2f2;
+    }
+
   </style>
 </head>
 
@@ -483,6 +508,11 @@
 
     <a href="#" onclick="goToCheckout(event)" class="checkout-btn">Proceed to Checkout</a>        <a href="#" onclick="goBackToProducts(event)" class="continue-btn">Continue Shopping</a>      </aside>
     </div>
+
+    <div class="saved-later-section">
+      <h2 class="saved-later-title">Saved for Later</h2>
+      <div id="savedLaterItems"></div>
+    </div>
   </main>
 
   <script>
@@ -524,7 +554,15 @@
               <button onclick="increaseQuantity(${index})">+</button>
             </div>
 
-            <button class="remove-btn" onclick="removeItem(${index})">Remove All</button>
+            <div style="margin-top:10px;">
+              <button class="remove-btn" onclick="removeItem(${index})">
+                Remove All
+              </button>
+
+              <button class="save-later-btn" onclick="saveForLater(${index})">
+                Save for Later
+              </button>
+            </div>
           </div>
         `;
 
@@ -566,6 +604,159 @@
       loadCart();
     }
 
+    async function saveForLater(index) {
+        const cart = JSON.parse(localStorage.getItem('cart')) || [];
+        const item = cart[index];
+
+        const userEmail = localStorage.getItem('email');
+
+        if (!userEmail) {
+          alert('Please log in first.');
+          return;
+        }
+
+        try {
+          const res = await fetch('/saved-for-later', {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              userEmail,
+              productName: item.name,
+              productPrice: item.price,
+              productImage: item.image,
+              personalizationType: item.personalizationType || '',
+              personalizationMessage: item.engraving || '',
+              savedFor: item.savedFor || ''
+            })
+          });
+
+          if (res.ok) {
+            cart.splice(index, 1);
+
+            localStorage.setItem('cart', JSON.stringify(cart));
+
+            loadCart();
+            loadSavedLater();
+          } else {
+            alert('Error saving item.');
+          }
+        } catch (err) {
+          console.error(err);
+          alert('Something went wrong.');
+        }
+      }
+
+      async function loadSavedLater() {
+        const userEmail = localStorage.getItem('email');
+
+        if (!userEmail) return;
+
+        try {
+          const res = await fetch(`/saved-for-later/${encodeURIComponent(userEmail)}`);
+
+          const items = await res.json();
+
+          const container = document.getElementById('savedLaterItems');
+
+          container.innerHTML = '';
+
+          if (items.length === 0) {
+            container.innerHTML = '<p>No saved items yet.</p>';
+            return;
+          }
+
+          items.forEach(item => {
+            container.innerHTML += `
+              <div class="cart-item">
+                <img src="${item.product_image}" class="cart-item-image">
+
+                <div class="cart-item-info">
+                  <h3>${item.product_name}</h3>
+
+                  <p>$${Number(item.product_price).toFixed(2)}</p>
+
+                  ${
+                    item.personalization_message
+                      ? `<p><strong>${item.personalization_type || 'Personalization'}:</strong> ${item.personalization_message}</p>`
+                      : ''
+                  }
+
+                  ${
+                    item.saved_for
+                      ? `<p><strong>Saved For:</strong> ${item.saved_for}</p>`
+                      : ''
+                  }
+
+                  <div style="margin-top:10px;">
+                    <button class="checkout-btn" onclick="moveToCart(${item.id})">
+                      Move to Cart
+                    </button>
+
+                    <button class="save-later-btn" onclick="removeSavedItem(${item.id})">
+                      Remove
+                    </button>
+                  </div>
+                </div>
+              </div>
+            `;
+          });
+
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      async function removeSavedItem(id) {
+        try {
+          await fetch(`/saved-for-later/${id}`, {
+            method: 'DELETE'
+          });
+
+          loadSavedLater();
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
+      async function moveToCart(id) {
+        const userEmail = localStorage.getItem('email');
+
+        try {
+          const res = await fetch(`/saved-for-later/${encodeURIComponent(userEmail)}`);
+
+          const items = await res.json();
+
+          const item = items.find(i => i.id === id);
+
+          if (!item) return;
+
+          const cart = JSON.parse(localStorage.getItem('cart')) || [];
+
+          cart.push({
+            name: item.product_name,
+            price: item.product_price,
+            image: item.product_image,
+            engraving: item.personalization_message,
+            personalizationType: item.personalization_type,
+            quantity: 1
+          });
+
+          localStorage.setItem('cart', JSON.stringify(cart));
+
+          await fetch(`/saved-for-later/${id}`, {
+            method: 'DELETE'
+          });
+
+          loadCart();
+          loadSavedLater();
+
+        } catch (err) {
+          console.error(err);
+        }
+      }
+
       function goBackToProducts(e) {
       if (e) e.preventDefault();
 
@@ -592,6 +783,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       loadCart();
+      loadSavedLater();
     });
 
     function goToCheckout(e) {

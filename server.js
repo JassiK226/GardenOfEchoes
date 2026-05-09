@@ -314,7 +314,6 @@ app.delete('/loved-ones/:id', async (req, res) => {
 });
 
 // Update a loved one
-// Update a loved one
 app.put('/loved-ones/:id', async (req, res) => {
   try {
     const id = req.params.id;
@@ -959,7 +958,7 @@ app.get('/donations', async (req, res) => {
   }
 });
 
-
+// Generate image preview from prompt and optional image references using Hugging Face API
 app.post('/generate-preview', async (req, res) => {
   try {
     const { prompt, images } = req.body;
@@ -1105,7 +1104,89 @@ app.delete('/cart/:id', async (req, res) => {
   }
 });
 
+// Save item for later
+app.post('/saved-for-later', async (req, res) => {
+  try {
+    const {
+      userEmail,
+      productName,
+      productPrice,
+      productImage,
+      personalizationType,
+      personalizationMessage,
+      savedFor
+    } = req.body;
 
+    if (!userEmail) {
+      return res.status(400).json({ error: 'User must be logged in' });
+    }
+
+    const savedItem = await pool.query(
+      `INSERT INTO saved_for_later
+       (user_email, product_name, product_price, product_image, personalization_type, personalization_message, saved_for)
+       VALUES ($1, $2, $3, $4, $5, $6, $7)
+       RETURNING *`,
+      [
+        userEmail,
+        productName,
+        productPrice,
+        productImage,
+        personalizationType || '',
+        personalizationMessage || '',
+        savedFor || ''
+      ]
+    );
+
+    res.json(savedItem.rows[0]);
+  } catch (err) {
+    console.error('SAVE FOR LATER ERROR:', err.message);
+    res.status(500).json({ error: 'Error saving item for later' });
+  }
+});
+
+// Get saved for later items for one user
+app.get('/saved-for-later/:email', async (req, res) => {
+  try {
+    const email = req.params.email;
+
+    const result = await pool.query(
+      `SELECT * FROM saved_for_later
+       WHERE user_email = $1
+       ORDER BY created_at DESC`,
+      [email]
+    );
+
+    res.json(result.rows);
+  } catch (err) {
+    console.error('GET SAVED FOR LATER ERROR:', err.message);
+    res.status(500).json({ error: 'Error getting saved items' });
+  }
+});
+
+// Remove saved for later item
+app.delete('/saved-for-later/:id', async (req, res) => {
+  try {
+    const id = req.params.id;
+
+    const result = await pool.query(
+      `DELETE FROM saved_for_later
+       WHERE id = $1
+       RETURNING *`,
+      [id]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ error: 'Saved item not found' });
+    }
+
+    res.json({ message: 'Saved item removed' });
+  } catch (err) {
+    console.error('DELETE SAVED ITEM ERROR:', err.message);
+    res.status(500).json({ error: 'Error removing saved item' });
+  }
+});
+
+// Remove background from image using remove.bg API and return new image URL
 app.post('/remove-bg', async (req, res) => {
   try {
     const { imageUrl } = req.body;
