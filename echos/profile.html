@@ -603,6 +603,20 @@
                 <label for="lo-cemetery">Cemetery / Resting Place</label>
                 <input type="text" id="lo-cemetery" placeholder="e.g. Greenwood Memorial Park, Los Angeles, CA">
               </div>
+              <div class="form-group">
+                <label for="lo-plot">Plot Number</label>
+                <input type="text" id="lo-plot" placeholder="Example: Plot 24">
+              </div>
+
+              <div class="form-group">
+                <label for="lo-section">Section</label>
+                <input type="text" id="lo-section" placeholder="Example: Section B">
+              </div>
+
+              <div class="form-group">
+                <label for="lo-row">Row</label>
+                <input type="text" id="lo-row" placeholder="Example: Row 7">
+              </div>
               <div class="form-group full">
                 <label for="lo-notes">Notes</label>
                 <textarea id="lo-notes" placeholder="A note in their memory…"></textarea>
@@ -957,6 +971,9 @@
     birthDate: document.getElementById('lo-bday').value || null,
     passedDate: document.getElementById('lo-passed').value || null,
     cemetery: document.getElementById('lo-cemetery').value,
+    plotNumber: document.getElementById('lo-plot').value,
+    section: document.getElementById('lo-section').value,
+    rowNumber: document.getElementById('lo-row').value,
     notes: document.getElementById('lo-notes').value,
     icon: document.getElementById('lo-icon').value || '🌸'
   };
@@ -1022,6 +1039,7 @@
           <h4>${person.first_name} ${person.last_name}</h4>
           <p>Born: ${birthText} · Passed: ${passedText}</p>
           <p>Cemetery: ${person.cemetery || ''}</p>
+          <p>Plot: ${person.plot_number || ''} · Section: ${person.section || ''} · Row: ${person.row_number || ''}</p>
           <p>Notes: ${person.notes || ''}</p>
         </div>
       </div>
@@ -1644,6 +1662,9 @@ async function editLovedOne(id) {
     document.getElementById('lo-bday').value = person.birth_date ? person.birth_date.split('T')[0] : '';
     document.getElementById('lo-passed').value = person.passed_date ? person.passed_date.split('T')[0] : '';
     document.getElementById('lo-cemetery').value = person.cemetery || '';
+    document.getElementById('lo-plot').value = person.plot_number || '';
+    document.getElementById('lo-section').value = person.section || '';
+    document.getElementById('lo-row').value = person.row_number || '';
     document.getElementById('lo-notes').value = person.notes || '';
     document.getElementById('lo-icon').value = person.icon || '🌸';
 
