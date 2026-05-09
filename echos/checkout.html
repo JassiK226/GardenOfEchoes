@@ -297,6 +297,22 @@
       .logo img { height: 62px; }
       .main-nav-links a span { display: none; }
     }
+
+    .section-card h2 {
+      font-size: 15px;
+      font-weight: 700;
+      color: #1a1a1a;
+      margin-bottom: 6px;
+      padding-bottom: 0;
+      border-bottom: none;
+    }
+
+    .required-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 14px;
+    }
   </style>
 </head>
 <body>
@@ -435,7 +451,8 @@
 
       <!-- Contact -->
       <div class="section-card">
-        <h2>Contact Information</h2> <h4>* Required Fields</h4>
+        <h2>Contact Information</h2> 
+        <h5 class="required-text">* Required Fields</h5>
         <div class="form-row">
           <div class="form-group">
             <label for="first-name">First Name *</label>
@@ -457,7 +474,8 @@
       </div>
 
       <div class="section-card">
-        <h2>Choose Loved One</h2> <h4>* Required Fields</h4>
+        <h2>Choose Loved One</h2> 
+        <h5 class="required-text">* Required Fields</h5>
         <div class="form-group full">
           <label for="loved-one-select">Who is this subscription for? *</label>
           <select id="loved-one-select" required>
@@ -468,7 +486,8 @@
 
       <!-- Delivery -->
       <div class="section-card">
-        <h2>Billing Address</h2> <h4>* Required Fields</h4>
+        <h2>Billing Address</h2> 
+        <h5 class="required-text">* Required Fields</h5>
         <div class="form-row">
           <div class="form-group full">
             <label for="address">Street Address *</label>
@@ -547,7 +566,8 @@
 
       <!-- Payment -->
       <div class="section-card">
-        <h2>Payment Details</h2> <h4>* Required Fields</h4>
+        <h2>Payment Details</h2> 
+        <h5 class="required-text">* Required Fields</h5>
         <div class="card-icons">
           <div class="card-icon">VISA</div>
           <div class="card-icon">MC</div>
