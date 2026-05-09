@@ -210,16 +210,31 @@ app.post('/loved-ones', async (req, res) => {
       birthDate,
       passedDate,
       cemetery,
+      plotNumber,
+      section,
+      rowNumber,
       notes,
       icon
     } = req.body;
 
     const newLovedOne = await pool.query(
       `INSERT INTO loved_ones
-      (user_email, first_name, last_name, birth_date, passed_date, cemetery, notes, icon)
-      VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+      (user_email, first_name, last_name, birth_date, passed_date, cemetery, plot_number, section, row_number, notes, icon)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
       RETURNING *`,
-      [userEmail, firstName, lastName, birthDate, passedDate, cemetery, notes, icon || '🌸']
+      [
+        userEmail,
+        firstName,
+        lastName,
+        birthDate,
+        passedDate,
+        cemetery,
+        plotNumber,
+        section,
+        rowNumber,
+        notes,
+        icon || '🌸'
+      ]
     );
 
     res.json(newLovedOne.rows[0]);
@@ -324,11 +339,13 @@ app.put('/loved-ones/:id', async (req, res) => {
       birthDate,
       passedDate,
       cemetery,
+      plotNumber,
+      section,
+      rowNumber,
       notes,
       icon
     } = req.body;
 
-    // Convert empty dates to null so PostgreSQL accepts them
     birthDate = birthDate || null;
     passedDate = passedDate || null;
 
@@ -339,19 +356,33 @@ app.put('/loved-ones/:id', async (req, res) => {
            birth_date = $3,
            passed_date = $4,
            cemetery = $5,
-           notes = $6,
-           icon = $7
-       WHERE id = $8
+           plot_number = $6,
+           section = $7,
+           row_number = $8,
+           notes = $9,
+           icon = $10
+       WHERE id = $11
        RETURNING *`,
-      [firstName, lastName, birthDate, passedDate, cemetery, notes, icon || '🌸', id]
+      [
+        firstName,
+        lastName,
+        birthDate,
+        passedDate,
+        cemetery,
+        plotNumber,
+        section,
+        rowNumber,
+        notes,
+        icon || '🌸',
+        id
+      ]
     );
 
     if (result.rows.length === 0) {
       return res.status(404).json({ error: 'Loved one not found' });
     }
 
-    res.setHeader('Content-Type', 'application/json');
-    res.send(JSON.stringify(result.rows, null, 2));
+    res.json(result.rows[0]);
 
   } catch (err) {
     console.error('UPDATE LOVED ONE ERROR:', err.message);
