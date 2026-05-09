@@ -436,21 +436,22 @@
       <!-- Contact -->
       <div class="section-card">
         <h2>Contact Information</h2>
+        <h4>* Required Fields</h4>
         <div class="form-row">
           <div class="form-group">
-            <label for="first-name">First Name</label>
+            <label for="first-name">First Name *</label>
             <input type="text" id="first-name" placeholder="Jane" required>
           </div>
           <div class="form-group">
-            <label for="last-name">Last Name</label>
+            <label for="last-name">Last Name *</label>
             <input type="text" id="last-name" placeholder="Smith" required>
           </div>
           <div class="form-group full">
-            <label for="email">Email Address</label>
+            <label for="email">Email Address *</label>
             <input type="email" id="email" placeholder="jane@email.com" required>
           </div>
           <div class="form-group full">
-            <label for="phone">Phone</label>
+            <label for="phone">Phone *</label>
             <input type="tel" id="phone" placeholder="(555) 000-0000" required>
           </div>
         </div>
@@ -458,8 +459,9 @@
 
       <div class="section-card">
         <h2>Choose Loved One</h2>
+        <h4>* Required Fields</h4>
         <div class="form-group full">
-          <label for="loved-one-select">Who is this subscription for?</label>
+          <label for="loved-one-select">Who is this subscription for? *</label>
           <select id="loved-one-select" required>
             <option value="">Select loved one</option>
           </select>
@@ -469,9 +471,10 @@
       <!-- Delivery -->
       <div class="section-card">
         <h2>Billing Address</h2>
+        <h4>* Required Fields</h4>
         <div class="form-row">
           <div class="form-group full">
-            <label for="address">Street Address</label>
+            <label for="address">Street Address *</label>
             <input type="text" id="address" placeholder="123 Garden Lane" required>
           </div>
           <div class="form-group full">
@@ -479,11 +482,11 @@
             <input type="text" id="address2" placeholder="Apt 4B">
           </div>
           <div class="form-group">
-            <label for="city">City</label>
+            <label for="city">City *</label>
             <input type="text" id="city" placeholder="Los Angeles" required>
           </div>
           <div class="form-group">
-            <label for="state">State</label>
+            <label for="state">State *</label>
             <select id="state" required>
             <option value="">Select state</option>
             <option value="AL">Alabama</option>
@@ -539,7 +542,7 @@
           </select>
           </div>
           <div class="form-group">
-            <label for="zip">ZIP Code</label>
+            <label for="zip">ZIP Code *</label>
             <input type="text" id="zip" placeholder="90001" required>
           </div>
         </div>
@@ -548,6 +551,7 @@
       <!-- Payment -->
       <div class="section-card">
         <h2>Payment Details</h2>
+        <h4>* Required Fields</h4>
         <div class="card-icons">
           <div class="card-icon">VISA</div>
           <div class="card-icon">MC</div>
@@ -556,19 +560,19 @@
         </div>
         <div class="form-row">
           <div class="form-group full">
-            <label for="card-number">Card Number</label>
+            <label for="card-number">Card Number *</label>
             <input type="text" id="card-number" placeholder="1234 5678 9012 3456" maxlength="19" required>
           </div>
           <div class="form-group full">
-            <label for="card-name">Name on Card</label>
+            <label for="card-name">Name on Card *</label>
             <input type="text" id="card-name" placeholder="Jane Smith" required>
           </div>
           <div class="form-group">
-            <label for="card-exp">Expiration Date</label>
+            <label for="card-exp">Expiration Date *</label>
             <input type="text" id="card-exp" placeholder="MM / YY" maxlength="7" required>
           </div>
           <div class="form-group">
-            <label for="card-cvv">CVV</label>
+            <label for="card-cvv">CVV *</label>
             <input type="text" id="card-cvv" placeholder="123" maxlength="4" required>
           </div>
         </div>
@@ -613,7 +617,7 @@
     <div class="success-box">
       <div class="success-icon">🌸</div>
       <h2>You're Subscribed!</h2>
-      <p>Thank you for joining the Garden Program.<br>Your first delivery confirmation will be sent to your email shortly.</p>
+      <p>Thank you for joining the Garden Program.<br>Your confirmation will be sent to your email shortly.</p>
       <button class="btn-success" onclick="window.location.href='profile.html'">Go to My Account</button>
     </div>
   </div>
