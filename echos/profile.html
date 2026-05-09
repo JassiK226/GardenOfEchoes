@@ -703,8 +703,7 @@
               </div>
             </div>
             <button type="submit" class="btn-save">Save Card</button>
-            <button type="button" class="btn-save-outline" onclick="toggleAddPayment()">Cancel</button>
-          </form>
+            <button type="button" class="btn-save-outline" onclick="cancelPaymentEdit()">Cancel</button>          </form>
         </div>
       </div>
 
@@ -767,8 +766,7 @@
               </div>
             </div>
             <button type="submit" class="btn-save">Save Address</button>
-            <button type="button" class="btn-save-outline" onclick="toggleAddShipping()">Cancel</button>
-          </form>
+            <button type="button" class="btn-save-outline" onclick="cancelShippingEdit()">Cancel</button>          </form>
         </div>
       </div>
 
@@ -790,6 +788,8 @@
   </div>
 
   <script>
+    let editingPaymentId = null;
+    let editingShippingId = null;
     let editingLovedOneId = null;
     /* ── Tab switching ── */
     function switchTab(id, el) {
@@ -822,65 +822,6 @@
     reader.readAsDataURL(input.files[0]);
   }
 }
-
-    /* ── Save Profile ── */
-    /*function saveProfile(e) {
-      e.preventDefault();
-      const first = document.getElementById('p-first').value || 'User';
-      const last  = document.getElementById('p-last').value || '';
-      const email = document.getElementById('p-email').value || '';
-      document.getElementById('sidebarName').textContent    = (first + ' ' + last).trim();
-      document.getElementById('sidebarEmail').textContent   = email;
-      document.getElementById('sidebarInitial').textContent = first.charAt(0).toUpperCase();
-      document.getElementById('avatarPreview').textContent  = first.charAt(0).toUpperCase();
-      showToast('Profile saved!');
-    }
-      *//*
-     async function saveProfile(e) {
-  e.preventDefault();
-
-  const userData = {
-    firstName: document.getElementById('p-first').value,
-    lastName: document.getElementById('p-last').value,
-    email: document.getElementById('p-email').value,
-    phone: document.getElementById('p-phone').value,
-    dob: document.getElementById('p-dob').value,
-    gender: document.getElementById('p-gender').value,
-    bio: document.getElementById('p-bio').value
-  };
-
-  try {
-    const response = await fetch('/users', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(userData)
-    });
-
-    const data = await response.json();
-
-    if (response.ok) {
-      const first = userData.firstName || 'User';
-      const last = userData.lastName || '';
-      const email = userData.email || '';
-
-      document.getElementById('sidebarName').textContent = (first + ' ' + last).trim();
-      document.getElementById('sidebarEmail').textContent = email;
-      document.getElementById('sidebarInitial').textContent = first.charAt(0).toUpperCase();
-      document.getElementById('avatarPreview').textContent = first.charAt(0).toUpperCase();
-
-      showToast('Profile saved AND stored in database!');
-      console.log(data);
-
-    } else {
-      showToast('Error saving to database');
-      console.error(data);
-    }
-
-  } catch (error) {
-    console.error(error);
-    showToast('Something went wrong');
-  }
-}*/
 
   // Save profile information
   async function saveProfile(e) {
@@ -1061,13 +1002,12 @@
     document.getElementById('addPaymentForm').classList.toggle('open');
   }
 
-  // Save payment card
+  // Save payment card information
   async function savePayment(e) {
     e.preventDefault();
 
     const userEmail = localStorage.getItem('email');
 
-    // Collect payment form data
     const data = {
       userEmail: userEmail,
       cardName: document.getElementById('pay-name').value,
@@ -1077,21 +1017,36 @@
     };
 
     try {
-      // Send card info to backend
-      const res = await fetch('/payment-methods', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data)
-      });
+      let res;
+
+      if (editingPaymentId) {
+        res = await fetch(`/payment-methods/${editingPaymentId}`, {
+          method: 'PUT',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            cardName: data.cardName,
+            expiry: data.expiry,
+            billingZip: data.billingZip
+          })
+        });
+      } else {
+        res = await fetch('/payment-methods', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+      }
 
       const result = await res.json();
 
       if (res.ok) {
-        // Add new card to page right away
-        renderPaymentCard(result);
+        showToast(editingPaymentId ? 'Card updated!' : 'Card saved!');
+        editingPaymentId = null;
         e.target.reset();
+        document.getElementById('pay-number').required = true;
+        document.getElementById('pay-cvv').required = true;
         document.getElementById('addPaymentForm').classList.remove('open');
-        showToast('Card saved!');
+        loadPaymentMethods();
       } else {
         showToast(result.error || 'Error saving card');
       }
@@ -1170,40 +1125,23 @@
     }
   }
 
-  // Edit selected payment card using prompts
-  async function editPayment(id, currentName, currentExpiry, currentZip) {
-    const newName = prompt('Enter updated card name:', currentName);
-    if (newName === null) return;
+  // Edit selected payment card
+    function editPayment(id, currentName, currentExpiry, currentZip) {
+    editingPaymentId = id;
 
-    const newExpiry = prompt('Enter updated expiry (MM / YY):', currentExpiry);
-    if (newExpiry === null) return;
+    document.getElementById('addPaymentForm').classList.add('open');
 
-    const newZip = prompt('Enter updated billing ZIP code:', currentZip);
-    if (newZip === null) return;
+    document.getElementById('pay-name').value = currentName || '';
+    document.getElementById('pay-expiry').value = currentExpiry || '';
+    document.getElementById('pay-zip').value = currentZip || '';
 
-    try {
-      const res = await fetch(`/payment-methods/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          cardName: newName,
-          expiry: newExpiry,
-          billingZip: newZip
-        })
-      });
+    document.getElementById('pay-number').value = '';
+    document.getElementById('pay-number').placeholder = 'Saved card number cannot be edited here';
+    document.getElementById('pay-number').required = false;
 
-      const result = await res.json();
-
-      if (res.ok) {
-        showToast('Card updated!');
-        loadPaymentMethods();
-      } else {
-        showToast(result.error || 'Error updating card');
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('Something went wrong');
-    }
+    document.getElementById('pay-cvv').value = '';
+    document.getElementById('pay-cvv').placeholder = 'Not needed for edit';
+    document.getElementById('pay-cvv').required = false;
   }
 
   // Load all payment methods for current user
@@ -1234,47 +1172,56 @@
 
   // Save shipping address
   async function saveShipping(e) {
-    e.preventDefault();
+  e.preventDefault();
 
-    const userEmail = localStorage.getItem('email');
+  const userEmail = localStorage.getItem('email');
 
-    // Collect shipping form data
-    const data = {
-      userEmail: userEmail,
-      firstName: document.getElementById('sh-first').value,
-      lastName: document.getElementById('sh-last').value,
-      addressLine1: document.getElementById('sh-addr1').value,
-      addressLine2: document.getElementById('sh-addr2').value,
-      city: document.getElementById('sh-city').value,
-      state: document.getElementById('sh-state').value,
-      zipCode: document.getElementById('sh-zip').value,
-      country: document.getElementById('sh-country').value,
-      phone: document.getElementById('sh-phone').value
-    };
+  const data = {
+    userEmail: userEmail,
+    firstName: document.getElementById('sh-first').value,
+    lastName: document.getElementById('sh-last').value,
+    addressLine1: document.getElementById('sh-addr1').value,
+    addressLine2: document.getElementById('sh-addr2').value,
+    city: document.getElementById('sh-city').value,
+    state: document.getElementById('sh-state').value,
+    zipCode: document.getElementById('sh-zip').value,
+    country: document.getElementById('sh-country').value,
+    phone: document.getElementById('sh-phone').value
+  };
 
-    try {
-      // Send shipping address to backend
-      const res = await fetch('/shipping-addresses', {
+  try {
+    let res;
+
+    if (editingShippingId) {
+      res = await fetch(`/shipping-addresses/${editingShippingId}`, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(data)
+      });
+    } else {
+      res = await fetch('/shipping-addresses', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify(data)
       });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        e.target.reset();
-        document.getElementById('addShippingForm').classList.remove('open');
-        showToast('Address saved!');
-        loadShippingAddresses();
-      } else {
-        showToast(result.error || 'Error saving address');
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('Something went wrong');
     }
+
+    const result = await res.json();
+
+    if (res.ok) {
+      showToast(editingShippingId ? 'Address updated!' : 'Address saved!');
+      editingShippingId = null;
+      e.target.reset();
+      document.getElementById('addShippingForm').classList.remove('open');
+      loadShippingAddresses();
+    } else {
+      showToast(result.error || 'Error saving address');
+    }
+  } catch (err) {
+    console.error(err);
+    showToast('Something went wrong');
   }
+}
 
   // Show shipping address card on the page
   function renderShippingCard(address) {
@@ -1377,8 +1324,8 @@
     }
   }
 
-  // Edit shipping address using prompts
-  async function editShipping(
+  // Edit shipping address
+  function editShipping(
     id,
     currentFirst,
     currentLast,
@@ -1390,62 +1337,19 @@
     currentCountry,
     currentPhone
   ) {
-    const firstName = prompt('First name:', currentFirst);
-    if (firstName === null) return;
+    editingShippingId = id;
 
-    const lastName = prompt('Last name:', currentLast);
-    if (lastName === null) return;
+    document.getElementById('addShippingForm').classList.add('open');
 
-    const addressLine1 = prompt('Address line 1:', currentAddr1);
-    if (addressLine1 === null) return;
-
-    const addressLine2 = prompt('Address line 2:', currentAddr2);
-    if (addressLine2 === null) return;
-
-    const city = prompt('City:', currentCity);
-    if (city === null) return;
-
-    const state = prompt('State:', currentState);
-    if (state === null) return;
-
-    const zipCode = prompt('ZIP code:', currentZip);
-    if (zipCode === null) return;
-
-    const country = prompt('Country:', currentCountry);
-    if (country === null) return;
-
-    const phone = prompt('Phone:', currentPhone);
-    if (phone === null) return;
-
-    try {
-      const res = await fetch(`/shipping-addresses/${id}`, {
-        method: 'PUT',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          firstName,
-          lastName,
-          addressLine1,
-          addressLine2,
-          city,
-          state,
-          zipCode,
-          country,
-          phone
-        })
-      });
-
-      const result = await res.json();
-
-      if (res.ok) {
-        showToast('Address updated!');
-        loadShippingAddresses();
-      } else {
-        showToast(result.error || 'Error updating address');
-      }
-    } catch (err) {
-      console.error(err);
-      showToast('Something went wrong');
-    }
+    document.getElementById('sh-first').value = currentFirst || '';
+    document.getElementById('sh-last').value = currentLast || '';
+    document.getElementById('sh-addr1').value = currentAddr1 || '';
+    document.getElementById('sh-addr2').value = currentAddr2 || '';
+    document.getElementById('sh-city').value = currentCity || '';
+    document.getElementById('sh-state').value = currentState || '';
+    document.getElementById('sh-zip').value = currentZip || '';
+    document.getElementById('sh-country').value = currentCountry || 'United States';
+    document.getElementById('sh-phone').value = currentPhone || '';
   }
 
   /* ── Toast notification ── */
@@ -1745,6 +1649,22 @@ async function removeSubscription(id) {
     console.error(err);
     showToast('Something went wrong');
   }
+}
+
+function cancelPaymentEdit() {
+  editingPaymentId = null;
+  document.querySelector('#addPaymentForm form').reset();
+  document.getElementById('pay-number').required = true;
+  document.getElementById('pay-cvv').required = true;
+  document.getElementById('pay-number').placeholder = '1234 5678 9012 3456';
+  document.getElementById('pay-cvv').placeholder = '•••';
+  document.getElementById('addPaymentForm').classList.remove('open');
+}
+
+function cancelShippingEdit() {
+  editingShippingId = null;
+  document.querySelector('#addShippingForm form').reset();
+  document.getElementById('addShippingForm').classList.remove('open');
 }
 </script>
 
