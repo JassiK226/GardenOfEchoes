@@ -540,7 +540,7 @@
           </div>
           <div class="form-group">
             <label for="zip">ZIP Code</label>
-            <input type="text" id="zip" placeholder="90001">
+            <input type="text" id="zip" placeholder="90001" required>
           </div>
         </div>
       </div>
@@ -652,15 +652,41 @@
     });
 
     async function placeOrder() {
-  const userEmail = localStorage.getItem('email');
+      const requiredFields = [
+        'first-name',
+        'last-name',
+        'email',
+        'phone',
+        'loved-one-select',
+        'address',
+        'city',
+        'state',
+        'zip',
+        'card-number',
+        'card-name',
+        'card-exp',
+        'card-cvv'
+      ];
 
-  if (!userEmail) {
-    alert('Please log in before subscribing.');
-    window.location.href = 'login.html';
-    return;
-  }
+      for (let id of requiredFields) {
+        const field = document.getElementById(id);
 
-  const lovedOneId = document.getElementById('loved-one-select')?.value;
+        if (!field.value.trim()) {
+          alert('Please fill out all required fields.');
+          field.focus();
+          return;
+        }
+      }
+
+      const userEmail = localStorage.getItem('email');
+
+      if (!userEmail) {
+        alert('Please log in before subscribing.');
+        window.location.href = 'login.html';
+        return;
+      }
+
+      const lovedOneId = document.getElementById('loved-one-select').value;
 
   if (!lovedOneId) {
     alert('Please select a loved one for this subscription.');
