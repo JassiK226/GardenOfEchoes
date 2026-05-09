@@ -600,12 +600,6 @@
                 : ''
             }
 
-            ${
-              item.engravingMessage || item.engraving
-                ? `<button class="small-action-btn" onclick="editEngraving(${index})">Edit Engraving</button>`
-                : ''
-            }
-
             <div class="quantity-controls">
               <button onclick="decreaseQuantity(${index})">−</button>
               <span>${quantity}</span>
@@ -614,6 +608,13 @@
 
             <div class="cart-actions">
               <button class="primary-small-btn" onclick="removeItem(${index})">Remove All</button>
+
+              ${
+                item.engravingMessage || item.engraving
+                  ? `<button class="small-action-btn" onclick="editEngraving(${index})">Edit Engraving</button>`
+                  : ''
+              }
+
               <button class="small-action-btn" onclick="saveForLater(${index})">Save for Later</button>
             </div>
           </div>
