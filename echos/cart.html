@@ -365,6 +365,47 @@
       background: #fdf2f2;
     }
 
+    .cart-actions {
+      display: flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+
+    .small-action-btn {
+      border: 1px solid #c0392b;
+      background: #fff;
+      color: #c0392b;
+      padding: 8px 14px;
+      border-radius: 5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .small-action-btn:hover {
+      background: #fdf2f2;
+    }
+
+    .primary-small-btn {
+      background: #c0392b;
+      color: #fff;
+      border: 1px solid #c0392b;
+      padding: 8px 14px;
+      border-radius: 5px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .primary-small-btn:hover {
+      background: #a93226;
+    }
+
+    .saved-for-text,
+    .engraving-text {
+      color: #555;
+      font-size: 13.5px;
+    }
+
   </style>
 </head>
 
@@ -546,7 +587,24 @@
           <div class="cart-item-info">
             <h3>${item.name}</h3>
             <p>$${price.toFixed(2)}</p>
-            ${item.engravingMessage ? `<p class="engraving-text"><strong>Engraving:</strong> ${item.engravingMessage}</p>` : ''}
+
+            ${
+              item.engravingMessage || item.engraving
+                ? `<p class="engraving-text"><strong>Engraving:</strong> ${item.engravingMessage || item.engraving}</p>`
+                : ''
+            }
+
+            ${
+              item.savedFor
+                ? `<p class="saved-for-text"><strong>Saved For:</strong> ${item.savedFor}</p>`
+                : ''
+            }
+
+            ${
+              item.engravingMessage || item.engraving
+                ? `<button class="small-action-btn" onclick="editEngraving(${index})">Edit Engraving</button>`
+                : ''
+            }
 
             <div class="quantity-controls">
               <button onclick="decreaseQuantity(${index})">−</button>
@@ -554,14 +612,9 @@
               <button onclick="increaseQuantity(${index})">+</button>
             </div>
 
-            <div style="margin-top:10px;">
-              <button class="remove-btn" onclick="removeItem(${index})">
-                Remove All
-              </button>
-
-              <button class="save-later-btn" onclick="saveForLater(${index})">
-                Save for Later
-              </button>
+            <div class="cart-actions">
+              <button class="primary-small-btn" onclick="removeItem(${index})">Remove All</button>
+              <button class="small-action-btn" onclick="saveForLater(${index})">Save for Later</button>
             </div>
           </div>
         `;
@@ -604,49 +657,67 @@
       loadCart();
     }
 
+    function editEngraving(index) {
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const currentMessage = cart[index].engravingMessage || cart[index].engraving || '';
+
+      const newMessage = prompt('Edit engraving message:', currentMessage);
+
+      if (newMessage === null) return;
+
+      cart[index].engravingMessage = newMessage;
+      cart[index].engraving = newMessage;
+
+      localStorage.setItem('cart', JSON.stringify(cart));
+      loadCart();
+    }
+
     async function saveForLater(index) {
-        const cart = JSON.parse(localStorage.getItem('cart')) || [];
-        const item = cart[index];
+      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+      const item = cart[index];
 
-        const userEmail = localStorage.getItem('email');
+      const userEmail = localStorage.getItem('email');
 
-        if (!userEmail) {
-          alert('Please log in first.');
-          return;
-        }
-
-        try {
-          const res = await fetch('/saved-for-later', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              userEmail,
-              productName: item.name,
-              productPrice: item.price,
-              productImage: item.image,
-              personalizationType: item.personalizationType || '',
-              personalizationMessage: item.engraving || '',
-              savedFor: item.savedFor || ''
-            })
-          });
-
-          if (res.ok) {
-            cart.splice(index, 1);
-
-            localStorage.setItem('cart', JSON.stringify(cart));
-
-            loadCart();
-            loadSavedLater();
-          } else {
-            alert('Error saving item.');
-          }
-        } catch (err) {
-          console.error(err);
-          alert('Something went wrong.');
-        }
+      if (!userEmail) {
+        alert('Please log in first.');
+        return;
       }
+
+      const savedFor = prompt('Who are you saving this item for? Example: Mom, Dad, Grandma, Aunt, etc.', item.savedFor || '');
+
+      if (savedFor === null) return;
+
+      try {
+        const res = await fetch('/saved-for-later', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({
+            userEmail,
+            productName: item.name,
+            productPrice: item.price,
+            productImage: item.image,
+            personalizationType: item.personalizationType || 'Engraving',
+            personalizationMessage: item.engravingMessage || item.engraving || '',
+            savedFor: savedFor
+          })
+        });
+
+        if (res.ok) {
+          cart.splice(index, 1);
+          localStorage.setItem('cart', JSON.stringify(cart));
+
+          loadCart();
+          loadSavedLater();
+        } else {
+          alert('Error saving item.');
+        }
+      } catch (err) {
+        console.error(err);
+        alert('Something went wrong.');
+      }
+    }
 
       async function loadSavedLater() {
         const userEmail = localStorage.getItem('email');
@@ -689,12 +760,12 @@
                       : ''
                   }
 
-                  <div style="margin-top:10px;">
-                    <button class="checkout-btn" onclick="moveToCart(${item.id})">
+                  <div class="cart-actions">
+                    <button class="primary-small-btn" onclick="moveToCart(${item.id})">
                       Move to Cart
                     </button>
 
-                    <button class="save-later-btn" onclick="removeSavedItem(${item.id})">
+                    <button class="small-action-btn" onclick="removeSavedItem(${item.id})">
                       Remove
                     </button>
                   </div>
@@ -739,7 +810,9 @@
             price: item.product_price,
             image: item.product_image,
             engraving: item.personalization_message,
+            engravingMessage: item.personalization_message,
             personalizationType: item.personalization_type,
+            savedFor: item.saved_for,
             quantity: 1
           });
 
