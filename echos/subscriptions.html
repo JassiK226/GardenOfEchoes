@@ -367,13 +367,56 @@
 
     <div class="plans-grid">
 
-      <!-- Bloom Plan -->
+      <!-- Weekly Plan -->
       <div class="plan-card bloom">
-        <div class="badge-popular">&#11088; Most Popular</div>
+        <div class="badge-popular">⭐ Most Frequent</div>
+        <p class="plan-name">WEEKLY PLAN</p>
+        <p class="plan-freq">(Every Week)</p>
+        <ul class="plan-features">
+          <li><span class="feat-icon">🌸</span> 52 Deliveries / Year</li>
+          <li><span class="feat-icon">🌿</span> Fresh Weekly Flowers</li>
+          <li><span class="feat-icon">🚚</span> Free Delivery</li>
+          <li><span class="feat-icon">🎁</span> Optional Add-Ons</li>
+        </ul>
+        <p class="plan-price">$2,400 <span>/ year</span></p>
+        <button class="btn-subscribe" onclick="goToCheckout('weekly', 'Weekly Plan', '$2,400/year', 2400)">Subscribe Now</button>
+      </div>
+
+      <!-- Bi-Weekly Plan -->
+      <div class="plan-card seasonal">
+        <p class="plan-name">BI-WEEKLY PLAN</p>
+        <p class="plan-freq">(Every 2 Weeks)</p>
+        <ul class="plan-features">
+          <li><span class="feat-icon">💐</span> 26 Deliveries / Year</li>
+          <li><span class="feat-icon">🌼</span> Seasonal Arrangements</li>
+          <li><span class="feat-icon">🚚</span> Free Delivery</li>
+          <li><span class="feat-icon">🎁</span> Optional Add-Ons</li>
+        </ul>
+        <p class="plan-price">$1,200 <span>/ year</span></p>
+        <button class="btn-subscribe" onclick="goToCheckout('biweekly', 'Bi-Weekly Plan', '$1,200/year', 1200)">Subscribe Now</button>
+      </div>
+
+      <!-- Monthly Plan -->
+      <div class="plan-card annual">
+        <div class="badge-popular">⭐ Most Popular</div>
+        <p class="plan-name">MONTHLY PLAN</p>
+        <p class="plan-freq">(Every Month)</p>
+        <ul class="plan-features">
+          <li><span class="feat-icon">🌺</span> 12 Deliveries / Year</li>
+          <li><span class="feat-icon">✨</span> Premium Monthly Flowers</li>
+          <li><span class="feat-icon">🚚</span> Free Delivery</li>
+          <li><span class="feat-icon">🎁</span> Optional Add-Ons</li>
+        </ul>
+        <p class="plan-price">$600 <span>/ year</span></p>
+        <button class="btn-subscribe" onclick="goToCheckout('monthly', 'Monthly Plan', '$600/year', 600)">Subscribe Now</button>
+      </div>
+
+      <!-- Every 3 Months Plan -->
+      <div class="plan-card bloom">
         <p class="plan-name">BLOOM PLAN</p>
         <p class="plan-freq">(Every 3 Months)</p>
         <ul class="plan-features">
-          <li><span class="feat-icon">🌸</span> 4 Deliveries / Year</li>
+          <li><span class="feat-icon">🌷</span> 4 Deliveries / Year</li>
           <li><span class="feat-icon">🌿</span> Fresh Seasonal Flowers</li>
           <li><span class="feat-icon">🚚</span> Free Delivery</li>
           <li><span class="feat-icon">🎁</span> Optional Add-Ons</li>
@@ -382,7 +425,7 @@
         <button class="btn-subscribe" onclick="goToCheckout('bloom', 'Bloom Plan', '$250/year', 250)">Subscribe Now</button>
       </div>
 
-      <!-- Seasonal Plan -->
+      <!-- Every 6 Months Plan -->
       <div class="plan-card seasonal">
         <p class="plan-name">SEASONAL PLAN</p>
         <p class="plan-freq">(Every 6 Months)</p>
@@ -401,7 +444,7 @@
         <p class="plan-name">ANNUAL PLAN</p>
         <p class="plan-freq">(Once a Year)</p>
         <ul class="plan-features">
-          <li><span class="feat-icon">🌺</span> 1 Delivery / Year</li>
+          <li><span class="feat-icon">🌹</span> 1 Delivery / Year</li>
           <li><span class="feat-icon">✨</span> Deluxe Arrangement</li>
           <li><span class="feat-icon">🚚</span> Free Delivery</li>
           <li><span class="feat-icon">🎁</span> Optional Add-Ons</li>
@@ -410,6 +453,47 @@
         <button class="btn-subscribe" onclick="goToCheckout('annual', 'Annual Plan', '$75/year', 75)">Subscribe Now</button>
       </div>
 
+      <!-- Birthday Plan -->
+      <div class="plan-card bloom">
+        <p class="plan-name">BIRTHDAY REMEMBRANCE PLAN</p>
+        <p class="plan-freq">(Every Year on Their Birthday)</p>
+        <ul class="plan-features">
+          <li><span class="feat-icon">🎂</span> Birthday Memorial Delivery</li>
+          <li><span class="feat-icon">🌸</span> Personalized Flower Arrangement</li>
+          <li><span class="feat-icon">💌</span> Optional Message Card</li>
+          <li><span class="feat-icon">🚚</span> Free Delivery</li>
+        </ul>
+        <p class="plan-price">$85 <span>/ year</span></p>
+        <button class="btn-subscribe" onclick="goToCheckout('birthday', 'Birthday Remembrance Plan', '$85/year', 85)">Subscribe Now</button>
+      </div>
+
+      <!-- Anniversary Plan -->
+      <div class="plan-card seasonal">
+        <p class="plan-name">ANNIVERSARY PLAN</p>
+        <p class="plan-freq">(Every Year on a Special Date)</p>
+        <ul class="plan-features">
+          <li><span class="feat-icon">🕊️</span> Memorial Anniversary Delivery</li>
+          <li><span class="feat-icon">💐</span> Thoughtful Arrangement</li>
+          <li><span class="feat-icon">💌</span> Optional Message Card</li>
+          <li><span class="feat-icon">🚚</span> Free Delivery</li>
+        </ul>
+        <p class="plan-price">$85 <span>/ year</span></p>
+        <button class="btn-subscribe" onclick="goToCheckout('anniversary', 'Anniversary Plan', '$85/year', 85)">Subscribe Now</button>
+      </div>
+
+      <!-- Holiday Plan -->
+      <div class="plan-card annual">
+        <p class="plan-name">HOLIDAY REMEMBRANCE PLAN</p>
+        <p class="plan-freq">(Valentine’s Day, Christmas, and New Year’s)</p>
+        <ul class="plan-features">
+          <li><span class="feat-icon">❤️</span> Valentine’s Day Delivery</li>
+          <li><span class="feat-icon">🎄</span> Christmas Delivery</li>
+          <li><span class="feat-icon">✨</span> New Year’s Arrangement</li>
+          <li><span class="feat-icon">🚚</span> Free Delivery</li>
+        </ul>
+        <p class="plan-price">$220 <span>/ year</span></p>
+        <button class="btn-subscribe" onclick="goToCheckout('holiday', 'Holiday Remembrance Plan', '$220/year', 220)">Subscribe Now</button>
+      </div>
     </div>
   </div>
 
