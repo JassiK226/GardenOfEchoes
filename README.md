@@ -576,7 +576,7 @@ Make sure this route exists in server.js:
 
 Also make sure homepage.html is inside the echos folder.
 
-### Problem: CSS or images are not loading
+### Problem: CSS or the images are not loading
 
 Make sure this line is in server.js:
 ```javascript
