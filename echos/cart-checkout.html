@@ -244,11 +244,6 @@
           </div>
         </div>
 
-        <div class="form-group">
-          <label for="new-loved-relationship">Relationship</label>
-          <input type="text" id="new-loved-relationship" placeholder="Example: Mother, Father, Friend">
-        </div>
-
         <div class="form-row">
           <div class="form-group">
             <label for="new-loved-birthdate">Birth Date</label>
@@ -262,8 +257,25 @@
         </div>
 
         <div class="form-group">
-          <label for="new-loved-cemetery">Cemetery / Memorial Location</label>
-          <input type="text" id="new-loved-cemetery" placeholder="Example: Pinelawn Memorial Park">
+          <label for="new-loved-cemetery">Cemetery / Resting Place</label>
+          <input type="text" id="new-loved-cemetery" placeholder="e.g. Greenwood Memorial Park, Los Angeles, CA">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label for="new-loved-plot">Plot Number</label>
+            <input type="text" id="new-loved-plot" placeholder="Example: Plot 24">
+          </div>
+
+          <div class="form-group">
+            <label for="new-loved-section">Section</label>
+            <input type="text" id="new-loved-section" placeholder="Example: Section B">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label for="new-loved-row">Row</label>
+          <input type="text" id="new-loved-row" placeholder="Example: Row 7">
         </div>
 
         <div class="form-group">
@@ -688,13 +700,15 @@ if (lovedOneChoice === 'new') {
       ? {
           firstName: document.getElementById('new-loved-first').value.trim(),
           lastName: document.getElementById('new-loved-last').value.trim(),
-          relationship: document.getElementById('new-loved-relationship').value.trim(),
           birthDate: document.getElementById('new-loved-birthdate').value,
-          passingDate: document.getElementById('new-loved-passing-date').value,
+          passedDate: document.getElementById('new-loved-passing-date').value,
           cemetery: document.getElementById('new-loved-cemetery').value.trim(),
+          plotNumber: document.getElementById('new-loved-plot').value.trim(),
+          section: document.getElementById('new-loved-section').value.trim(),
+          rowNumber: document.getElementById('new-loved-row').value.trim(),
           notes: document.getElementById('new-loved-notes').value.trim()
         }
-      : null,    
+      : null,
     customerName: `${firstName} ${lastName}`,
     customerEmail,
     phone: document.getElementById('phone').value,

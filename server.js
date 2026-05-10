@@ -1274,6 +1274,7 @@ app.post('/orders', async (req, res) => {
     const {
       userEmail,
       lovedOneId,
+      newLovedOne,
       customerName,
       customerEmail,
       phone,
@@ -1288,6 +1289,33 @@ app.post('/orders', async (req, res) => {
       items
     } = req.body;
 
+    let finalLovedOneId = lovedOneId || null;
+
+    // If user enters a new loved one during checkout, save it first
+    if (!finalLovedOneId && newLovedOne) {
+      const savedLovedOne = await pool.query(
+        `INSERT INTO loved_ones
+        (user_email, first_name, last_name, birth_date, passed_date, cemetery, plot_number, section, row_number, notes, icon)
+        VALUES ($1,$2,$3,$4,$5,$6,$7,$8,$9,$10,$11)
+        RETURNING *`,
+        [
+          userEmail,
+          newLovedOne.firstName,
+          newLovedOne.lastName,
+          newLovedOne.birthDate || null,
+          newLovedOne.passedDate || null,
+          newLovedOne.cemetery,
+          newLovedOne.plotNumber,
+          newLovedOne.section,
+          newLovedOne.rowNumber,
+          newLovedOne.notes,
+          '🌸'
+        ]
+      );
+
+      finalLovedOneId = savedLovedOne.rows[0].id;
+    }
+
     const cardLast4 = cardNumber ? cardNumber.replace(/\D/g, '').slice(-4) : null;
 
     const orderResult = await pool.query(
@@ -1299,7 +1327,7 @@ app.post('/orders', async (req, res) => {
        RETURNING *`,
       [
         userEmail,
-        lovedOneId || null,
+        finalLovedOneId,
         customerName,
         customerEmail,
         phone,
