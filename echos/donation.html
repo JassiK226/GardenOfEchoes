@@ -653,16 +653,25 @@
     }
   }
 
-  function fillSavedCard() {
-    const id = document.getElementById('saved-card-select').value;
-    const card = savedCards.find(c => String(c.id) === String(id));
+    function fillSavedCard() {
+      const id = document.getElementById('saved-card-select').value;
 
-    if (!card) return;
+      if (!id) {
+        document.getElementById('card-name').value = '';
+        document.getElementById('card-number').value = '';
+        document.getElementById('card-exp').value = '';
+        document.getElementById('card-cvv').value = '';
+        return;
+      }
 
-    document.getElementById('card-name').value = card.card_name || '';
-    document.getElementById('card-number').value = `•••• •••• •••• ${card.card_last4}`;
-    document.getElementById('card-exp').value = card.expiry || '';
-  }
+      const card = savedCards.find(c => String(c.id) === String(id));
+
+      if (!card) return;
+
+      document.getElementById('card-name').value = card.card_name || '';
+      document.getElementById('card-number').value = `•••• •••• •••• ${card.card_last4}`;
+      document.getElementById('card-exp').value = card.expiry || '';
+    }
 
   document.getElementById('card-number').addEventListener('input', function () {
     let value = this.value.replace(/\D/g, '').substring(0, 16);
@@ -675,6 +684,18 @@
     this.value = value;
   });
 
+function clearDonationForm() {
+  document.getElementById('custom-amount').value = '';
+  document.getElementById('donor-name').value = '';
+  document.getElementById('donor-email').value = '';
+  document.getElementById('donor-message').value = '';
+  document.getElementById('card-name').value = '';
+  document.getElementById('card-number').value = '';
+  document.getElementById('card-exp').value = '';
+  document.getElementById('card-cvv').value = '';
+  document.getElementById('saved-card-select').value = '';
+}
+
   window.addEventListener('DOMContentLoaded', loadSavedCards);
 
     async function goToCheckout() {
@@ -686,27 +707,27 @@
   const cardExp = document.getElementById('card-exp').value.trim();
   const cardCvv = document.getElementById('card-cvv').value.trim();
 
-  if (!cardName || !cardNumber || !cardExp || !cardCvv) {
-    alert('Please fill in your payment information.');
-    return;
-  }
+if (!name) {
+  alert('Please enter your full name.');
+  document.getElementById('donor-name').focus();
+  return;
+}
 
-  if (!name) {
-    alert('Please enter your full name.');
-    document.getElementById('donor-name').focus();
-    return;
-  }
+if (!email) {
+  alert('Please enter your email address.');
+  document.getElementById('donor-email').focus();
+  return;
+}
 
-  if (!email) {
-    alert('Please enter your email address.');
-    document.getElementById('donor-email').focus();
-    return;
-  }
+if (!selectedAmount || selectedAmount <= 0) {
+  alert('Please select or enter a donation amount.');
+  return;
+}
 
-  if (!selectedAmount || selectedAmount <= 0) {
-    alert('Please select or enter a donation amount.');
-    return;
-  }
+if (!cardName || !cardNumber || !cardExp || !cardCvv) {
+  alert('Please fill in your payment information.');
+  return;
+}
 
   const data = {
     donorName: name,
@@ -731,13 +752,13 @@
     if (res.ok) {
       alert('Thank you for your kindness and generosity. Your donation has been received and will help families continue honoring and remembering their loved ones with care and compassion.');
 
-      document.getElementById('donor-name').value = '';
-      document.getElementById('donor-email').value = '';
-      document.getElementById('donor-message').value = '';
-      document.getElementById('custom-amount').value = '';
+      clearDonationForm();
 
       selectedAmount = 100;
       document.getElementById('donateBtn').textContent = 'Donate $100';
+
+      document.querySelectorAll('.pill').forEach(p => p.classList.remove('selected'));
+      document.querySelectorAll('.pill')[2].classList.add('selected');
     } else {
       alert(result.error || 'Error saving donation');
     }
