@@ -21,6 +21,7 @@ This README explains how to install and run the project locally.
 
 The project folder should look similar to this:
 
+```text
 GARDEN-OF-ECHOES-BACKEND/
 │
 ├── echos/
@@ -87,6 +88,7 @@ GARDEN-OF-ECHOES-BACKEND/
 ├── package-lock.json
 ├── README.md
 └── server.js
+```
 
 ## Required Software
 
@@ -95,18 +97,24 @@ Before running the project, install the following:
 1. Node.js
 
 Download and install Node.js from:
+```text
 	https://nodejs.org/
+```
 
 After installing, check that Node.js and npm are working:
+```bash
 	node -v
 	npm -v
+```
 
 If version numbers appear, Node.js and npm are installed correctly.
 
 2. PostgreSQL
 
 Install PostgreSQL from:
+```text
 	https://www.postgresql.org/download/
+```
 
 You may also use pgAdmin to view and manage the database.
 
@@ -127,25 +135,34 @@ Make sure you are inside the main project folder where server.js is located.
 Open the terminal inside the project folder.
 
 Run:
+```bash
 	npm install
+```
 
 This installs all required Node.js packages, including:
+```text
 	express
 	cors
 	pg
 	dotenv
+```
 
 If needed, install them manually:
+```bash
 	npm install express cors pg dotenv
+```
 
 ## Step 3: Create the .env File
 
 Create a file named:
+```text
 	.env
+```
 
 The .env file must be in the same folder as server.js.
 
 Add the following information:
+```env
 	DB_HOST=your_database_host
 	DB_PORT=5432
 	DB_NAME=your_database_name
@@ -154,15 +171,18 @@ Add the following information:
 
 	REMOVE_BG_API_KEY=your_remove_bg_api_key
 	HUGGINGFACE_API_KEY=your_huggingface_api_key
+```
 
 Replace the values with your own database information.
 
 Example:
+```env
 	DB_HOST=dpg-example.render.com
 	DB_PORT=5432
 	DB_NAME=garden_of_echoes
 	DB_USER=garden_user
 	DB_PASSWORD=yourpassword
+```
 
 Do not put quotes around the values.
 
@@ -173,12 +193,17 @@ Open PostgreSQL using pgAdmin or psql.
 Create a new database for the project.
 
 Example database name:
+```text
 	garden_of_echoes
+```
 
 Then run the SQL file included with the project:
+```text
 	database/database.sql
+```
 
 This file should create all required tables, such as:
+```text
 	accounts
 	users
 	loved_ones
@@ -191,6 +216,7 @@ This file should create all required tables, such as:
 	saved_for_later
 	orders
 	order_items
+```
 
 If using pgAdmin:
 1. Open pgAdmin.
@@ -200,11 +226,14 @@ If using pgAdmin:
 5. Click Execute.
 
 If using psql:
+```bash
 	psql -U your_username -d garden_of_echoes -f database/database.sql
+```
 
 ## Step 5: Check the Database Connection File
 
 Make sure db.js looks similar to this:
+```javascript
 	const { Pool } = require('pg');
 	require('dotenv').config();
 
@@ -220,24 +249,32 @@ Make sure db.js looks similar to this:
 	});
 
 	module.exports = pool;
+```
 
 ## Step 6: Start the Server Locally
 
 In the terminal, run:
+```bash
 	node server.js
+```
 
 If everything is working, the terminal should show:
+```text
 	Server file started
 	Server is running on http://localhost:3000
+```
 
 ## Step 7: Open the Website Locally
 
 Open your browser and go to:
+```text
 	http://localhost:3000
+```
 
 This should load the homepage.
 
 You can also open specific pages:
+```text
 	http://localhost:3000/homepage.html
 	http://localhost:3000/login.html
 	http://localhost:3000/profile.html
@@ -245,19 +282,24 @@ You can also open specific pages:
 	http://localhost:3000/cart.html	
 	http://localhost:3000/donation.html
 	http://localhost:3000/subscriptions.html
+```
 
 ## Step 8: Test the Database Connection
 
 In the browser, go to:
+```text
 	http://localhost:3000/test-db
+```
 
 If the database is connected, you should see a message like:
+```JSON
 	{
 		  "message": "Database connected successfully",
 		  "time": {
 		    	"now": "..."
 	  	  }
 	}
+```
 
 If there is an error, check:
 * .env file values
@@ -272,7 +314,9 @@ If there is an error, check:
 1. Sign Up
 
 Go to:
+```text
 	http://localhost:3000/login.html
+```
 
 Create a new account using name, email, and password.
 
@@ -281,7 +325,9 @@ The account should be saved in the accounts table.
 2. Log In
 
 Go to:
+```text
 	http://localhost:3000/login.html
+```
 
 Log in using the account you created.
 
@@ -290,7 +336,9 @@ After login, the user email and full name are saved in localStorage so the websi
 3. Edit Profile
 
 Go to:
+```text
 	http://localhost:3000/profile.html
+```
 
 Use the Edit Profile tab to save:
 * first name
@@ -361,17 +409,20 @@ Saved addresses are stored in the shipping_addresses table.
 7. Browse Products
 
 Go to:
+```text
 	http://localhost:3000/flowers.html
+```
 
 Users can browse flowers and memorial gifts.
 
 Products can be added to the cart.
 
-
 8. Cart
 
 Go to:
+```text
 	http://localhost:3000/cart.html
+```
 
 The cart allows users to:
 * view selected items
@@ -387,7 +438,9 @@ Saved for later items are stored in the saved_for_later table.
 9. Checkout
 
 Go to the cart and click:
+```text
 	Proceed To Checkout
+```
 
 The checkout page allows the user to:
 * choose a saved loved one
@@ -398,13 +451,17 @@ The checkout page allows the user to:
 * place an order
 
 Orders are saved in:
+```text
 	orders
 	order_items
+```
 
 10. Order History
 
 After placing an order, go to:
-	profile.html
+```text
+	http://localhost:3000/profile.html
+```
 
 Open the Order History tab.
 
@@ -420,7 +477,9 @@ The user should see previous orders, including:
 11. Subscriptions
 
 Go to:
+```text
 	http://localhost:3000/subscriptions.html
+```
 
 Users can choose subscription plans such as:
 * weekly
@@ -438,7 +497,9 @@ Subscriptions are saved in the subscriptions table.
 12. Donations
 
 Go to:
+```text
 	http://localhost:3000/donation.html
+```
 
 Users can enter:
 * donation amount
@@ -451,7 +512,9 @@ Donation data is saved in the donations table.
 13. Contact Form
 
 Go to:
+```text
 	http://localhost:3000/contact.html
+```
 
 Users can submit:
 * name
@@ -464,6 +527,7 @@ Messages are saved in the contact_messages table.
 ## Step 10: Useful Testing URLs
 
 These routes can be used to check if data is saving correctly:
+```text
 	http://localhost:3000/test-db
 	http://localhost:3000/users
 	http://localhost:3000/accounts
@@ -473,44 +537,55 @@ These routes can be used to check if data is saving correctly:
 	http://localhost:3000/contact-messages
 	http://localhost:3000/donations
 	http://localhost:3000/all-subscriptions 
+```
 
 Some routes require a user email in the URL:
+```text
 	http://localhost:3000/users/useremail@example.com
 	http://localhost:3000/loved-ones/useremail@example.com
 	http://localhost:3000/payment-methods/useremail@example.com
 	http://localhost:3000/shipping-addresses/useremail@example.com
 	http://localhost:3000/orders/useremail@example.com
 	http://localhost:3000/subscriptions/useremail@example.com
+```
 
 Replace useremail@example.com with the actual email used during signup.
 
-Step 11: Stopping the Server
+## Step 11: Stopping the Server
 
 To stop the local server, go to the terminal and press:
+```text
 	Control + C
+```
 
 On Mac, this is also:
+```text
 	Control + C
+```
 
-Troubleshooting
+## Troubleshooting
 
-Problem: Cannot GET / 
+### Problem: Cannot GET / 
 
 Make sure this route exists in server.js:
+```javascript
 	app.get('/', (req, res) => {
 	  res.sendFile(path.join(__dirname, 'echos', 'homepage.html'));
 	});
+```
 
 Also make sure homepage.html is inside the echos folder.
 
-Problem: CSS or images are not loading
+### Problem: CSS or images are not loading
 
 Make sure this line is in server.js:
+```javascript
 	app.use(express.static(path.join(__dirname, 'echos')));
+```
 
 Also make sure image files are inside the echos folder.
 
-Problem: Database connection failed
+### Problem: Database connection failed
 
 Check:
 1. .env file exists.
@@ -521,56 +596,72 @@ Check:
 6. PostgreSQL database exists.
 7. SSL is enabled in db.js.
 
-Problem: relation does not exist
+### Problem: relation does not exist
 
 This means the database table has not been created yet.
 
 Run the SQL file again:
+```text
 	database/database.sql
+```
 
-Problem: Port already in use
+### Problem: Port already in use
 
 If port 3000 is already being used, stop the other server or change the port in server.js:
+```javascript
 	const PORT = process.env.PORT || 3000;
+```
 
 Example:
+```javascript
 	const PORT = process.env.PORT || 4000;
+```
 
 Then open:
+```text
 	http://localhost:4000
+```
 
-Problem: Login does not work
+### Problem: Login does not work
 
 Check that the account exists in the accounts table.
 
 You can test by opening:
+```text
 	http://localhost:3000/accounts
+```
 
-Problem: Profile does not load
+### Problem: Profile does not load
 
 Make sure the email is saved in localStorage after login.
 
 The website uses localStorage to know which user is currently signed in.
 
-Problem: API key features do not work
+### Problem: API key features do not work
 
 Some features require API keys in the .env file:
+```env
 	REMOVE_BG_API_KEY=your_remove_bg_api_key
 	HUGGINGFACE_API_KEY=your_huggingface_api_key
+```
 
 If these keys are missing, background removal or image generation may not work.
 
 The rest of the website can still run locally without those features.
 
-Local Execution Summary
+## Local Execution Summary
 
 To run the project locally:
+```bash
 	cd GardenOfEchoes
 	npm install
 	node server.js
+```
 
 Then open:
+```text
 	http://localhost:3000
+```
 
 ## Notes
 * The frontend files are stored inside the echos folder.
