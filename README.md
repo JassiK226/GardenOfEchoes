@@ -1,4 +1,7 @@
 # Garden of Echoes — Local Installation and Execution Guide
+
+## This website is available to view on https://gardenofechoes.onrender.com
+
 ## Project Overview
 
 Garden of Echoes is a web-based memorial decoration platform. The system allows users to create an account, manage their profile, save loved one information, browse products, add items to a cart, save items for later, place orders, manage subscriptions, save payment methods, save shipping addresses, submit contact messages, make donations, and preview memorial arrangements.
