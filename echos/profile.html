@@ -879,10 +879,21 @@
         document.getElementById('sidebarName').textContent = fullName;
         document.getElementById('sidebarEmail').textContent = data.email;
 
-        if (!selectedProfilePhoto) {
-          document.getElementById('sidebarInitial').textContent = data.firstName.charAt(0).toUpperCase();
-          document.getElementById('avatarPreview').textContent = data.firstName.charAt(0).toUpperCase();
-        }
+        if (selectedProfilePhoto) {
+            const preview = document.getElementById('avatarPreview');
+            preview.style.background = `url(${selectedProfilePhoto}) center/cover`;
+            preview.textContent = '';
+
+            const sidebar = document.getElementById('sidebarInitial');
+            sidebar.style.background = `url(${selectedProfilePhoto}) center/cover`;
+            sidebar.textContent = '';
+          } else {
+            document.getElementById('sidebarInitial').style.background = '';
+            document.getElementById('avatarPreview').style.background = '';
+
+            document.getElementById('sidebarInitial').textContent = data.firstName.charAt(0).toUpperCase();
+            document.getElementById('avatarPreview').textContent = data.firstName.charAt(0).toUpperCase();
+          }
 
         showToast('Profile saved!');
         console.log(result);
