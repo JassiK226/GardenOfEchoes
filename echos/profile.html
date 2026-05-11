@@ -791,6 +791,8 @@
     let editingPaymentId = null;
     let editingShippingId = null;
     let editingLovedOneId = null;
+    let selectedProfilePhoto = null;
+
     /* ── Tab switching ── */
     function switchTab(id, el) {
       event.preventDefault();
@@ -802,26 +804,24 @@
 
     /* ── Avatar preview ── */
     function previewAvatar(input) {
-  if (input.files && input.files[0]) {
-    const reader = new FileReader();
+      if (input.files && input.files[0]) {
+        const reader = new FileReader();
 
-    reader.onload = e => {
-      const imageData = e.target.result;
+        reader.onload = e => {
+          selectedProfilePhoto = e.target.result;
 
-      localStorage.setItem('profilePhoto', imageData);
+          const preview = document.getElementById('avatarPreview');
+          preview.style.background = `url(${selectedProfilePhoto}) center/cover`;
+          preview.textContent = '';
 
-      const preview = document.getElementById('avatarPreview');
-      preview.style.background = `url(${imageData}) center/cover`;
-      preview.textContent = '';
+          const sidebar = document.getElementById('sidebarInitial');
+          sidebar.style.background = `url(${selectedProfilePhoto}) center/cover`;
+          sidebar.textContent = '';
+        };
 
-      const sidebar = document.getElementById('sidebarInitial');
-      sidebar.style.background = `url(${imageData}) center/cover`;
-      sidebar.textContent = '';
-    };
-
-    reader.readAsDataURL(input.files[0]);
-  }
-}
+        reader.readAsDataURL(input.files[0]);
+      }
+    }
 
   // Save profile information
   async function saveProfile(e) {
@@ -840,6 +840,7 @@
       city: document.getElementById('p-city').value,
       state: document.getElementById('p-state').value,
       zipCode: document.getElementById('p-zip').value,
+      profilePhoto: selectedProfilePhoto,
       currentPassword: document.getElementById('p-current-pass').value,
       newPassword: document.getElementById('p-new-pass').value,
       confirmPassword: document.getElementById('p-confirm-pass').value
@@ -877,8 +878,11 @@
         // Update sidebar profile info right away
         document.getElementById('sidebarName').textContent = fullName;
         document.getElementById('sidebarEmail').textContent = data.email;
-        document.getElementById('sidebarInitial').textContent = data.firstName.charAt(0).toUpperCase();
-        document.getElementById('avatarPreview').textContent = data.firstName.charAt(0).toUpperCase();
+
+        if (!selectedProfilePhoto) {
+          document.getElementById('sidebarInitial').textContent = data.firstName.charAt(0).toUpperCase();
+          document.getElementById('avatarPreview').textContent = data.firstName.charAt(0).toUpperCase();
+        }
 
         showToast('Profile saved!');
         console.log(result);
@@ -1453,6 +1457,7 @@
       if (res.ok) {
         const user = await res.json();
 
+
         document.getElementById('p-first').value = user.first_name || '';
         document.getElementById('p-last').value = user.last_name || '';
         document.getElementById('p-email').value = user.email || '';
@@ -1464,7 +1469,20 @@
         document.getElementById('p-dob').value = user.dob ? user.dob.split('T')[0] : '';
         document.getElementById('p-gender').value = user.gender || '';
         document.getElementById('p-bio').value = user.bio || '';
-      } else {
+      
+      if (user.profile_photo) {
+      selectedProfilePhoto = user.profile_photo;
+
+      const preview = document.getElementById('avatarPreview');
+      preview.style.background = `url(${user.profile_photo}) center/cover`;
+      preview.textContent = '';
+
+      const sidebar = document.getElementById('sidebarInitial');
+      sidebar.style.background = `url(${user.profile_photo}) center/cover`;
+      sidebar.textContent = '';
+      }
+    } 
+      else {
         // If no saved profile in database yet, use localStorage values
         document.getElementById('p-first').value = firstName;
         document.getElementById('p-last').value = lastName;
@@ -1477,18 +1495,6 @@
       document.getElementById('p-last').value = lastName;
       document.getElementById('p-email').value = email || '';
     }
-
-    const savedPhoto = localStorage.getItem('profilePhoto');
-
-    if (savedPhoto) {
-      const preview = document.getElementById('avatarPreview');
-      preview.style.background = `url(${savedPhoto}) center/cover`;
-      preview.textContent = '';
-
-      const sidebar = document.getElementById('sidebarInitial');
-      sidebar.style.background = `url(${savedPhoto}) center/cover`;
-      sidebar.textContent = '';
-}
 
     await loadLovedOnes();
 

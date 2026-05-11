@@ -50,6 +50,7 @@ app.post('/users', async (req, res) => {
       city,
       state,
       zipCode,
+      profilePhoto,
       currentPassword,
       newPassword,
       confirmPassword
@@ -81,22 +82,23 @@ app.post('/users', async (req, res) => {
 
     const savedUser = await pool.query(
       `INSERT INTO users
-       (first_name, last_name, email, phone, dob, gender, bio, address, city, state, zip_code)
-       VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11)
-       ON CONFLICT (email)
-       DO UPDATE SET
-         first_name = EXCLUDED.first_name,
-         last_name = EXCLUDED.last_name,
-         phone = EXCLUDED.phone,
-         dob = EXCLUDED.dob,
-         gender = EXCLUDED.gender,
-         bio = EXCLUDED.bio,
-         address = EXCLUDED.address,
-         city = EXCLUDED.city,
-         state = EXCLUDED.state,
-         zip_code = EXCLUDED.zip_code
-       RETURNING *`,
-      [firstName, lastName, email, phone, dob || null, gender, bio, address, city, state, zipCode]
+      (first_name, last_name, email, phone, dob, gender, bio, address, city, state, zip_code, profile_photo)
+      VALUES ($1, $2, $3, $4, $5, $6, $7, $8, $9, $10, $11, $12)
+      ON CONFLICT (email)
+      DO UPDATE SET
+        first_name = EXCLUDED.first_name,
+        last_name = EXCLUDED.last_name,
+        phone = EXCLUDED.phone,
+        dob = EXCLUDED.dob,
+        gender = EXCLUDED.gender,
+        bio = EXCLUDED.bio,
+        address = EXCLUDED.address,
+        city = EXCLUDED.city,
+        state = EXCLUDED.state,
+        zip_code = EXCLUDED.zip_code,
+        profile_photo = EXCLUDED.profile_photo
+      RETURNING *`,
+      [firstName, lastName, email, phone, dob || null, gender, bio, address, city, state, zipCode, profilePhoto]
     );
 
     res.json(savedUser.rows[0]);
